@@ -1,0 +1,8 @@
+{
+    "recommendations": [
+        "dbaeumer.vscode-eslint", // ESLint integration
+        "esbenp.prettier-vscode", // Prettier for code formatting
+        "eamodio.gitlens", // Git insights
+        "editorconfig.editorconfig" // Respect .editorconfig settings
+    ]
+}
