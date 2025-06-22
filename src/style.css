@@ -35,16 +35,6 @@ header nav {
   display: flex;
 }
 
-header a {
-  color: var(--color);
-  padding: 0.75rem;
-  text-decoration: none;
-
-  &:hover {
-    --neumo-item-distance: 15px;
-  }
-}
-
 main {
   flex: auto;
   display: flex;
@@ -83,21 +73,62 @@ main {
     calc(var(--neumo-item-shadow-spread-base) * 1) 0px
     var(--neumo-item-shadow-color);
 
-  box-sizing: border-box;
-  margin: 10px;
-  /* display: block; */
-  border-radius: 10px;
-  padding: 10px;
-  box-shadow: var(--neumo-item-shadow), var(--neumo-item-highlight);
-  transition: box-shadow 0.3s cubic-bezier(0.2, 1.1, 0.35, 1.5);
-
-  &.hollow {
-    box-shadow: inset var(--neumo-item-shadow),
-      inset var(--neumo-item-highlight);
-  }
-
   @media (prefers-color-scheme: dark) {
     --neumo-item-shadow-color: hsl(0, 0%, 0%, 0.8);
     --neumo-item-highlight-color: hsl(0, 0%, 100%, 0.2);
+  }
+
+  a&,
+  button& {
+    --neumo-item-distance: 5px;
+
+    all: unset;
+    cursor: pointer;
+
+    &:hover {
+      --neumo-item-distance: 8px;
+    }
+
+    &:active {
+      --neumo-item-distance: 5px;
+    }
+  }
+
+  input& {
+    --neumo-item-distance: 5px;
+
+    all: unset;
+    text-align: left;
+
+    &:hover {
+      --neumo-item-distance: 3px;
+    }
+
+    &:active,
+    &:focus {
+      --neumo-item-distance: 8px;
+    }
+  }
+
+  *&,
+  a&,
+  button&,
+  input& {
+    box-sizing: border-box;
+    margin: 10px;
+    /* display: block; */
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: var(--neumo-item-shadow), var(--neumo-item-highlight);
+    transition: box-shadow 0.3s cubic-bezier(0.2, 1.1, 0.35, 1.5);
+
+    &.hollow,
+    a&:active,
+    a&:focus,
+    button&:active,
+    input& {
+      box-shadow: inset var(--neumo-item-shadow),
+        inset var(--neumo-item-highlight);
+    }
   }
 }
