@@ -3,6 +3,7 @@ import { LocationProvider, Router, Route } from "preact-iso";
 
 import { Header } from "./components/Header.jsx";
 import { Home } from "./pages/Home/index.jsx";
+import { PeerTest } from "./pages/PeerTest/index.js";
 import { NotFound } from "./pages/_404.jsx";
 import "./style.css";
 
@@ -13,6 +14,7 @@ export function App() {
       <main class="neumo hollow">
         <Router>
           <Route path="/" component={Home} />
+          <Route path="/peer-test" component={PeerTest} />
           <Route default component={NotFound} />
         </Router>
       </main>

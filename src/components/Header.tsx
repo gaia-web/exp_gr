@@ -9,6 +9,12 @@ export function Header() {
         <a href="/" class={`neumo ${url === "/" ? "active hollow" : ""}`}>
           Home
         </a>
+        <a
+          href="/peer-test"
+          class={`neumo ${url === "/peer-test" ? "active hollow" : ""}`}
+        >
+          Peer Test
+        </a>
         <a href="/404" class={`neumo ${url === "/404" ? "active hollow" : ""}`}>
           404
         </a>
