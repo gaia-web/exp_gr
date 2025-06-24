@@ -29,12 +29,33 @@
     --neumo-item-highlight-color: hsl(0, 0%, 100%, 0.2);
   }
 
+  box-sizing: border-box;
+  margin: 10px;
+  /* display: block; */
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: var(--neumo-item-shadow), var(--neumo-item-highlight);
+  transition-property: var(--neumo-item-transition-protperty);
+  transition-duration: var(--neumo-item-transition-duration);
+  transition-timing-function: var(--neumo-item-transition-timing-function);
+
+  &.hollow,
+  a&:active,
+  a&:focus,
+  button&:active,
+  input& {
+    box-shadow: inset var(--neumo-item-shadow),
+      inset var(--neumo-item-highlight);
+  }
+
   a&,
   button& {
     --neumo-item-distance: 5px;
 
-    all: unset;
-    cursor: pointer;
+    :where(&) {
+      all: unset;
+      cursor: pointer;
+    }
 
     &:hover {
       --neumo-item-distance: 8px;
@@ -48,41 +69,18 @@
   input& {
     --neumo-item-distance: 5px;
 
-    all: unset;
-    text-align: left;
+    :where(&) {
+      all: unset;
+      text-align: left;
+    }
 
     &:hover {
-      --neumo-item-distance: 3px;
+      --neumo-item-distance: 8px;
     }
 
     &:active,
     &:focus {
-      --neumo-item-distance: 8px;
-    }
-  }
-
-  *&,
-  /* To increase the specificity of `a`, `button`, `input`, etc*/
-  a&,
-  button&,
-  input& {
-    box-sizing: border-box;
-    margin: 10px;
-    /* display: block; */
-    border-radius: 10px;
-    padding: 10px;
-    box-shadow: var(--neumo-item-shadow), var(--neumo-item-highlight);
-    transition-property: var(--neumo-item-transition-protperty);
-    transition-duration: var(--neumo-item-transition-duration);
-    transition-timing-function: var(--neumo-item-transition-timing-function);
-
-    &.hollow,
-    a&:active,
-    a&:focus,
-    button&:active,
-    input& {
-      box-shadow: inset var(--neumo-item-shadow),
-        inset var(--neumo-item-highlight);
+      --neumo-item-distance: 3px;
     }
   }
 }
