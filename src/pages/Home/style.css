@@ -1,0 +1,4 @@
+::view-transition-old(dialog),
+::view-transition-new(dialog) {
+  animation-duration: 0.8s;
+}
