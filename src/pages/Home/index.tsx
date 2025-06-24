@@ -3,23 +3,34 @@ import "./style.css";
 import { useRef } from "preact/hooks";
 
 export function Home() {
+  const buttonRef = useRef<HTMLButtonElement>();
   const dialogRef = useRef<HTMLDialogElement>();
-  const foo = useSignal(false);
+  const dialogOpened = useSignal(false);
 
   useSignalEffect(() => {
-    const shouldOpen = foo.value;
     const callback = () => {
-      if (!dialogRef.current) return;
-      if (shouldOpen) {
+      if (!dialogRef.current || !buttonRef.current) return;
+      if (dialogOpened.value) {
+        buttonRef.current.style.viewTransitionName = null;
         dialogRef.current.style.viewTransitionName = "dialog";
         dialogRef.current.showModal();
         return;
       }
-      dialogRef.current.style.viewTransitionName = "dialog";
+      dialogRef.current.style.viewTransitionName = null;
+      buttonRef.current.style.viewTransitionName = "dialog";
       dialogRef.current?.close();
     };
     if (document.startViewTransition) {
-      document.startViewTransition(callback);
+      if (dialogOpened.value) {
+        buttonRef.current.style.viewTransitionName = "dialog";
+      } else {
+        dialogRef.current.style.viewTransitionName = "dialog";
+      }
+      const viewTransition = document.startViewTransition(callback);
+      viewTransition.finished.then(() => {
+        buttonRef.current.style.viewTransitionName = null;
+        dialogRef.current.style.viewTransitionName = null;
+      });
     } else {
       callback();
     }
@@ -33,20 +44,28 @@ export function Home() {
         id quia autem, animi ipsa ad architecto, nemo officia soluta officiis.
       </p>
       <button
+        ref={buttonRef}
         class="neumo"
         onClick={() => {
-          foo.value = true;
+          dialogOpened.value = true;
         }}
       >
         Open Modal
       </button>
-      <dialog ref={dialogRef} style="background: var(--background-color);">
-        Foo
+      <dialog
+        ref={dialogRef}
+        class="neumo"
+        style={{ maxWidth: "50%", aspectRatio: "16 / 9" }}
+      >
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente
+        aspernatur recusandae perspiciatis reiciendis iusto? Obcaecati error
+        excepturi, inventore esse impedit magni eaque ullam natus recusandae
+        itaque sapiente alias commodi qui!
         <br />
         <button
           class="neumo"
           onClick={() => {
-            foo.value = false;
+            dialogOpened.value = false;
           }}
         >
           Close Modal

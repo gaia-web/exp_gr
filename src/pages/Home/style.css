@@ -1,4 +1,5 @@
 ::view-transition-old(dialog),
 ::view-transition-new(dialog) {
-  animation-duration: 0.8s;
+  animation-duration: 0.5s;
+  animation-timing-function: ease-in;
 }
