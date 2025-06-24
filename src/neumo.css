@@ -12,6 +12,11 @@
   }
 }
 
+:where(*) {
+  color: var(--neumo-item-color);
+  background-color: var(--neumo-item-background-color);
+}
+
 .neumo {
   --neumo-item-distance: 10px;
   --neumo-item-light-angle: 45deg;
@@ -44,7 +49,6 @@
   }
 
   box-sizing: border-box;
-  margin: 10px;
   /* display: block; */
   border-radius: 10px;
   padding: 10px;
@@ -52,6 +56,10 @@
   transition-property: var(--neumo-item-transition-protperty);
   transition-duration: var(--neumo-item-transition-duration);
   transition-timing-function: var(--neumo-item-transition-timing-function);
+
+  :where(&) {
+    margin: 10px;
+  }
 
   &.hollow,
   a&:active,
@@ -69,6 +77,7 @@
     :where(&) {
       all: unset;
       cursor: pointer;
+      margin: 5px;
     }
 
     &:hover {
@@ -86,6 +95,7 @@
     :where(&) {
       all: unset;
       text-align: left;
+      margin: 5px;
     }
 
     &:hover {
@@ -95,6 +105,15 @@
     &:active,
     &:focus {
       --neumo-item-distance: 3px;
+    }
+  }
+
+  dialog& {
+    --neumo-item-distance: 15px;
+
+    :where(&) {
+      border: none;
+      margin: auto;
     }
   }
 }
