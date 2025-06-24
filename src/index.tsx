@@ -5,7 +5,9 @@ import { Header } from "./components/Header.jsx";
 import { Home } from "./pages/Home/index.jsx";
 import { PeerTest } from "./pages/PeerTest/index.js";
 import { NotFound } from "./pages/_404.jsx";
+
 import "./style.css";
+import "./neumo.css";
 
 export function App() {
   return (
