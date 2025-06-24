@@ -1,3 +1,17 @@
+:where(:root) {
+  --neumo-item-color: hsl(0, 0%, 20%);
+  --neumo-item-background-color: hsl(0, 0%, 90%);
+
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  color: var(--neumo-item-color);
+  background-color: var(--neumo-item-background-color);
+
+  @media (prefers-color-scheme: dark) {
+    --neumo-item-color: hsl(0, 0%, 80%);
+    --neumo-item-background-color: hsl(0, 0%, 10%);
+  }
+}
+
 .neumo {
   --neumo-item-distance: 10px;
   --neumo-item-light-angle: 45deg;
