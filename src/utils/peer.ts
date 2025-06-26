@@ -16,6 +16,8 @@ export const isHostPeer = computed(() =>
 export const roomName = signal<string>();
 export const playerName = signal<string>();
 export const connectionMap = signal<Map<DataConnection, string>>(new Map());
+export const playerList = signal<string[]>([]);
+export const playerCount = signal<number>(0);
 export const dataHandler = signal<
   (data: { type?: string; value?: unknown }, connection: DataConnection) => void
 >((data, connection) => {
@@ -29,6 +31,10 @@ export const dataHandler = signal<
       break;
     case DataType.UPDATE_PLAYER_LIST:
       console.log(`Player list updated as: `, data.value);
+      playerList.value = structuredClone(
+        (data.value as any[]).map((v) => v.playerName)
+      );
+      playerCount.value = (data.value as []).length;
       break;
   }
 });
@@ -76,6 +82,8 @@ effect(() => {
       connectionMap.value = map;
       c.off("open").on("open", () => {
         console.log(`New player ${c.peer} joined.`);
+        playerList.value.push(c.peer);
+        playerCount.value = playerList.value.length;
         sendPlayerName(c);
         notifyPlayerListUpdate();
       });
