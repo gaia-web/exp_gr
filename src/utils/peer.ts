@@ -28,6 +28,11 @@ export const dataHandler = signal<
       map.set(connection, data.value.toString());
       connectionMap.value = map;
       console.log(`Peer ${connection.peer} updated its name as ${data.value}`);
+
+      if (isHostPeer) {
+        notifyPlayerListUpdate();
+      }
+
       break;
     case DataType.UPDATE_PLAYER_LIST:
       console.log(`Player list updated as: `, data.value);

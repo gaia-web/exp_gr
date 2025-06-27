@@ -29,11 +29,6 @@ export function PeerTest() {
     }
   });
 
-  // const values = Array.from(connectionMap.value.values());
-
-  console.log(playerList);
-  // console.log(values);
-
   return (
     <div class="peer-test">
       <input
