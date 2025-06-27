@@ -59,7 +59,7 @@ export function PeerTest() {
       <b>Current Connections:</b>
       <ul>
         <li key={playerName.value}>You: {playerName.value}</li>
-        <li key={playerCount.value}>Total player count: {playerCount.value}</li>
+        <li key={playerCount}>Total player count: {playerCount}</li>
 
         {playerList.value.map((value) => (
           <li key={value}>{value}</li>
@@ -82,7 +82,6 @@ export function PeerTest() {
     console.log(
       `Create a room with name ${roomName} as ${playerName} and wait for players to join.`
     );
-    playerCount.value = 1;
     playerList.value = [playerName.value];
   }
 
