@@ -36,9 +36,7 @@ export const dataHandler = signal<
       break;
     case DataType.UPDATE_PLAYER_LIST:
       console.log(`Player list updated as: `, data.value);
-      playerList.value = structuredClone(
-        (data.value as any[]).map((v) => v.playerName)
-      );
+      playerList.value = (data.value as any[]).map((v) => v.playerName);
       break;
   }
 });
