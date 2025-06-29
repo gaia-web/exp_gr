@@ -34,7 +34,7 @@ export function PeerTest() {
 
   return (
     <div class="peer-test">
-      <ChatRoom roomName={roomName.value} peer={peer.value} />
+      <ChatRoom roomName={roomName.value} />
       <br />
       <input
         class="neumo"

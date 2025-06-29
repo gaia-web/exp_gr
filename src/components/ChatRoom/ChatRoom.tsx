@@ -3,12 +3,9 @@ import { playerName } from "../../utils/peer";
 import { Message, chatHistory, sendChatMessage } from "../../utils/chat";
 import { JSX } from "preact";
 import { useSignal } from "@preact/signals";
-import Peer, { DataConnection } from "peerjs";
 
 export type ChatRoomProp = {
   roomName: string;
-  connection?: DataConnection;
-  peer?: Peer;
 };
 
 export const ChatRoom = (prop: ChatRoomProp): JSX.Element => {
