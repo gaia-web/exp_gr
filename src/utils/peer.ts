@@ -58,7 +58,6 @@ export const dataHandler = signal<
         const connectionAndPlayerNamePairs = [...connectionMap.value.entries()];
         for (const [c, n] of connectionAndPlayerNamePairs) {
           if (n === data.value[0].message.sender) {
-            console.log("skip for the sender");
             continue;
           }
           c.send({
