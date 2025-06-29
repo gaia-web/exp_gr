@@ -1,6 +1,6 @@
 import { computed, effect, signal } from "@preact/signals";
 import { DataConnection } from "peerjs";
-import { connectionMap, DataType } from "./peer";
+import { connectionMap, DataType, isHostPeer } from "./peer";
 
 export type Message = {
   sender: string;
@@ -16,8 +16,6 @@ export function insertChatMessageIntoHistory(message: Message) {
   const history = chatHistory.value;
   history.push(message);
   chatHistory.value = [...history];
-
-  console.log("inserting chat message to history need to reboardcast?", connectionMap)
 }
 
 export function sendChatMessage(roonName: string, message: Message) {

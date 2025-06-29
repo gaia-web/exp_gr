@@ -30,21 +30,62 @@ export const dataHandler = signal<
       map.set(connection, data.value.toString());
       connectionMap.value = map;
       console.log(`Peer ${connection.peer} updated its name as ${data.value}`);
-      console.log("map is now", connectionMap.value)
+      console.log("map is now", connectionMap.value);
+      const newPlayerList = [];
+      for (const [_, n] of connectionMap.value.entries()) {
+        newPlayerList.push(n);
+      }
 
       if (isHostPeer) {
+        newPlayerList.push(playerName.value);
         notifyPlayerListUpdate();
       }
+      playerList.value = [...newPlayerList];
+      console.log(
+        `UPDATE_PLAYER_NAME - Player list is now: `,
+        playerList.value
+      );
 
       break;
     case DataType.UPDATE_PLAYER_LIST:
-      console.log(`Player list updated as: `, data.value);
-      playerList.value = (data.value as any[]).map((v) => v.playerName);
+      console.log(
+        `Player list updated as: `,
+        data.value,
+        !isHostPeer,
+        peer.value.id.startsWith(PEER_ID_PREFIX)
+      );
+      // Host should not upadte is player list based on UPDATE PLAYER LIST signal.
+      if (!peer.value.id.startsWith(PEER_ID_PREFIX)) {
+        playerList.value = (data.value as any[]).map((v) => v.playerName);
+      }
       console.log(`Player list is now: `, playerList.value);
       break;
     case DataType.SEND_MESSAGE:
       console.log("received message", data.value, chatHistory.value);
       insertChatMessageIntoHistory(data.value[0].message);
+
+      // host need to reboardcast the message to rest of the connections
+      if (peer.value.id.startsWith(PEER_ID_PREFIX)) {
+        const connectionAndPlayerNamePairs = [...connectionMap.value.entries()];
+        for (const [c, n] of connectionAndPlayerNamePairs) {
+          if (n === data.value[0].message.sender) {
+            console.log("skip for the sender");
+            continue;
+          }
+          c.send({
+            type: DataType.SEND_MESSAGE,
+            value: [
+              {
+                message: data.value[0].message,
+              },
+              ...connectionAndPlayerNamePairs.map(([p, n]) => ({
+                id: p.peer,
+                playerName: n,
+              })),
+            ],
+          });
+        }
+      }
       break;
   }
 });
@@ -54,12 +95,20 @@ function updateDataHandler(c: DataConnection) {
 }
 
 function sendPlayerName(c: DataConnection) {
+  console.log("sending UPDATE_PLAYER_NAME to connection", c);
   c.send({ type: DataType.UPDATE_PLAYER_NAME, value: playerName.value });
 }
 
 function notifyPlayerListUpdate() {
   const connectionAndPlayerNamePairs = [...connectionMap.value.entries()];
   for (const [c] of connectionAndPlayerNamePairs) {
+    console.log(
+      "board casted connection ->",
+      ...connectionAndPlayerNamePairs.map(([p, n]) => ({
+        id: p.peer,
+        playerName: n,
+      }))
+    );
     c.send({
       type: DataType.UPDATE_PLAYER_LIST,
       value: [
@@ -96,6 +145,7 @@ effect(() => {
         map.set(c, c.connectionId);
         connectionMap.value = map;
         playerList.value.push(c.peer);
+        console.log("new player joined, player list is now", playerList.value);
         sendPlayerName(c);
         notifyPlayerListUpdate();
       });
