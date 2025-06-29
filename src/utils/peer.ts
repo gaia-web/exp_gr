@@ -1,12 +1,14 @@
 import { computed, effect, signal } from "@preact/signals";
 import Peer, { DataConnection, PeerJSOption } from "peerjs";
+import { chatHistory } from "./chat";
 
 export const PEER_ID_PREFIX = "1uX68Fu0mzVKNp5h";
 export const PEER_JS_OPTIONS: PeerJSOption = { debug: 0 };
 
-enum DataType {
+export enum DataType {
   UPDATE_PLAYER_NAME = "update_player_name",
   UPDATE_PLAYER_LIST = "update_player_list",
+  SEND_MESSAGE = "send_message",
 }
 
 export const peer = signal<Peer>();
@@ -37,6 +39,10 @@ export const dataHandler = signal<
     case DataType.UPDATE_PLAYER_LIST:
       console.log(`Player list updated as: `, data.value);
       playerList.value = (data.value as any[]).map((v) => v.playerName);
+      break;
+    case DataType.SEND_MESSAGE:
+      console.log("received message", data.value, chatHistory.value);
+      chatHistory.value.get(roomName.value).push(data.value[0].message.content);
       break;
   }
 });
