@@ -1,13 +1,4 @@
-import {
-  connectionMap,
-  peer,
-  PEER_ID_PREFIX,
-  PEER_JS_OPTIONS,
-  playerCount,
-  playerList,
-  playerName,
-  roomName,
-} from "../../utils/peer";
+import { playerName } from "../../utils/peer";
 
 import { Message, chatHistory, sendChatMessage } from "../../utils/chat";
 import { JSX } from "preact";
@@ -21,7 +12,7 @@ export type ChatRoomProp = {
 };
 
 export const ChatRoom = (prop: ChatRoomProp): JSX.Element => {
-  const { roomName, connection, peer } = prop;
+  const { roomName } = prop;
   const newMessageContent = useSignal<string>("");
 
   const sendMessage = (e: JSX.TargetedEvent<HTMLFormElement, Event>) => {

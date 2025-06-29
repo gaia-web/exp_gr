@@ -41,19 +41,9 @@ export const dataHandler = signal<
         notifyPlayerListUpdate();
       }
       playerList.value = [...newPlayerList];
-      console.log(
-        `UPDATE_PLAYER_NAME - Player list is now: `,
-        playerList.value
-      );
 
       break;
     case DataType.UPDATE_PLAYER_LIST:
-      console.log(
-        `Player list updated as: `,
-        data.value,
-        !isHostPeer,
-        peer.value.id.startsWith(PEER_ID_PREFIX)
-      );
       // Host should not upadte is player list based on UPDATE PLAYER LIST signal.
       if (!peer.value.id.startsWith(PEER_ID_PREFIX)) {
         playerList.value = (data.value as any[]).map((v) => v.playerName);
@@ -61,7 +51,6 @@ export const dataHandler = signal<
       console.log(`Player list is now: `, playerList.value);
       break;
     case DataType.SEND_MESSAGE:
-      console.log("received message", data.value, chatHistory.value);
       insertChatMessageIntoHistory(data.value[0].message);
 
       // host need to reboardcast the message to rest of the connections
