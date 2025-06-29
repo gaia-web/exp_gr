@@ -32,7 +32,6 @@ export function PeerTest() {
     }
   });
 
-  console.log("Peer page update ");
   return (
     <div class="peer-test">
       <ChatRoom roomName={roomName.value} peer={peer.value} />

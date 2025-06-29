@@ -30,6 +30,7 @@ export const dataHandler = signal<
       map.set(connection, data.value.toString());
       connectionMap.value = map;
       console.log(`Peer ${connection.peer} updated its name as ${data.value}`);
+      console.log("map is now", connectionMap.value)
 
       if (isHostPeer) {
         notifyPlayerListUpdate();
@@ -39,6 +40,7 @@ export const dataHandler = signal<
     case DataType.UPDATE_PLAYER_LIST:
       console.log(`Player list updated as: `, data.value);
       playerList.value = (data.value as any[]).map((v) => v.playerName);
+      console.log(`Player list is now: `, playerList.value);
       break;
     case DataType.SEND_MESSAGE:
       console.log("received message", data.value, chatHistory.value);
@@ -90,6 +92,9 @@ effect(() => {
       connectionMap.value = map;
       c.off("open").on("open", () => {
         console.log(`New player ${c.peer} joined.`);
+        const map = new Map(connectionMap.value);
+        map.set(c, c.connectionId);
+        connectionMap.value = map;
         playerList.value.push(c.peer);
         sendPlayerName(c);
         notifyPlayerListUpdate();
