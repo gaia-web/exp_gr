@@ -9,21 +9,21 @@ export type Message = {
   timestamp: Date;
 };
 
-export const chatHistory = signal<Map<string, Message[]>>(new Map());
+export const chatHistory = signal<Message[]>();
 
-// I think we should make this sendChatMessage to expect a pass in variable of DataConnection.
+// This is very inefficient...
+export function insertChatMessageIntoHistory(message: Message) {
+  const history = chatHistory.value;
+  history.push(message);
+  chatHistory.value = [...history];
+
+  console.log("inserting chat message to history need to reboardcast?", connectionMap)
+}
+
 export function sendChatMessage(roonName: string, message: Message) {
-  // const newMessage = {
-  //   sender: "somesender",
-  //   chatroom: "chatroomName",
-  //   content,
-  //   timestamp: new Date(),
-  // } as Message;
-  console.log(chatHistory);
+  insertChatMessageIntoHistory(message);
 
-  chatHistory.value.get(roonName).push(message);
-
-  // Here we traversal all connection to boardcast message
+  // Here we traversal all connection to boardcast message, also, very inefficient
   const connectionAndPlayerNamePairs = [...connectionMap.value.entries()];
   for (const [c] of connectionAndPlayerNamePairs) {
     c.send({

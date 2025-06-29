@@ -89,10 +89,9 @@ export function PeerTest() {
       `Create a room with name ${roomName} as ${playerName} and wait for players to join.`
     );
     playerList.value = [playerName.value];
-
-    chatHistory.value = new Map(chatHistory.value).set(roomName.value, []);
+    chatHistory.value = [];
   }
-  
+
   function joinRoom() {
     if (!roomName.value) {
       alert("A room name is required.");
@@ -105,6 +104,6 @@ export function PeerTest() {
     peer.value?.destroy();
     peer.value = new Peer(PEER_JS_OPTIONS);
     console.log(`Join room ${roomName} as ${playerName}.`);
-    chatHistory.value = new Map(chatHistory.value).set(roomName.value, []);
+    chatHistory.value = [];
   }
 }

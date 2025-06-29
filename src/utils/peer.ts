@@ -1,6 +1,6 @@
 import { computed, effect, signal } from "@preact/signals";
 import Peer, { DataConnection, PeerJSOption } from "peerjs";
-import { chatHistory } from "./chat";
+import { chatHistory, insertChatMessageIntoHistory } from "./chat";
 
 export const PEER_ID_PREFIX = "1uX68Fu0mzVKNp5h";
 export const PEER_JS_OPTIONS: PeerJSOption = { debug: 0 };
@@ -42,7 +42,7 @@ export const dataHandler = signal<
       break;
     case DataType.SEND_MESSAGE:
       console.log("received message", data.value, chatHistory.value);
-      chatHistory.value.get(roomName.value).push(data.value[0].message.content);
+      insertChatMessageIntoHistory(data.value[0].message);
       break;
   }
 });
