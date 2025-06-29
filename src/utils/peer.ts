@@ -84,20 +84,12 @@ function updateDataHandler(c: DataConnection) {
 }
 
 function sendPlayerName(c: DataConnection) {
-  console.log("sending UPDATE_PLAYER_NAME to connection", c);
   c.send({ type: DataType.UPDATE_PLAYER_NAME, value: playerName.value });
 }
 
 function notifyPlayerListUpdate() {
   const connectionAndPlayerNamePairs = [...connectionMap.value.entries()];
   for (const [c] of connectionAndPlayerNamePairs) {
-    console.log(
-      "board casted connection ->",
-      ...connectionAndPlayerNamePairs.map(([p, n]) => ({
-        id: p.peer,
-        playerName: n,
-      }))
-    );
     c.send({
       type: DataType.UPDATE_PLAYER_LIST,
       value: [
@@ -134,7 +126,6 @@ effect(() => {
         map.set(c, c.connectionId);
         connectionMap.value = map;
         playerList.value.push(c.peer);
-        console.log("new player joined, player list is now", playerList.value);
         sendPlayerName(c);
         notifyPlayerListUpdate();
       });
