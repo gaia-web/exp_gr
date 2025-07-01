@@ -5,7 +5,7 @@ import { Header } from "./components/Header/index.js";
 import { Home } from "./pages/Home/index.jsx";
 import { Lounge } from "./pages/Lounge/index.js";
 import { Chatting } from "./pages/Chatting/index.js";
-import { IntegrationTest } from "./pages/IntegrationTest/index.js";
+import { Playing } from "./pages/Playing/index.js";
 import { NotFound } from "./pages/_404.jsx";
 
 import "./style.css";
@@ -20,7 +20,7 @@ export function App() {
           <Route path="/" component={Home} />
           <Route path="/room/:roomName" component={Lounge} />
           <Route path="/room/:roomName/chat" component={Chatting} />
-          <Route path="int-test" component={IntegrationTest} />
+          <Route path="/room/:roomName/play" component={Playing} />
           <Route default component={NotFound} />
         </Router>
       </main>

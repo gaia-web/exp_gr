@@ -38,13 +38,12 @@ export function Header() {
           Chat
         </a>
         <a
-          href="/int-test"
-          class={`neumo ${url === "/int-test" ? "active hollow" : ""}`}
+          href={`/room/${roomName.value}/play`}
+          class={`neumo ${
+            url === `/room/${roomName.value}/play` ? "active hollow" : ""
+          }`}
         >
-          Integration Test
-        </a>
-        <a href="/404" class={`neumo ${url === "/404" ? "active hollow" : ""}`}>
-          404
+          Play
         </a>
       </nav>
     </header>
