@@ -30,6 +30,14 @@ export function Header() {
           Lounge
         </a>
         <a
+          href={`/room/${roomName.value}/chat`}
+          class={`neumo ${
+            url === `/room/${roomName.value}/chat` ? "active hollow" : ""
+          }`}
+        >
+          Chat
+        </a>
+        <a
           href="/int-test"
           class={`neumo ${url === "/int-test" ? "active hollow" : ""}`}
         >

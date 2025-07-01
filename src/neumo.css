@@ -65,7 +65,8 @@
   a&:active,
   a&:focus,
   button&:active,
-  input& {
+  input&,
+  textarea& {
     box-shadow: inset var(--neumo-item-shadow),
       inset var(--neumo-item-highlight);
   }
@@ -90,7 +91,8 @@
     }
   }
 
-  input& {
+  input&,
+  textarea& {
     --neumo-item-distance: 5px;
 
     :where(&) {

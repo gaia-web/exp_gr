@@ -4,6 +4,7 @@ import { LocationProvider, Router, Route } from "preact-iso";
 import { Header } from "./components/Header/index.js";
 import { Home } from "./pages/Home/index.jsx";
 import { Lounge } from "./pages/Lounge/index.js";
+import { Chatting } from "./pages/Chatting/index.js";
 import { IntegrationTest } from "./pages/IntegrationTest/index.js";
 import { NotFound } from "./pages/_404.jsx";
 
@@ -18,6 +19,7 @@ export function App() {
         <Router>
           <Route path="/" component={Home} />
           <Route path="/room/:roomName" component={Lounge} />
+          <Route path="/room/:roomName/chat" component={Chatting} />
           <Route path="int-test" component={IntegrationTest} />
           <Route default component={NotFound} />
         </Router>
