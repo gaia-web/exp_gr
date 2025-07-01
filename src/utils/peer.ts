@@ -1,5 +1,6 @@
 import { computed, effect, signal } from "@preact/signals";
-import Peer, { DataConnection, PeerJSOption } from "peerjs";
+import Peer, { DataConnection, PeerError, PeerJSOption } from "peerjs";
+import { exitRoom, hostId, playerMap, playerName } from "./session";
 
 export const PEER_ID_PREFIX = "1uX68Fu0mzVKNp5h";
 export const PEER_JS_OPTIONS: PeerJSOption = { debug: 0 };
@@ -10,33 +11,25 @@ enum DataType {
 }
 
 export const peer = signal<Peer>();
-export const isHostPeer = computed(() =>
-  peer.value.id.startsWith(PEER_ID_PREFIX)
-);
-export const roomName = signal<string>();
-export const playerName = signal<string>();
-export const connectionMap = signal<Map<DataConnection, string>>(new Map());
-export const playerList = signal<string[]>([]);
-export const playerCount = computed(() => playerList.value.length);
+export const isHost = computed(() => peer.value.id === hostId.value);
+export const connectionMap = signal<Map<string, DataConnection>>(new Map());
 export const dataHandler = signal<
   (data: { type?: string; value?: unknown }, connection: DataConnection) => void
 >((data, connection) => {
   switch (data.type) {
     case DataType.UPDATE_PLAYER_NAME:
       if (!data) break;
-      const map = new Map(connectionMap.value);
-      map.set(connection, data.value.toString());
-      connectionMap.value = map;
-      console.log(`Peer ${connection.peer} updated its name as ${data.value}`);
-
-      if (isHostPeer) {
-        notifyPlayerListUpdate();
-      }
-
+      if (!isHost.value) break;
+      playerMap.value = new Map([
+        ...playerMap.value,
+        [connection.connectionId, data.value.toString()],
+      ]);
+      console.info(`Peer ${connection.peer} updated its name as ${data.value}`);
+      notifyPlayerListUpdate();
       break;
     case DataType.UPDATE_PLAYER_LIST:
-      console.log(`Player list updated as: `, data.value);
-      playerList.value = (data.value as any[]).map((v) => v.playerName);
+      console.info(`Player list updated as: `, data.value);
+      playerMap.value = new Map(data.value as [string, string][]);
       break;
   }
 });
@@ -50,17 +43,12 @@ function sendPlayerName(c: DataConnection) {
 }
 
 function notifyPlayerListUpdate() {
-  const connectionAndPlayerNamePairs = [...connectionMap.value.entries()];
-  for (const [c] of connectionAndPlayerNamePairs) {
+  if (!isHost.value) return;
+  const playerIdAndNamePairs = [...playerMap.value.entries()];
+  for (const [_, c] of connectionMap.value) {
     c.send({
       type: DataType.UPDATE_PLAYER_LIST,
-      value: [
-        { id: peer.value.id, playerName: playerName.value },
-        ...connectionAndPlayerNamePairs.map(([p, n]) => ({
-          id: p.peer,
-          playerName: n,
-        })),
-      ],
+      value: playerIdAndNamePairs,
     });
   }
 }
@@ -69,41 +57,52 @@ effect(() => {
   const p = peer.value;
   if (!p) return;
   p.off("error")
-    .on("error", (e) => {
-      if (e.type === "unavailable-id") {
-        alert(
-          "Room with this name has already been created. You may want to join instead."
-        );
-      }
-    })
+    .on("error", (e) => handleErrors(e))
     .off("connection")
-    .on("connection", (c) => {
-      updateDataHandler(c);
-      const map = new Map(connectionMap.value);
-      map.set(c, c.connectionId);
-      connectionMap.value = map;
-      c.off("open").on("open", () => {
-        console.log(`New player ${c.peer} joined.`);
-        playerList.value.push(c.peer);
-        sendPlayerName(c);
-        notifyPlayerListUpdate();
-      });
-    });
-  p.off("open").on("open", () => {
-    if (!isHostPeer.value) {
-      const connection = p.connect(`${PEER_ID_PREFIX}_${roomName}`);
-      connection.on("open", () => {
-        sendPlayerName(connection);
-      });
-      const map = new Map(connectionMap.value);
-      map.set(connection, connection.connectionId);
-      connectionMap.value = map;
-    }
-  });
+    .on("connection", (c) => handleConnectionToTheHost(c))
+    .off("open")
+    .on("open", () => handleNonHostPeerOpened(p));
 });
 
 effect(() => {
-  for (const [c] of connectionMap.value) {
+  if (!connectionMap?.value) return;
+  for (const [_, c] of connectionMap.value) {
     updateDataHandler(c);
   }
 });
+
+function handleConnectionToTheHost(c: DataConnection) {
+  if (!isHost.value) return;
+  updateDataHandler(c);
+  connectionMap.value = new Map([...connectionMap.value, [c.connectionId, c]]);
+  c.off("open").on("open", () => {
+    console.info(`New player ${c.peer} joined.`);
+    sendPlayerName(c);
+    notifyPlayerListUpdate();
+  });
+}
+
+function handleNonHostPeerOpened(p: Peer) {
+  if (isHost.value) return;
+  const connection = p.connect(hostId.value);
+  connection.on("open", () => {
+    sendPlayerName(connection);
+  });
+  connectionMap.value = new Map([
+    ...connectionMap.value,
+    [connection.connectionId, connection],
+  ]);
+}
+
+function handleErrors(e: PeerError<string>) {
+  switch (e.type) {
+    case "unavailable-id":
+      exitRoom();
+      alert(
+        "Room with this name has already been created. You may want to join instead."
+      );
+      break;
+  }
+}
+
+// TODO handle disconnections

@@ -1,6 +1,7 @@
 import { useLocation } from "preact-iso";
 
 import "./style.css";
+import { exitRoom, roomName } from "../../utils/session";
 
 export function Header() {
   const { url } = useLocation();
@@ -14,14 +15,19 @@ export function Header() {
           href="/"
           class={`neumo ${url === "/" ? "active hollow" : ""}`}
           style={{ marginRight: "auto" }}
+          onClick={() => {
+            exitRoom();
+          }}
         >
           Exit Room
         </a>
         <a
-          href="/peer-test"
-          class={`neumo ${url === "/peer-test" ? "active hollow" : ""}`}
+          href={`/room/${roomName.value}`}
+          class={`neumo ${
+            url === `/room/${roomName.value}` ? "active hollow" : ""
+          }`}
         >
-          Peer Test
+          Lounge
         </a>
         <a
           href="/int-test"

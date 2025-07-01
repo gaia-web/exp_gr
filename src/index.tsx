@@ -3,7 +3,7 @@ import { LocationProvider, Router, Route } from "preact-iso";
 
 import { Header } from "./components/Header/index.js";
 import { Home } from "./pages/Home/index.jsx";
-import { PeerTest } from "./pages/PeerTest/index.js";
+import { Lounge } from "./pages/Lounge/index.js";
 import { IntegrationTest } from "./pages/IntegrationTest/index.js";
 import { NotFound } from "./pages/_404.jsx";
 
@@ -17,7 +17,7 @@ export function App() {
       <main class="neumo hollow">
         <Router>
           <Route path="/" component={Home} />
-          <Route path="/peer-test" component={PeerTest} />
+          <Route path="/room/:roomName" component={Lounge} />
           <Route path="int-test" component={IntegrationTest} />
           <Route default component={NotFound} />
         </Router>

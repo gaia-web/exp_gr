@@ -118,4 +118,24 @@
       margin: auto;
     }
   }
+
+  ul& {
+    --neumo-item-distance: 5px;
+
+    padding: 5px;
+
+    :where(&) {
+      list-style-type: none;
+    }
+  }
+
+  li& {
+    --neumo-item-distance: 5px;
+
+    padding: 5px;
+
+    :where(&) {
+      margin: 5px;
+    }
+  }
 }
