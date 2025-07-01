@@ -1,7 +1,7 @@
 import { render } from "preact";
 import { LocationProvider, Router, Route } from "preact-iso";
 
-import { Header } from "./components/Header.jsx";
+import { Header } from "./components/Header/index.js";
 import { Home } from "./pages/Home/index.jsx";
 import { PeerTest } from "./pages/PeerTest/index.js";
 import { IntegrationTest } from "./pages/IntegrationTest/index.js";

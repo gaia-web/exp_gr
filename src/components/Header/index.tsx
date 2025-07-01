@@ -1,13 +1,21 @@
 import { useLocation } from "preact-iso";
 
+import "./style.css";
+
 export function Header() {
   const { url } = useLocation();
 
+  const isRootUrl = () => url === "" || url === "/";
+
   return (
-    <header class="neumo hollow">
+    <header class={`neumo hollow ${isRootUrl() ? "collapsed" : ""}`}>
       <nav>
-        <a href="/" class={`neumo ${url === "/" ? "active hollow" : ""}`}>
-          Home
+        <a
+          href="/"
+          class={`neumo ${url === "/" ? "active hollow" : ""}`}
+          style={{ marginRight: "auto" }}
+        >
+          Exit Room
         </a>
         <a
           href="/peer-test"

@@ -52,6 +52,9 @@ export function Home() {
       >
         Open Modal
       </button>
+      <a href="/peer-test" class="neumo">
+        Peer Test
+      </a>
       <dialog
         ref={dialogRef}
         class="neumo"

@@ -8,16 +8,6 @@ body {
   min-height: 100vh;
 }
 
-header {
-  display: flex;
-  justify-content: flex-end;
-  padding: 0;
-}
-
-header nav {
-  display: flex;
-}
-
 main {
   flex: auto;
   display: flex;
