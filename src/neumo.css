@@ -53,12 +53,12 @@
   border-radius: 10px;
   padding: 10px;
   box-shadow: var(--neumo-item-shadow), var(--neumo-item-highlight);
+  transition-property: var(--neumo-item-transition-protperty);
+  transition-duration: var(--neumo-item-transition-duration);
+  transition-timing-function: var(--neumo-item-transition-timing-function);
 
   :where(&) {
     margin: 10px;
-    transition-property: var(--neumo-item-transition-protperty);
-    transition-duration: var(--neumo-item-transition-duration);
-    transition-timing-function: var(--neumo-item-transition-timing-function);
   }
 
   &.hollow,
