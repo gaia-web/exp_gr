@@ -13,7 +13,7 @@ export function Home() {
 
   useSignalEffect(() => {
     if (!peer.value) return;
-    route(`/room/${encodeURIComponent(roomName.value)}`);
+    route(`/room/${encodeURIComponent(roomName.value)}/players`);
   });
 
   return (

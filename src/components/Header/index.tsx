@@ -22,12 +22,12 @@ export function Header() {
           Exit Room
         </a>
         <a
-          href={`/room/${roomName.value}`}
+          href={`/room/${roomName.value}/players`}
           class={`neumo ${
-            url === `/room/${roomName.value}` ? "active hollow" : ""
+            url === `/room/${roomName.value}/players` ? "active hollow" : ""
           }`}
         >
-          Lounge
+          Players
         </a>
         <a
           href={`/room/${roomName.value}/chat`}
