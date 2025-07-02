@@ -1,6 +1,6 @@
 import { computed, effect, signal } from "@preact/signals";
 import Peer, { DataConnection, PeerJSOption } from "peerjs";
-import { chatHistory, insertChatMessageIntoHistory } from "./chat";
+import { insertChatMessageIntoHistory } from "./chat";
 
 export const PEER_ID_PREFIX = "1uX68Fu0mzVKNp5h";
 export const PEER_JS_OPTIONS: PeerJSOption = { debug: 0 };
@@ -44,7 +44,6 @@ export const dataHandler = signal<
 
       break;
     case DataType.UPDATE_PLAYER_LIST:
-      // Host should not upadte is player list based on UPDATE PLAYER LIST signal.
       if (!peer.value.id.startsWith(PEER_ID_PREFIX)) {
         playerList.value = (data.value as any[]).map((v) => v.playerName);
       }
@@ -53,7 +52,6 @@ export const dataHandler = signal<
     case DataType.SEND_MESSAGE:
       insertChatMessageIntoHistory(data.value[0].message);
 
-      // host need to reboardcast the message to rest of the connections
       if (peer.value.id.startsWith(PEER_ID_PREFIX)) {
         const connectionAndPlayerNamePairs = [...connectionMap.value.entries()];
         for (const [c, n] of connectionAndPlayerNamePairs) {

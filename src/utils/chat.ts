@@ -1,6 +1,5 @@
-import { computed, effect, signal } from "@preact/signals";
-import { DataConnection } from "peerjs";
-import { connectionMap, DataType, isHostPeer } from "./peer";
+import { signal } from "@preact/signals";
+import { connectionMap, DataType } from "./peer";
 
 export type Message = {
   sender: string;
@@ -11,7 +10,6 @@ export type Message = {
 
 export const chatHistory = signal<Message[]>();
 
-// This is very inefficient...
 export function insertChatMessageIntoHistory(message: Message) {
   const history = chatHistory.value;
   history.push(message);
@@ -21,7 +19,6 @@ export function insertChatMessageIntoHistory(message: Message) {
 export function sendChatMessage(roonName: string, message: Message) {
   insertChatMessageIntoHistory(message);
 
-  // Here we traversal all connection to boardcast message, also, very inefficient
   const connectionAndPlayerNamePairs = [...connectionMap.value.entries()];
   for (const [c] of connectionAndPlayerNamePairs) {
     c.send({
