@@ -1,5 +1,30 @@
-.player-list {
-  & ul > li {
-    user-select: none;
+.player-list.page {
+  text-align: center;
+
+  & .card {
+    --neumo-item-distance: 5px;
+
+    & ul {
+      margin: 0;
+      list-style: none;
+      padding: 0;
+
+      & > li {
+        user-select: none;
+
+        &.self {
+          --max-shake-distance: 2%;
+
+          font-weight: bold;
+          animation: shake 5s linear infinite;
+        }
+
+        &.host::after {
+          content: " (host)";
+          font-style: italic;
+          filter: contrast(0.5);
+        }
+      }
+    }
   }
 }

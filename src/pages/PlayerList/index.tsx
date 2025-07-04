@@ -18,22 +18,22 @@ export function PlayerList() {
   return (
     <section class="player-list page">
       <h1>Room: {params.roomName}</h1>
-      <ul class="neumo hollow">
+      <div class="neumo hollow card">
         <div style={{ fontSize: "1.5em", fontWeight: "bold", margin: "0.5em" }}>
           {playerMap.value.size} Player(s)
         </div>
-        {[...playerMap.value].map(([id, name]) => (
-          <li
-            class={`neumo hollow`}
-            style={{
-              fontWeight: id === hostId.value ? "bold" : "",
-              "--neumo-item-distance": id === hostId.value ? "5px" : "3px",
-            }}
-          >
-            {name}
-          </li>
-        ))}
-      </ul>
+        <ul>
+          {[...playerMap.value].map(([id, name]) => (
+            <li
+              class={`neumo ${id === hostId.value ? "host" : ""} ${
+                id === peer.value.id ? "self" : ""
+              }`}
+            >
+              {name}
+            </li>
+          ))}
+        </ul>
+      </div>
     </section>
   );
 }
