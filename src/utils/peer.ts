@@ -5,9 +5,10 @@ import { exitRoom, hostId, playerMap, playerName } from "./session";
 export const PEER_ID_PREFIX = "1uX68Fu0mzVKNp5h";
 export const PEER_JS_OPTIONS: PeerJSOption = { debug: 0 };
 
-enum DataType {
+export enum DataType {
   UPDATE_PLAYER_NAME = "update_player_name",
   UPDATE_PLAYER_LIST = "update_player_list",
+  SEND_MESSAGE = "send_message",
 }
 
 export const peer = signal<Peer>();
