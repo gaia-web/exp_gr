@@ -55,6 +55,7 @@ export function Chatting() {
         onSubmit={(e) => {
           e.preventDefault();
           sendChatMessage(e.target["content"].value);
+          (e.target as HTMLFormElement).reset();
         }}
       >
         <textarea
