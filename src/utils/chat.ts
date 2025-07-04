@@ -1,4 +1,4 @@
-import { signal } from "@preact/signals";
+import { batch, signal } from "@preact/signals";
 import {
   connectionMap,
   connectionToTheHost,
@@ -15,9 +15,13 @@ export type ChatMessage = {
 };
 
 export const chatMessageHistory = signal<ChatMessage[]>([]);
+export const unreadChatMessages = signal(0);
 
 export function insertChatMessageIntoHistory(message: ChatMessage) {
-  chatMessageHistory.value = chatMessageHistory.value.concat(message);
+  batch(() => {
+    chatMessageHistory.value = chatMessageHistory.value.concat(message);
+    unreadChatMessages.value++;
+  });
 
   if (isHost.value) {
     boardcastNewMessage(message);

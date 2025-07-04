@@ -2,6 +2,7 @@ import { useLocation } from "preact-iso";
 
 import "./style.css";
 import { exitRoom, roomName } from "../../utils/session";
+import { unreadChatMessages } from "../../utils/chat";
 
 export function Header() {
   const { url } = useLocation();
@@ -33,7 +34,7 @@ export function Header() {
           href={`/room/${roomName.value}/chat`}
           class={`neumo ${
             url === `/room/${roomName.value}/chat` ? "active hollow" : ""
-          }`}
+          } ${unreadChatMessages.value > 0 ? 'attention': ''}`}
         >
           Chat
         </a>
