@@ -1,37 +1,47 @@
 import { signal } from "@preact/signals";
-import { connectionMap, DataType } from "./peer";
+import {
+  connectionMap,
+  connectionToTheHost,
+  MessageType,
+  isHost,
+  peer,
+  sendMessage,
+} from "./peer";
 
-export type Message = {
-  sender: string;
-  chatroom: string;
+export type ChatMessage = {
+  senderId: string;
   content: string;
-  timestamp: Date;
+  timestamp: string;
 };
 
-export const chatHistory = signal<Message[]>();
+export const chatMessageHistory = signal<ChatMessage[]>([]);
 
-export function insertChatMessageIntoHistory(message: Message) {
-  const history = chatHistory.value;
-  history.push(message);
-  chatHistory.value = [...history];
+export function insertChatMessageIntoHistory(message: ChatMessage) {
+  chatMessageHistory.value = chatMessageHistory.value.concat(message);
+
+  if (isHost.value) {
+    boardcastNewMessage(message);
+    return;
+  }
+  if (message.senderId !== peer.value.id) return;
+  sendMessage(connectionToTheHost.value, MessageType.CHAT_MESSAGE, message);
 }
 
-export function sendChatMessage(roonName: string, message: Message) {
+export function sendChatMessage(content: string) {
+  const message: ChatMessage = {
+    senderId: peer.value.id,
+    content,
+    timestamp: new Date().toISOString(),
+  };
   insertChatMessageIntoHistory(message);
+}
 
-  const connectionAndPlayerNamePairs = [...connectionMap.value.entries()];
-  for (const [c] of connectionAndPlayerNamePairs) {
+export function boardcastNewMessage(message: ChatMessage) {
+  for (const [_, c] of connectionMap.value) {
+    if (c.peer === message.senderId) continue;
     c.send({
-      type: DataType.SEND_MESSAGE,
-      value: [
-        {
-          message,
-        },
-        ...connectionAndPlayerNamePairs.map(([p, n]) => ({
-          id: p.peer,
-          playerName: n,
-        })),
-      ],
+      type: MessageType.CHAT_MESSAGE,
+      value: message,
     });
   }
 }
