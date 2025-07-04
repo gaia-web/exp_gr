@@ -15,7 +15,7 @@ export function Chatting() {
 
   return (
     <div class="chatting">
-      <div class="neumo hollow">
+      <div class="neumo hollow message-container">
         <div style={{ fontSize: "1.5em" }}>Messages</div>
         <ul class="message-list">
           {Array(30)

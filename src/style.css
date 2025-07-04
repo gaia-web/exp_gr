@@ -8,20 +8,26 @@ body {
   min-height: 100vh;
   max-height: 100vh;
   overflow: hidden;
-}
 
-main {
-  flex: auto;
-  display: flex;
-  align-items: center;
-  text-align: center;
+  & header {
+    flex: 1 0 0;
+  }
 
-  & > * {
-    max-width: 1280px;
-    margin: 0 auto;
+  & main {
+    flex: 1 0 0;
+    display: flex;
+    flex-direction: column;
+    /* align-items: center;
+    text-align: center; */
+    overflow: hidden;
 
-    @media (max-width: 639px) {
-      margin: 2rem;
+    & > * {
+      max-width: 1280px;
+      margin: 0 auto;
+
+      @media (max-width: 639px) {
+        margin: 2rem;
+      }
     }
   }
 }
