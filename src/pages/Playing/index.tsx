@@ -1,7 +1,10 @@
-import { useSignal } from "@preact/signals";
+import { useSignal, useSignalEffect } from "@preact/signals";
+import { useLocation } from "preact-iso";
 import { useEffect, useRef } from "preact/hooks";
+import { peer } from "../../utils/peer";
 
-export function IntegrationTest() {
+export function Playing() {
+  const { route } = useLocation();
   const iframeRef = useRef();
   const messages = useSignal<string[]>([]);
 
@@ -19,9 +22,16 @@ export function IntegrationTest() {
     return () => window.removeEventListener("message", handleMessage);
   }, []);
 
+  useSignalEffect(() => {
+    if (!peer.value) {
+      alert("Connection lost or timed out, exiting room...");
+      route("/");
+    }
+  });
+
   return (
-    <div class="integration-test">
-      <iframe ref={iframeRef} src="test.html" />
+    <section class="playing page">
+      <iframe ref={iframeRef} src="/test.html" />
       <div>
         <button class="neumo" onClick={sendMessage}>
           Send Message
@@ -32,7 +42,7 @@ export function IntegrationTest() {
           ))}
         </ul>
       </div>
-    </div>
+    </section>
   );
 
   function sendMessage() {
