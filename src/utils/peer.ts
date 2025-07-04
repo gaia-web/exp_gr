@@ -2,19 +2,14 @@ import { computed, effect, signal } from "@preact/signals";
 import Peer, { DataConnection, PeerError, PeerJSOption } from "peerjs";
 import { exitRoom, hostId, playerMap, playerName } from "./session";
 import {
-  boardcastNewMessage,
-  ChatMessage,
-  insertChatMessageIntoHistory,
-} from "./chat";
+  boardcastMessage,
+  messageHandler,
+  MessageType,
+  sendMessage,
+} from "./message";
 
 export const PEER_ID_PREFIX = "1uX68Fu0mzVKNp5h";
 export const PEER_JS_OPTIONS: PeerJSOption = { debug: 0 };
-
-export enum MessageType {
-  UPDATE_PLAYER_NAME = "update_player_name",
-  UPDATE_PLAYER_LIST = "update_player_list",
-  CHAT_MESSAGE = "chat_message",
-}
 
 export const peer = signal<Peer>();
 export const isHost = computed(() => peer.value.id === hostId.value);
@@ -22,53 +17,25 @@ export const connectionMap = signal<Map<string, DataConnection>>(new Map());
 export const connectionToTheHost = computed(() =>
   connectionMap.value.get(hostId.value)
 );
-export const dataHandler = signal<
-  (data: { type?: string; value?: unknown }, connection: DataConnection) => void
->((data, connection) => {
-  switch (data.type) {
-    case MessageType.UPDATE_PLAYER_NAME:
-      if (!data) break;
-      if (!isHost.value) break;
-      playerMap.value = new Map([
-        ...playerMap.value,
-        [connection.peer, data.value.toString()],
-      ]);
-      console.info(`Peer ${connection.peer} updated its name as ${data.value}`);
-      notifyPlayerListUpdate();
-      break;
-    case MessageType.UPDATE_PLAYER_LIST:
-      console.info(`Player list updated as: `, data.value);
-      playerMap.value = new Map(data.value as [string, string][]);
-      break;
-    case MessageType.CHAT_MESSAGE: {
-      const message = data.value as ChatMessage;
-      console.info(
-        `Player ${message.senderId} sent a message at ${message.timestamp} with content:`,
-        message.content
-      );
-      insertChatMessageIntoHistory(message);
-      break;
-    }
-  }
-});
 
-function updateDataHandler(c: DataConnection) {
-  c.off("data").on("data", (data) => dataHandler.value?.(data, c));
+function applyMessageHandler(c: DataConnection) {
+  c.off("data").on("data", (data) => messageHandler(data, c));
 }
 
 function sendPlayerName(c: DataConnection) {
-  c.send({ type: MessageType.UPDATE_PLAYER_NAME, value: playerName.value });
+  sendMessage(c, {
+    type: MessageType.UPDATE_PLAYER_NAME,
+    value: playerName.value,
+  });
 }
 
-function notifyPlayerListUpdate() {
+export function boardcastPlayerList() {
   if (!isHost.value) return;
-  const playerIdAndNamePairs = [...playerMap.value.entries()];
-  for (const [_, c] of connectionMap.value) {
-    c.send({
-      type: MessageType.UPDATE_PLAYER_LIST,
-      value: playerIdAndNamePairs,
-    });
-  }
+  const playerIdAndNamePairs = [...playerMap.value];
+  boardcastMessage(() => ({
+    type: MessageType.UPDATE_PLAYER_LIST,
+    value: playerIdAndNamePairs,
+  }));
 }
 
 effect(() => {
@@ -82,21 +49,14 @@ effect(() => {
     .on("open", () => handleNonHostPeerOpened(p));
 });
 
-effect(() => {
-  if (!connectionMap?.value) return;
-  for (const [_, c] of connectionMap.value) {
-    updateDataHandler(c);
-  }
-});
-
 function handleConnectionToTheHost(c: DataConnection) {
   if (!isHost.value) return;
-  updateDataHandler(c);
+  applyMessageHandler(c);
   connectionMap.value = new Map([...connectionMap.value, [c.peer, c]]);
   c.off("open").on("open", () => {
     console.info(`New player ${c.peer} joined.`);
     sendPlayerName(c);
-    notifyPlayerListUpdate();
+    boardcastPlayerList();
   });
 }
 
@@ -110,6 +70,7 @@ function handleNonHostPeerOpened(p: Peer) {
     ]);
     sendPlayerName(connection);
   });
+  applyMessageHandler(connection);
 }
 
 function handleErrors(e: PeerError<string>) {
@@ -120,22 +81,10 @@ function handleErrors(e: PeerError<string>) {
         "Room with this name has already been created. You may want to join instead."
       );
       break;
+    default:
+      console.error(e);
+      break;
   }
-}
-
-export function sendMessage(
-  connection: DataConnection,
-  type: MessageType,
-  value: unknown
-) {
-  if (!connection) {
-    console.error("No connection instance");
-    return;
-  }
-  connection.send({
-    type,
-    value,
-  });
 }
 
 // TODO handle disconnections

@@ -1,12 +1,6 @@
 import { batch, signal } from "@preact/signals";
-import {
-  connectionMap,
-  connectionToTheHost,
-  MessageType,
-  isHost,
-  peer,
-  sendMessage,
-} from "./peer";
+import { connectionMap, connectionToTheHost, isHost, peer } from "./peer";
+import { boardcastMessage, MessageType, sendMessage } from "./message";
 
 export type ChatMessage = {
   senderId: string;
@@ -24,11 +18,14 @@ export function insertChatMessageIntoHistory(message: ChatMessage) {
   });
 
   if (isHost.value) {
-    boardcastNewMessage(message);
+    boardcastChatMessage(message);
     return;
   }
   if (message.senderId !== peer.value.id) return;
-  sendMessage(connectionToTheHost.value, MessageType.CHAT_MESSAGE, message);
+  sendMessage(connectionToTheHost.value, {
+    type: MessageType.CHAT_MESSAGE,
+    value: message,
+  });
 }
 
 export function sendChatMessage(content: string) {
@@ -40,12 +37,13 @@ export function sendChatMessage(content: string) {
   insertChatMessageIntoHistory(message);
 }
 
-export function boardcastNewMessage(message: ChatMessage) {
-  for (const [_, c] of connectionMap.value) {
-    if (c.peer === message.senderId) continue;
-    c.send({
-      type: MessageType.CHAT_MESSAGE,
-      value: message,
-    });
-  }
+export function boardcastChatMessage(chatMessage: ChatMessage) {
+  boardcastMessage((c) =>
+    c.peer === chatMessage.senderId
+      ? null
+      : {
+          type: MessageType.CHAT_MESSAGE,
+          value: chatMessage,
+        }
+  );
 }

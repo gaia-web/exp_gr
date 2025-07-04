@@ -1,4 +1,4 @@
-import Peer, { DataConnection } from "peerjs";
+import Peer from "peerjs";
 import { batch, computed, effect, signal } from "@preact/signals";
 import { connectionMap, peer, PEER_ID_PREFIX, PEER_JS_OPTIONS } from "./peer";
 
