@@ -33,7 +33,7 @@ export function Chatting() {
   });
 
   return (
-    <div class="chatting">
+    <section class="chatting page">
       <div class="neumo hollow message-container">
         <div style={{ fontSize: "1.5em" }}>Messages</div>
         <ul class="message-list" ref={chatMessageListRef}>
@@ -66,6 +66,6 @@ export function Chatting() {
           Send
         </button>
       </form>
-    </div>
+    </section>
   );
 }

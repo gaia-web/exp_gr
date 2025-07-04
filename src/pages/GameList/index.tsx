@@ -12,5 +12,5 @@ export function GameList() {
       route("/");
     }
   });
-  return <section>A game list should be here.</section>;
+  return <section class="game-list page">A game list should be here.</section>;
 }

@@ -30,7 +30,7 @@ export function Playing() {
   });
 
   return (
-    <div class="integration-test">
+    <section class="playing page">
       <iframe ref={iframeRef} src="/test.html" />
       <div>
         <button class="neumo" onClick={sendMessage}>
@@ -42,7 +42,7 @@ export function Playing() {
           ))}
         </ul>
       </div>
-    </div>
+    </section>
   );
 
   function sendMessage() {

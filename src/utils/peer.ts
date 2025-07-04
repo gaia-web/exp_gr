@@ -139,3 +139,4 @@ export function sendMessage(
 }
 
 // TODO handle disconnections
+// TODO should not allow same player names

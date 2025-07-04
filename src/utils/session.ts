@@ -2,7 +2,7 @@ import Peer, { DataConnection } from "peerjs";
 import { batch, computed, effect, signal } from "@preact/signals";
 import { connectionMap, peer, PEER_ID_PREFIX, PEER_JS_OPTIONS } from "./peer";
 
-export const hostId = computed(() => `${PEER_ID_PREFIX}_${roomName}`);
+export const hostId = computed(() => `${PEER_ID_PREFIX}-${roomName}`);
 export const roomName = signal<string>();
 export const playerName = signal<string>();
 export const playerMap = signal<Map<string, string>>(new Map());
@@ -32,6 +32,7 @@ export function createRoom() {
 }
 
 export function joinRoom() {
+  // TODO should prevent player to join a room that is not yet created
   if (!roomName.value) {
     alert("A room name is required.");
     return;

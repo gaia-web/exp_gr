@@ -16,7 +16,7 @@ export function PlayerList() {
   });
 
   return (
-    <div class="player-list">
+    <section class="player-list page">
       <h1>Room: {params.roomName}</h1>
       <ul class="neumo hollow">
         <div style={{ fontSize: "1.5em", fontWeight: "bold", margin: "0.5em" }}>
@@ -34,6 +34,6 @@ export function PlayerList() {
           </li>
         ))}
       </ul>
-    </div>
+    </section>
   );
 }

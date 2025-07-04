@@ -80,6 +80,7 @@
       cursor: pointer;
       margin: 5px;
       overflow: hidden;
+      text-align: center;
     }
 
     &:hover {
