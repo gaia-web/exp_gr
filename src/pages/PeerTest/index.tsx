@@ -10,6 +10,8 @@ import {
   roomName,
 } from "../../utils/peer";
 import { useSignal, useSignalEffect } from "@preact/signals";
+import { ChatRoom } from "../../components/ChatRoom/ChatRoom";
+import { chatHistory } from "../../utils/chat";
 
 export function PeerTest() {
   const currentConnections = useSignal<DataConnection[]>([]);
@@ -24,6 +26,7 @@ export function PeerTest() {
           currentConnections.value = currentConnections.value.filter(
             (c) => c.peer !== conn.peer
           );
+          connectionMap.value.delete(conn);
         });
       });
     }
@@ -31,6 +34,8 @@ export function PeerTest() {
 
   return (
     <div class="peer-test">
+      <ChatRoom roomName={roomName.value} />
+      <br />
       <input
         class="neumo"
         placeholder="Enter room name here"
@@ -83,6 +88,7 @@ export function PeerTest() {
       `Create a room with name ${roomName} as ${playerName} and wait for players to join.`
     );
     playerList.value = [playerName.value];
+    chatHistory.value = [];
   }
 
   function joinRoom() {
@@ -97,5 +103,6 @@ export function PeerTest() {
     peer.value?.destroy();
     peer.value = new Peer(PEER_JS_OPTIONS);
     console.log(`Join room ${roomName} as ${playerName}.`);
+    chatHistory.value = [];
   }
 }
