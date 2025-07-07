@@ -53,28 +53,13 @@ export function Home() {
             (playerName.value = currentTarget.value)
           }
         />
-        <button
-          type="submit"
-          name="action"
-          value="join"
-          class="neumo"
-          // onClick={joinRoom}
-        >
+        <button type="submit" name="action" value="join" class="neumo">
           <b>Join Room</b>
         </button>
-        <button
-          type="submit"
-          name="action"
-          value="create"
-          class="neumo"
-          // onClick={createRoom}
-        >
+        <button type="submit" name="action" value="create" class="neumo">
           Create Room
         </button>
       </form>
     </section>
   );
 }
-
-// TODO might want to use form
-// TODO consider allow enter to join
