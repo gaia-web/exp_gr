@@ -10,39 +10,51 @@ export enum MessageType {
 }
 
 export type Message<T = unknown> = {
-  type: MessageType;
-  value: T;
+  type?: MessageType;
+  value?: T;
 };
 
-export const messageHandler = (
-  data: { type?: string; value?: unknown },
-  connection: DataConnection
-) => {
-  switch (data.type) {
-    case MessageType.UPDATE_PLAYER_NAME:
-      if (!data) break;
-      if (!isHost.value) break;
-      playerMap.value = new Map([
-        ...playerMap.value,
-        [connection.peer, data.value.toString()],
-      ]);
-      console.info(`Peer ${connection.peer} updated its name as ${data.value}`);
-      boardcastPlayerList();
-      break;
-    case MessageType.UPDATE_PLAYER_LIST:
-      console.info(`Player list updated as: `, data.value);
-      playerMap.value = new Map(data.value as [string, string][]);
-      break;
-    case MessageType.CHAT_MESSAGE: {
-      const message = data.value as ChatMessage;
-      console.info(
-        `Player ${message.senderId} sent a message at ${message.timestamp} with content:`,
-        message.content
-      );
-      insertChatMessageIntoHistory(message);
-      break;
-    }
+export const messageHandlerDict: Record<
+  string,
+  (message: Message, connection: DataConnection) => void
+> = {
+  [MessageType.UPDATE_PLAYER_NAME]: handlePlayerNameMessage,
+  [MessageType.UPDATE_PLAYER_LIST]: handlePlayerListMessage,
+  [MessageType.CHAT_MESSAGE]: handleChatMessage,
+};
+
+function handlePlayerNameMessage(message: Message, connection: DataConnection) {
+  if (!message) return;
+  if (!isHost.value) return;
+  playerMap.value = new Map([
+    ...playerMap.value,
+    [connection.peer, message.value.toString()],
+  ]);
+  console.info(`Peer ${connection.peer} updated its name as ${message.value}`);
+  boardcastPlayerList();
+}
+
+function handlePlayerListMessage(message: Message) {
+  console.info(`Player list updated as: `, message.value);
+  playerMap.value = new Map(message.value as [string, string][]);
+}
+
+function handleChatMessage(message: Message<ChatMessage>) {
+  const chatMessage = message.value;
+  console.info(
+    `Player ${chatMessage.senderId} sent a message at ${chatMessage.timestamp} with content:`,
+    chatMessage.content
+  );
+  insertChatMessageIntoHistory(chatMessage);
+}
+
+export const handleMessage = (message: Message, connection: DataConnection) => {
+  const handler = messageHandlerDict[message.type];
+  if (!handler) {
+    console.error("No message handler found for", message);
+    return;
   }
+  handler(message, connection);
 };
 
 export function sendMessage(connection: DataConnection, message: Message) {

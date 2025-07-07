@@ -3,7 +3,7 @@ import Peer, { DataConnection, PeerError, PeerJSOption } from "peerjs";
 import { exitRoom, hostId, playerMap, playerName } from "./session";
 import {
   boardcastMessage,
-  messageHandler,
+  handleMessage,
   MessageType,
   sendMessage,
 } from "./message";
@@ -19,7 +19,7 @@ export const connectionToTheHost = computed(() =>
 );
 
 function applyMessageHandler(c: DataConnection) {
-  c.off("data").on("data", (data) => messageHandler(data, c));
+  c.off("data").on("data", (data) => handleMessage(data, c));
 }
 
 function sendPlayerName(c: DataConnection) {
