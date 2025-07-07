@@ -19,9 +19,7 @@ export function PlayerList() {
     <section class="player-list page">
       <h1>Room: {params.roomName}</h1>
       <div class="neumo hollow card">
-        <div style={{ fontSize: "1.5em", fontWeight: "bold", margin: "0.5em" }}>
-          {playerMap.value.size} Player(s)
-        </div>
+        <div class="player-count-label">{playerMap.value.size} Player(s)</div>
         <ul>
           {[...playerMap.value].map(([id, name]) => (
             <li
