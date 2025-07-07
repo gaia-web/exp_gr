@@ -1,147 +1,91 @@
 import { computed, effect, signal } from "@preact/signals";
-import Peer, { DataConnection, PeerJSOption } from "peerjs";
-import { insertChatMessageIntoHistory } from "./chat";
+import Peer, { DataConnection, PeerError, PeerJSOption } from "peerjs";
+import { exitRoom, hostId, playerMap, playerName } from "./session";
+import {
+  boardcastMessage,
+  messageHandler,
+  MessageType,
+  sendMessage,
+} from "./message";
 
 export const PEER_ID_PREFIX = "1uX68Fu0mzVKNp5h";
 export const PEER_JS_OPTIONS: PeerJSOption = { debug: 0 };
 
-export enum DataType {
-  UPDATE_PLAYER_NAME = "update_player_name",
-  UPDATE_PLAYER_LIST = "update_player_list",
-  SEND_MESSAGE = "send_message",
-}
-
 export const peer = signal<Peer>();
-export const isHostPeer = computed(() =>
-  peer.value.id.startsWith(PEER_ID_PREFIX)
+export const isHost = computed(() => peer.value.id === hostId.value);
+export const connectionMap = signal<Map<string, DataConnection>>(new Map());
+export const connectionToTheHost = computed(() =>
+  connectionMap.value.get(hostId.value)
 );
-export const roomName = signal<string>();
-export const playerName = signal<string>();
-export const connectionMap = signal<Map<DataConnection, string>>(new Map());
-export const playerList = signal<string[]>([]);
-export const playerCount = computed(() => playerList.value.length);
-export const dataHandler = signal<
-  (data: { type?: string; value?: unknown }, connection: DataConnection) => void
->((data, connection) => {
-  switch (data.type) {
-    case DataType.UPDATE_PLAYER_NAME:
-      if (!data) break;
-      const map = new Map(connectionMap.value);
-      map.set(connection, data.value.toString());
-      connectionMap.value = map;
-      console.log(`Peer ${connection.peer} updated its name as ${data.value}`);
-      console.log("map is now", connectionMap.value);
-      const newPlayerList = [];
-      for (const [_, n] of connectionMap.value.entries()) {
-        newPlayerList.push(n);
-      }
 
-      if (isHostPeer) {
-        newPlayerList.push(playerName.value);
-        notifyPlayerListUpdate();
-      }
-      playerList.value = [...newPlayerList];
-
-      break;
-    case DataType.UPDATE_PLAYER_LIST:
-      if (!peer.value.id.startsWith(PEER_ID_PREFIX)) {
-        playerList.value = (data.value as any[]).map((v) => v.playerName);
-      }
-      console.log(`Player list is now: `, playerList.value);
-      break;
-    case DataType.SEND_MESSAGE:
-      insertChatMessageIntoHistory(data.value[0].message);
-
-      if (peer.value.id.startsWith(PEER_ID_PREFIX)) {
-        const connectionAndPlayerNamePairs = [...connectionMap.value.entries()];
-        for (const [c, n] of connectionAndPlayerNamePairs) {
-          if (n === data.value[0].message.sender) {
-            continue;
-          }
-          c.send({
-            type: DataType.SEND_MESSAGE,
-            value: [
-              {
-                message: data.value[0].message,
-              },
-              ...connectionAndPlayerNamePairs.map(([p, n]) => ({
-                id: p.peer,
-                playerName: n,
-              })),
-            ],
-          });
-        }
-      }
-      break;
-  }
-});
-
-function updateDataHandler(c: DataConnection) {
-  c.off("data").on("data", (data) => dataHandler.value?.(data, c));
+function applyMessageHandler(c: DataConnection) {
+  c.off("data").on("data", (data) => messageHandler(data, c));
 }
 
 function sendPlayerName(c: DataConnection) {
-  c.send({ type: DataType.UPDATE_PLAYER_NAME, value: playerName.value });
+  sendMessage(c, {
+    type: MessageType.UPDATE_PLAYER_NAME,
+    value: playerName.value,
+  });
 }
 
-function notifyPlayerListUpdate() {
-  const connectionAndPlayerNamePairs = [...connectionMap.value.entries()];
-  for (const [c] of connectionAndPlayerNamePairs) {
-    c.send({
-      type: DataType.UPDATE_PLAYER_LIST,
-      value: [
-        { id: peer.value.id, playerName: playerName.value },
-        ...connectionAndPlayerNamePairs.map(([p, n]) => ({
-          id: p.peer,
-          playerName: n,
-        })),
-      ],
-    });
-  }
+export function boardcastPlayerList() {
+  if (!isHost.value) return;
+  const playerIdAndNamePairs = [...playerMap.value];
+  boardcastMessage(() => ({
+    type: MessageType.UPDATE_PLAYER_LIST,
+    value: playerIdAndNamePairs,
+  }));
 }
 
 effect(() => {
   const p = peer.value;
   if (!p) return;
   p.off("error")
-    .on("error", (e) => {
-      if (e.type === "unavailable-id") {
-        alert(
-          "Room with this name has already been created. You may want to join instead."
-        );
-      }
-    })
+    .on("error", (e) => handleErrors(e))
     .off("connection")
-    .on("connection", (c) => {
-      updateDataHandler(c);
-      const map = new Map(connectionMap.value);
-      map.set(c, c.connectionId);
-      connectionMap.value = map;
-      c.off("open").on("open", () => {
-        console.log(`New player ${c.peer} joined.`);
-        const map = new Map(connectionMap.value);
-        map.set(c, c.connectionId);
-        connectionMap.value = map;
-        playerList.value.push(c.peer);
-        sendPlayerName(c);
-        notifyPlayerListUpdate();
-      });
-    });
-  p.off("open").on("open", () => {
-    if (!isHostPeer.value) {
-      const connection = p.connect(`${PEER_ID_PREFIX}_${roomName}`);
-      connection.on("open", () => {
-        sendPlayerName(connection);
-      });
-      const map = new Map(connectionMap.value);
-      map.set(connection, connection.connectionId);
-      connectionMap.value = map;
-    }
-  });
+    .on("connection", (c) => handleConnectionToTheHost(c))
+    .off("open")
+    .on("open", () => handleNonHostPeerOpened(p));
 });
 
-effect(() => {
-  for (const [c] of connectionMap.value) {
-    updateDataHandler(c);
+function handleConnectionToTheHost(c: DataConnection) {
+  if (!isHost.value) return;
+  applyMessageHandler(c);
+  connectionMap.value = new Map([...connectionMap.value, [c.peer, c]]);
+  c.off("open").on("open", () => {
+    console.info(`New player ${c.peer} joined.`);
+    sendPlayerName(c);
+    boardcastPlayerList();
+  });
+}
+
+function handleNonHostPeerOpened(p: Peer) {
+  if (isHost.value) return;
+  const connection = p.connect(hostId.value);
+  connection.on("open", () => {
+    connectionMap.value = new Map([
+      ...connectionMap.value,
+      [connection.peer, connection],
+    ]);
+    sendPlayerName(connection);
+  });
+  applyMessageHandler(connection);
+}
+
+function handleErrors(e: PeerError<string>) {
+  switch (e.type) {
+    case "unavailable-id":
+      exitRoom();
+      alert(
+        "Room with this name has already been created. You may want to join instead."
+      );
+      break;
+    default:
+      console.error(e);
+      break;
   }
-});
+}
+
+// TODO handle disconnections
+// TODO should not allow same player names

@@ -1,10 +1,12 @@
 import { render } from "preact";
 import { LocationProvider, Router, Route } from "preact-iso";
 
-import { Header } from "./components/Header.jsx";
+import { Header } from "./components/Header/index.js";
 import { Home } from "./pages/Home/index.jsx";
-import { PeerTest } from "./pages/PeerTest/index.js";
-import { IntegrationTest } from "./pages/IntegrationTest/index.js";
+import { PlayerList } from "./pages/PlayerList/index.js";
+import { Chatting } from "./pages/Chatting/index.js";
+import { GameList } from "./pages/GameList/index.js";
+import { Playing } from "./pages/Playing/index.js";
 import { NotFound } from "./pages/_404.jsx";
 
 import "./style.css";
@@ -17,8 +19,10 @@ export function App() {
       <main class="neumo hollow">
         <Router>
           <Route path="/" component={Home} />
-          <Route path="/peer-test" component={PeerTest} />
-          <Route path="int-test" component={IntegrationTest} />
+          <Route path="/room/:roomName/players" component={PlayerList} />
+          <Route path="/room/:roomName/chat" component={Chatting} />
+          <Route path="/room/:roomName/games" component={GameList} />
+          <Route path="/room/:roomName/play" component={Playing} />
           <Route default component={NotFound} />
         </Router>
       </main>

@@ -1,0 +1,32 @@
+header {
+  --header-height-estimated: 72px; /* This should be a very close approximate to its actual size. */
+
+  display: flex;
+  max-height: var(--header-height-estimated);
+  overflow: hidden;
+  opacity: 1;
+
+  /* Add specificity */
+  &.neumo {
+    transition: max-height 0.5s ease, padding 0.5s ease, margin 0.5s ease,
+      opacity 0.5s ease;
+  }
+
+  &.collapsed {
+    max-height: 0;
+    opacity: 0;
+    padding: 0;
+    margin: 0;
+  }
+
+  & nav {
+    display: flex;
+    flex: 1 1 0;
+
+    & a.attention {
+      --max-shake-distance: 5%;
+
+      animation: shake 1s ease-in-out infinite;
+    }
+  }
+}

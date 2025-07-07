@@ -65,7 +65,8 @@
   a&:active,
   a&:focus,
   button&:active,
-  input& {
+  input&,
+  textarea& {
     box-shadow: inset var(--neumo-item-shadow),
       inset var(--neumo-item-highlight);
   }
@@ -78,6 +79,8 @@
       all: unset;
       cursor: pointer;
       margin: 5px;
+      overflow: hidden;
+      text-align: center;
     }
 
     &:hover {
@@ -89,13 +92,15 @@
     }
   }
 
-  input& {
+  input&,
+  textarea& {
     --neumo-item-distance: 5px;
 
     :where(&) {
       all: unset;
       text-align: left;
       margin: 5px;
+      overflow: hidden;
     }
 
     &:hover {
@@ -114,6 +119,26 @@
     :where(&) {
       border: none;
       margin: auto;
+    }
+  }
+
+  ul& {
+    --neumo-item-distance: 5px;
+
+    padding: 5px;
+
+    :where(&) {
+      list-style-type: none;
+    }
+  }
+
+  li& {
+    --neumo-item-distance: 5px;
+
+    padding: 5px;
+
+    :where(&) {
+      margin: 5px;
     }
   }
 }

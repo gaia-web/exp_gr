@@ -1,37 +1,49 @@
-import { signal } from "@preact/signals";
-import { connectionMap, DataType } from "./peer";
+import { batch, signal } from "@preact/signals";
+import { connectionMap, connectionToTheHost, isHost, peer } from "./peer";
+import { boardcastMessage, MessageType, sendMessage } from "./message";
 
-export type Message = {
-  sender: string;
-  chatroom: string;
+export type ChatMessage = {
+  senderId: string;
   content: string;
-  timestamp: Date;
+  timestamp: string;
 };
 
-export const chatHistory = signal<Message[]>();
+export const chatMessageHistory = signal<ChatMessage[]>([]);
+export const unreadChatMessages = signal(0);
 
-export function insertChatMessageIntoHistory(message: Message) {
-  const history = chatHistory.value;
-  history.push(message);
-  chatHistory.value = [...history];
+export function insertChatMessageIntoHistory(message: ChatMessage) {
+  batch(() => {
+    chatMessageHistory.value = chatMessageHistory.value.concat(message);
+    unreadChatMessages.value++;
+  });
+
+  if (isHost.value) {
+    boardcastChatMessage(message);
+    return;
+  }
+  if (message.senderId !== peer.value.id) return;
+  sendMessage(connectionToTheHost.value, {
+    type: MessageType.CHAT_MESSAGE,
+    value: message,
+  });
 }
 
-export function sendChatMessage(roonName: string, message: Message) {
+export function sendChatMessage(content: string) {
+  const message: ChatMessage = {
+    senderId: peer.value.id,
+    content,
+    timestamp: new Date().toISOString(),
+  };
   insertChatMessageIntoHistory(message);
+}
 
-  const connectionAndPlayerNamePairs = [...connectionMap.value.entries()];
-  for (const [c] of connectionAndPlayerNamePairs) {
-    c.send({
-      type: DataType.SEND_MESSAGE,
-      value: [
-        {
-          message,
-        },
-        ...connectionAndPlayerNamePairs.map(([p, n]) => ({
-          id: p.peer,
-          playerName: n,
-        })),
-      ],
-    });
-  }
+export function boardcastChatMessage(chatMessage: ChatMessage) {
+  boardcastMessage((c) =>
+    c.peer === chatMessage.senderId
+      ? null
+      : {
+          type: MessageType.CHAT_MESSAGE,
+          value: chatMessage,
+        }
+  );
 }
