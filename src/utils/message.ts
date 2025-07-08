@@ -4,8 +4,8 @@ import { boardcastPlayerList, connectionMap, isHost } from "./peer";
 import { playerMap } from "./session";
 
 export enum MessageType {
-  UPDATE_PLAYER_NAME = "update_player_name",
-  UPDATE_PLAYER_LIST = "update_player_list",
+  PLAYER_NAME = "player_name",
+  PLAYER_LIST = "player_list",
   CHAT_MESSAGE = "chat_message",
 }
 
@@ -18,8 +18,8 @@ export const messageHandlerDict: Record<
   string,
   (message: Message, connection: DataConnection) => void
 > = {
-  [MessageType.UPDATE_PLAYER_NAME]: handlePlayerNameMessage,
-  [MessageType.UPDATE_PLAYER_LIST]: handlePlayerListMessage,
+  [MessageType.PLAYER_NAME]: handlePlayerNameMessage,
+  [MessageType.PLAYER_LIST]: handlePlayerListMessage,
   [MessageType.CHAT_MESSAGE]: handleChatMessage,
 };
 
