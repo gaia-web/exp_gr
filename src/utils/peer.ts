@@ -54,6 +54,7 @@ function handleConnectionToTheHost(c: DataConnection) {
   applyMessageHandler(c);
   connectionMap.value = new Map([...connectionMap.value, [c.peer, c]]);
   c.off("open").on("open", () => {
+    console.info(`New player ${c.peer} joined.`);
     sendPlayerName(c);
     boardcastPlayerList();
   });
