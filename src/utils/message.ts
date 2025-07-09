@@ -28,7 +28,6 @@ export const messageHandlerDict: Record<
 function disconnectFromHost(connection: DataConnection) {
   if (isHost.value) return;
   
-  
   connection.close();
   exitRoom();
 }
@@ -37,7 +36,6 @@ function validNewPlayerName(name: string): boolean {
   let nameAvaiable = true;
   for (const key of playerMap.value.keys()) {
     const value = playerMap.value.get(key);
-    console.log(`comparing name ${name} with ${value}`)
     if (name === value) {
       nameAvaiable = false;
       break;
@@ -75,7 +73,6 @@ function handleUnavaiablePlayerNameMessage(
   message: Message,
   connection: DataConnection
 ) {
-  // exitRoom();
   alert(
     `Name ${message.value} already been taken! Please choose a different name`
   );
