@@ -49,17 +49,19 @@ effect(() => {
     .on("open", () => handleNonHostPeerOpened(p));
 });
 
+// for host to handle incoming connection from clients
 function handleConnectionToTheHost(c: DataConnection) {
   if (!isHost.value) return;
   applyMessageHandler(c);
   connectionMap.value = new Map([...connectionMap.value, [c.peer, c]]);
   c.off("open").on("open", () => {
-    console.info(`New player ${c.peer} joined.`);
+    console.info(`New player ${c.peer} joined.}`);
     sendPlayerName(c);
     boardcastPlayerList();
   });
 }
 
+// for client to send out connection to host
 function handleNonHostPeerOpened(p: Peer) {
   if (isHost.value) return;
   const connection = p.connect(hostId.value);
