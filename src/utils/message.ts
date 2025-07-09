@@ -4,9 +4,9 @@ import { boardcastPlayerList, connectionMap, isHost } from "./peer";
 import { exitRoom, playerMap } from "./session";
 
 export enum MessageType {
-  UPDATE_PLAYER_NAME = "update_player_name",
+  PLAYER_NAME = "player_name",
   UNAVAILABLE_PLAYER_NAME = "unavailable_player_name",
-  UPDATE_PLAYER_LIST = "update_player_list",
+  PLAYER_LIST = "player_list",
   CHAT_MESSAGE = "chat_message",
 }
 
@@ -19,9 +19,9 @@ export const messageHandlerDict: Record<
   string,
   (message: Message, connection: DataConnection) => void
 > = {
-  [MessageType.UPDATE_PLAYER_NAME]: handlePlayerNameMessage,
+  [MessageType.PLAYER_NAME]: handlePlayerNameMessage,
   [MessageType.UNAVAILABLE_PLAYER_NAME]: handleUnavaiablePlayerNameMessage,
-  [MessageType.UPDATE_PLAYER_LIST]: handlePlayerListMessage,
+  [MessageType.PLAYER_LIST]: handlePlayerListMessage,
   [MessageType.CHAT_MESSAGE]: handleChatMessage,
 };
 

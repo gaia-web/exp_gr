@@ -24,7 +24,7 @@ function applyMessageHandler(c: DataConnection) {
 
 function sendPlayerName(c: DataConnection) {
   sendMessage(c, {
-    type: MessageType.UPDATE_PLAYER_NAME,
+    type: MessageType.PLAYER_NAME,
     value: playerName.value,
   });
 }
@@ -33,7 +33,7 @@ export function boardcastPlayerList() {
   if (!isHost.value) return;
   const playerIdAndNamePairs = [...playerMap.value];
   boardcastMessage(() => ({
-    type: MessageType.UPDATE_PLAYER_LIST,
+    type: MessageType.PLAYER_LIST,
     value: playerIdAndNamePairs,
   }));
 }
