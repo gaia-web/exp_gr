@@ -23,14 +23,15 @@ export function Home() {
         class="card neumo"
         onSubmit={(e) => {
           e.preventDefault();
-          switch (e.submitter["value"]) {
-            case "join":
-              joinRoom();
-              break;
-            case "create":
-              createRoom();
-              break;
-          }
+          // switch (e.submitter["value"]) {
+          //   case "join":
+          //     joinRoom();
+          //     break;
+          //   case "create":
+          //     createRoom();
+          //     break;
+          // }
+          createRoom();
         }}
       >
         <input
@@ -53,12 +54,12 @@ export function Home() {
             (playerName.value = currentTarget.value)
           }
         />
-        <button type="submit" name="action" value="join" class="neumo">
-          <b>Join Room</b>
+        <button type="submit" name="action" class="neumo">
+          Enter Room
         </button>
-        <button type="submit" name="action" value="create" class="neumo">
-          Create Room
-        </button>
+        <i style="text-align: center;">
+          If the room does not exist, it would be created.
+        </i>
       </form>
     </section>
   );

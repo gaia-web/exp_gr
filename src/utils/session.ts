@@ -38,14 +38,25 @@ export function createRoom() {
   }
   peer.value?.destroy();
   peer.value = new Peer(hostId.value, PEER_JS_OPTIONS);
-  console.info(
-    `Create a room with name ${roomName} as ${playerName} and wait for players to join.`
-  );
-  playerMap.value = new Map([[peer.value.id, playerName.value]]);
+  // TODO consider to use `.off()` after it is successfully opened
+  const errorHandler = (e) => {
+    switch (e.type) {
+      case "unavailable-id":
+        joinRoom();
+        break;
+    }
+  };
+  const openHandler = () => {
+    console.info(
+      `Create a room with name ${roomName} as ${playerName} and wait for players to join.`
+    );
+    playerMap.value = new Map([[peer.value.id, playerName.value]]);
+    peer.value?.off("error", errorHandler).off("open", openHandler);
+  };
+  peer.value.on("error", errorHandler).on("open", openHandler);
 }
 
 export function joinRoom() {
-  // TODO should prevent player to join a room that is not yet created
   if (!roomName.value) {
     alert("A room name is required.");
     return;

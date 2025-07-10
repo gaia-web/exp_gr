@@ -25,19 +25,16 @@ function sendPlayerName(c: DataConnection) {
 }
 
 effect(() => {
+  if (!peer.value) return;
   addListenersToPeer();
 });
 
 function addListenersToPeer() {
   const p = peer.value;
   if (!p) return;
-  p.off("error")
-    .on("error", (e) => handlePeerError(e))
-    .off("connection")
+  p.on("error", (e) => handlePeerError(e))
     .on("connection", (c) => handleReceivedPeerConnection(c))
-    .off("disconnected")
     .on("disconnected", () => handlePeerDisconnectedFromTheServer(p))
-    .off("open")
     .on("open", () => handlePeerOpened(p));
 }
 
@@ -48,6 +45,7 @@ function handleReceivedPeerConnection(c: DataConnection) {
 
 function handlePeerDisconnectedFromTheServer(p: Peer) {
   // TODO set a counter and limit times to reconnect, then destory it
+  if (!p.open || p.destroyed) return;
   p.reconnect();
 }
 
@@ -59,10 +57,6 @@ function handlePeerOpened(p: Peer) {
 function handlePeerError(e: PeerError<string>) {
   switch (e.type) {
     case "unavailable-id":
-      exitRoom();
-      alert(
-        "Room with this name has already been created. You may want to join instead."
-      );
       break;
     default:
       console.error(e);
@@ -89,22 +83,17 @@ function handleConnectionClosed(c: DataConnection) {
 function handleReceivedPeerConnectionToTheHost(c: DataConnection) {
   applyMessageHandler(c);
   connectionMap.value = new Map([...connectionMap.value, [c.peer, c]]);
-  c.off("open")
-    .on("open", () => {
-      handleConnectionOpened(c);
-    })
-    .off("close")
-    .on("close", () => handleConnectionClosed(c));
+  c.on("open", () => {
+    handleConnectionOpened(c);
+  }).on("close", () => handleConnectionClosed(c));
 }
 
 function handleNonHostPeerOpen(p: Peer) {
   const connection = p.connect(hostId.value);
   connection
-    .off("open")
     .on("open", () => {
       handleConnectionOpened(connection);
     })
-    .off("close")
     .on("close", () => handleConnectionClosed(connection));
   applyMessageHandler(connection);
 }
@@ -116,6 +105,7 @@ function HandleNonHostConnectionOpened(c: DataConnection) {
 
 function HandleHostConnectionClosed(c: DataConnection) {
   const peerId = c.peer;
+  console.info(`Player ${c.peer} left.`);
   batch(() => {
     connectionMap.value.delete(peerId);
     connectionMap.value = new Map(connectionMap.value);
