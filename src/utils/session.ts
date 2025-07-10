@@ -1,6 +1,13 @@
 import Peer from "peerjs";
 import { batch, computed, effect, signal } from "@preact/signals";
-import { connectionMap, peer, PEER_ID_PREFIX, PEER_JS_OPTIONS } from "./peer";
+import {
+  connectionMap,
+  isHost,
+  peer,
+  PEER_ID_PREFIX,
+  PEER_JS_OPTIONS,
+} from "./peer";
+import { boardcastMessage, MessageType } from "./message";
 
 export const hostId = computed(() => `${PEER_ID_PREFIX}-${roomName}`);
 export const roomName = signal<string>();
@@ -12,6 +19,12 @@ effect(() => {
     exitRoom();
     return;
   }
+});
+
+effect(() => {
+  if (!isHost.value) return;
+  if (!playerMap.value) return;
+  boardcastPlayerList();
 });
 
 export function createRoom() {
@@ -52,6 +65,16 @@ export function exitRoom() {
     playerName.value = void 0;
     playerMap.value = new Map();
     connectionMap.value = new Map();
+    peer.value?.destroy();
     peer.value = void 0;
   });
+}
+
+export function boardcastPlayerList() {
+  if (!isHost.value) return;
+  const playerIdAndNamePairs = [...playerMap.value];
+  boardcastMessage(() => ({
+    type: MessageType.PLAYER_LIST,
+    value: playerIdAndNamePairs,
+  }));
 }
