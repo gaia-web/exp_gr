@@ -38,7 +38,6 @@ export function createRoom() {
   }
   peer.value?.destroy();
   peer.value = new Peer(hostId.value, PEER_JS_OPTIONS);
-  // TODO consider to use `.off()` after it is successfully opened
   const errorHandler = (e) => {
     switch (e.type) {
       case "unavailable-id":
