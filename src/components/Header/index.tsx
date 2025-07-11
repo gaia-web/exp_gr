@@ -1,7 +1,7 @@
 import { useLocation } from "preact-iso";
 
 import "./style.css";
-import { exitRoom, roomName } from "../../utils/session";
+import { exitRoom, roomName, unreadPlayerListChanges } from "../../utils/session";
 import { unreadChatMessages } from "../../utils/chat";
 
 export function Header() {
@@ -26,7 +26,7 @@ export function Header() {
           href={`/room/${roomName.value}/players`}
           class={`neumo ${
             url === `/room/${roomName.value}/players` ? "active hollow" : ""
-          }`}
+          } ${unreadPlayerListChanges.value ? "attention" : ""}`}
         >
           Players
         </a>
@@ -34,7 +34,7 @@ export function Header() {
           href={`/room/${roomName.value}/chat`}
           class={`neumo ${
             url === `/room/${roomName.value}/chat` ? "active hollow" : ""
-          } ${unreadChatMessages.value > 0 ? 'attention': ''}`}
+          } ${unreadChatMessages.value > 0 ? "attention" : ""}`}
         >
           Chat
         </a>

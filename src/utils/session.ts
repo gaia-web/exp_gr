@@ -13,6 +13,7 @@ export const hostId = computed(() => `${PEER_ID_PREFIX}-${roomName}`);
 export const roomName = signal<string>();
 export const playerName = signal<string>();
 export const playerMap = signal<Map<string, string>>(new Map());
+export const unreadPlayerListChanges = signal(false);
 
 effect(() => {
   if (!peer.value) {
@@ -22,8 +23,10 @@ effect(() => {
 });
 
 effect(() => {
-  if (!isHost.value) return;
   if (!playerMap.value) return;
+  unreadPlayerListChanges.value = true;
+
+  if (!isHost.value) return;
   boardcastPlayerList();
 });
 
