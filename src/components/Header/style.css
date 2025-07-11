@@ -21,7 +21,30 @@ header {
 
   & nav {
     display: flex;
-    flex: 1 1 0;
+    flex: 1 1 100%;
+    overflow: hidden;
+    gap: 20px;
+
+    & .left-group {
+      display: flex;
+      flex: 0 0 auto;
+    }
+
+    & .right-group {
+      display: block;
+      flex: 1 1 auto;
+      overflow-x: auto;
+
+      & .scroll-helper {
+        display: flex;
+        justify-content: flex-end;
+        width: fit-content;
+      }
+
+      & a {
+        flex: 0 0 auto;
+      }
+    }
 
     & a.attention {
       --max-shake-distance: 5%;
