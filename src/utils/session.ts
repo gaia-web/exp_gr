@@ -1,4 +1,4 @@
-import Peer from "peerjs";
+import Peer, { PeerError } from "peerjs";
 import { batch, computed, effect, signal } from "@preact/signals";
 import {
   connectionMap,
@@ -27,7 +27,7 @@ effect(() => {
   boardcastPlayerList();
 });
 
-export function createRoom() {
+export function enterRoom() {
   if (!roomName.value) {
     alert("A room name is required.");
     return;
@@ -38,10 +38,12 @@ export function createRoom() {
   }
   peer.value?.destroy();
   peer.value = new Peer(hostId.value, PEER_JS_OPTIONS);
-  const errorHandler = (e) => {
+  const errorHandler = (e: PeerError<string>) => {
     switch (e.type) {
       case "unavailable-id":
-        joinRoom();
+        peer.value?.destroy();
+        peer.value = new Peer(PEER_JS_OPTIONS);
+        console.info(`Join room ${roomName} as ${playerName}.`);
         break;
     }
   };
@@ -53,20 +55,6 @@ export function createRoom() {
     peer.value?.off("error", errorHandler).off("open", openHandler);
   };
   peer.value.on("error", errorHandler).on("open", openHandler);
-}
-
-export function joinRoom() {
-  if (!roomName.value) {
-    alert("A room name is required.");
-    return;
-  }
-  if (!playerName.value) {
-    alert("A player name is required.");
-    return;
-  }
-  peer.value?.destroy();
-  peer.value = new Peer(PEER_JS_OPTIONS);
-  console.info(`Join room ${roomName} as ${playerName}.`);
 }
 
 export function exitRoom() {

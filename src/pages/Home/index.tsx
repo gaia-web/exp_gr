@@ -1,7 +1,7 @@
 import { useLocation } from "preact-iso";
 import { useSignalEffect } from "@preact/signals";
 import { peer } from "../../utils/peer";
-import { createRoom, playerName, roomName } from "../../utils/session";
+import { enterRoom, playerName, roomName } from "../../utils/session";
 import "./style.css";
 
 export function Home() {
@@ -18,7 +18,7 @@ export function Home() {
         class="card neumo"
         onSubmit={(e) => {
           e.preventDefault();
-          createRoom();
+          enterRoom();
         }}
       >
         <input
