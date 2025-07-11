@@ -15,7 +15,7 @@ export function Header() {
         <div class="left-group">
           <a
             href="/"
-            class={`neumo ${url === "/" ? "active hollow" : ""}`}
+            class="neumo"
             style={{ marginRight: "auto" }}
             onClick={() => {
               exitRoom();
