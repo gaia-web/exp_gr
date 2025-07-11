@@ -39,6 +39,7 @@ header {
         display: flex;
         justify-content: flex-end;
         width: fit-content;
+        min-width: 100%;
       }
 
       & a {
