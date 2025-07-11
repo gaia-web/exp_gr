@@ -84,6 +84,9 @@
 
     :where(&) {
       all: unset;
+
+      -webkit-tap-highlight-color: transparent;
+
       cursor: pointer;
       margin: 5px;
       overflow: hidden;
