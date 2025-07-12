@@ -20,7 +20,7 @@ export const messageHandlerDict: Record<
   (message: Message, connection: DataConnection) => void
 > = {
   [MessageType.PLAYER_NAME]: handlePlayerNameMessage,
-  [MessageType.UNAVAILABLE_PLAYER_NAME]: handleUnavaiablePlayerNameMessage,
+  [MessageType.UNAVAILABLE_PLAYER_NAME]: handleUnavailablePlayerNameMessage,
   [MessageType.PLAYER_LIST]: handlePlayerListMessage,
   [MessageType.CHAT_MESSAGE]: handleChatMessage,
 };
@@ -70,7 +70,7 @@ function handlePlayerNameMessage(
   boardcastPlayerList();
 }
 
-function handleUnavaiablePlayerNameMessage(
+function handleUnavailablePlayerNameMessage(
   message: Message,
   connection: DataConnection
 ) {
