@@ -1,5 +1,5 @@
 header {
-  --header-height-estimated: 72px; /* TODO This should be a very close approximate to its actual size. Later we might want to way that does not use a hard-coded size. */
+  --header-height-estimated: 72px; /* TODO This should be a very close approximate to its actual size. Later we might want a way that does not use a hard-coded size. */
 
   display: flex;
   max-height: var(--header-height-estimated);
