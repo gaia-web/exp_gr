@@ -34,16 +34,16 @@ function disconnectFromHost(connection: DataConnection) {
 }
 
 function validateNewPlayerName(name: string): boolean {
-  let isNameAvaiable = true;
+  let isNameAvailable = true;
   for (const key of playerMap.value.keys()) {
     const value = playerMap.value.get(key);
     if (name === value) {
-      isNameAvaiable = false;
+      isNameAvailable = false;
       break;
     }
   }
 
-  return isNameAvaiable;
+  return isNameAvailable;
 }
 
 function handlePlayerNameMessage(
