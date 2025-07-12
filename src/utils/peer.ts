@@ -66,18 +66,18 @@ function handlePeerError(e: PeerError<string>) {
 
 function handleConnectionOpened(c: DataConnection) {
   if (isHost.value) {
-    console.info(`New player ${c.peer} joined.`);
-    return;
+    handleHostConnectionOpened(c);
+  } else {
+    HandleNonHostConnectionOpened(c);
   }
-  HandleNonHostConnectionOpened(c);
 }
 
 function handleConnectionClosed(c: DataConnection) {
-  if (!isHost.value) {
-    exitRoom();
-    return;
+  if (isHost.value) {
+    HandleHostConnectionClosed(c);
+  } else {
+    handleNonHostConnectionClosed();
   }
-  HandleHostConnectionClosed(c);
 }
 
 function handleReceivedPeerConnectionToTheHost(c: DataConnection) {
@@ -98,6 +98,10 @@ function handleNonHostPeerOpen(p: Peer) {
   applyMessageHandler(connection);
 }
 
+function handleHostConnectionOpened(c: DataConnection) {
+  console.info(`New player ${c.peer} joined.`);
+}
+
 function HandleNonHostConnectionOpened(c: DataConnection) {
   connectionMap.value = new Map([...connectionMap.value, [c.peer, c]]);
   sendPlayerName(c);
@@ -112,4 +116,8 @@ function HandleHostConnectionClosed(c: DataConnection) {
     playerMap.value.delete(peerId);
     playerMap.value = new Map(playerMap.value);
   });
+}
+
+function handleNonHostConnectionClosed() {
+  exitRoom();
 }
