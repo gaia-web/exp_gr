@@ -1,5 +1,6 @@
 import { render } from "preact";
 import { LocationProvider, Router, Route } from "preact-iso";
+import { startViewTransition } from "./utils/view-transition";
 
 import { Header } from "./components/Header/index.js";
 import { Home } from "./pages/Home/index.jsx";
@@ -17,7 +18,12 @@ export function App() {
     <LocationProvider>
       <Header />
       <main class="neumo hollow">
-        <Router>
+        <Router
+          onRouteChange={() => {
+            // TODO may need another router lib so we can hook to the right time
+            startViewTransition(() => {});
+          }}
+        >
           <Route path="/" component={Home} />
           <Route path="/room/:roomName/players" component={PlayerList} />
           <Route path="/room/:roomName/chat" component={Chatting} />
