@@ -49,6 +49,7 @@ effect(() => {
     .on("open", () => handleNonHostPeerOpened(p));
 });
 
+// TODO: use better name to indicate this is for hosts to handle the incoming connection from clients
 function handleConnectionToTheHost(c: DataConnection) {
   if (!isHost.value) return;
   applyMessageHandler(c);

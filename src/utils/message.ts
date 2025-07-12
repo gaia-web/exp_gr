@@ -25,24 +25,25 @@ export const messageHandlerDict: Record<
   [MessageType.CHAT_MESSAGE]: handleChatMessage,
 };
 
+// TODO instead of letting client disconnect from Host, we should let host disconnect client
 function disconnectFromHost(connection: DataConnection) {
   if (isHost.value) return;
-  
+
   connection.close();
   exitRoom();
 }
 
-function validNewPlayerName(name: string): boolean {
-  let nameAvaiable = true;
+function validateNewPlayerName(name: string): boolean {
+  let isNameAvaiable = true;
   for (const key of playerMap.value.keys()) {
     const value = playerMap.value.get(key);
     if (name === value) {
-      nameAvaiable = false;
+      isNameAvaiable = false;
       break;
     }
   }
 
-  return nameAvaiable;
+  return isNameAvaiable;
 }
 
 function handlePlayerNameMessage(
@@ -52,7 +53,7 @@ function handlePlayerNameMessage(
   if (!message) return;
   if (!isHost.value) return;
 
-  if (!validNewPlayerName(message.value)) {
+  if (!validateNewPlayerName(message.value)) {
     sendMessage(connection, {
       type: MessageType.UNAVAILABLE_PLAYER_NAME,
       value: message.value,
