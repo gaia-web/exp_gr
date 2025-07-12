@@ -1,7 +1,7 @@
 import { useSignalEffect } from "@preact/signals";
 import { useLocation, useRoute } from "preact-iso";
 import { peer } from "../../utils/peer";
-import { hostId, playerMap } from "../../utils/session";
+import { hostId, playerMap, unreadPlayerListChanges } from "../../utils/session";
 import "./style.css";
 
 export function PlayerList() {
@@ -13,6 +13,11 @@ export function PlayerList() {
       alert("Connection lost or timed out, exiting room...");
       route("/");
     }
+  });
+
+  useSignalEffect(() => {
+    if (!unreadPlayerListChanges.value) return;
+    unreadPlayerListChanges.value = false;
   });
 
   return (
