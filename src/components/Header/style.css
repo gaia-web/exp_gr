@@ -1,5 +1,5 @@
 header {
-  --header-height-estimated: 72px; /* This should be a very close approximate to its actual size. */
+  --header-height-estimated: 72px; /* TODO This should be a very close approximate to its actual size. Later we might want a way that does not use a hard-coded size. */
 
   display: flex;
   max-height: var(--header-height-estimated);
@@ -8,8 +8,8 @@ header {
 
   /* Add specificity */
   &.neumo {
-    transition: max-height 0.5s ease, padding 0.5s ease, margin 0.5s ease,
-      opacity 0.5s ease;
+    transition-property: var(--neumo-item-transition-protperty) max-height,
+      padding, margin, opacity;
   }
 
   &.collapsed {
@@ -21,7 +21,36 @@ header {
 
   & nav {
     display: flex;
-    flex: 1 1 0;
+    flex: 1 1 100%;
+    overflow: hidden;
+    gap: 20px;
+
+    & .left-group {
+      display: flex;
+      flex: 0 0 auto;
+    }
+
+    & .right-group {
+      display: block;
+      flex: 1 1 auto;
+      overflow-x: auto;
+      overflow-y: hidden;
+
+      & .scroll-helper {
+        display: flex;
+        justify-content: flex-end;
+        width: fit-content;
+        min-width: 100%;
+      }
+
+      & a {
+        flex: 0 0 auto;
+      }
+    }
+
+    & a.active {
+      --neumo-item-background-color: var(--accent-color);
+    }
 
     & a.attention {
       --max-shake-distance: 5%;

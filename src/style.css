@@ -1,3 +1,18 @@
+:root {
+  --accent-color: hsl(190, 50%, 75%);
+  --neumo-item-transition-protperty: box-shadow, color, background-color;
+  --neumo-item-transition-duration: 0.5s;
+  --neumo-item-transition-timing-function: cubic-bezier(0.15, 1.15, 0.6, 1.45);
+
+  transition-property: var(--neumo-item-transition-protperty);
+  transition-duration: var(--neumo-item-transition-duration);
+  transition-timing-function: var(--neumo-item-transition-timing-function);
+
+  @media (prefers-color-scheme: dark) {
+    --accent-color: hsl(190, 50%, 25%);
+  }
+}
+
 body {
   margin: 0;
 }
@@ -20,11 +35,30 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    view-transition-name: main;
 
     & > .page {
       max-width: 1280px;
       margin: 0 auto;
     }
+  }
+}
+
+::view-transition-old(main) {
+  opacity: 0;
+}
+::view-transition-new(main) {
+  animation: scale-fade 0.5s ease;
+}
+
+@keyframes scale-fade {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 

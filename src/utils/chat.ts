@@ -1,5 +1,5 @@
 import { batch, signal } from "@preact/signals";
-import { connectionMap, connectionToTheHost, isHost, peer } from "./peer";
+import { connectionToTheHost, isHost, peer } from "./peer";
 import { boardcastMessage, MessageType, sendMessage } from "./message";
 
 export type ChatMessage = {

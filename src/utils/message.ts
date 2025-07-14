@@ -1,6 +1,6 @@
 import { DataConnection } from "peerjs";
 import { ChatMessage, insertChatMessageIntoHistory } from "./chat";
-import { boardcastPlayerList, connectionMap, isHost } from "./peer";
+import { connectionMap, isHost } from "./peer";
 import { exitRoom, playerMap } from "./session";
 
 export enum MessageType {
@@ -67,7 +67,6 @@ function handlePlayerNameMessage(
     [connection.peer, message.value.toString()],
   ]);
   console.info(`Peer ${connection.peer} updated its name as ${message.value}`);
-  boardcastPlayerList();
 }
 
 function handleUnavailablePlayerNameMessage(
