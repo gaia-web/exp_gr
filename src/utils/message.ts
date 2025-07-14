@@ -1,10 +1,11 @@
 import { DataConnection } from "peerjs";
 import { ChatMessage, insertChatMessageIntoHistory } from "./chat";
 import { connectionMap, isHost } from "./peer";
-import { playerMap } from "./session";
+import { exitRoom, playerMap } from "./session";
 
 export enum MessageType {
   PLAYER_NAME = "player_name",
+  UNAVAILABLE_PLAYER_NAME = "unavailable_player_name",
   PLAYER_LIST = "player_list",
   CHAT_MESSAGE = "chat_message",
 }
@@ -19,18 +20,64 @@ export const messageHandlerDict: Record<
   (message: Message, connection: DataConnection) => void
 > = {
   [MessageType.PLAYER_NAME]: handlePlayerNameMessage,
+  [MessageType.UNAVAILABLE_PLAYER_NAME]: handleUnavailablePlayerNameMessage,
   [MessageType.PLAYER_LIST]: handlePlayerListMessage,
   [MessageType.CHAT_MESSAGE]: handleChatMessage,
 };
 
-function handlePlayerNameMessage(message: Message, connection: DataConnection) {
+// TODO instead of letting client disconnect from Host, we should let host disconnect client
+function disconnectFromHost(connection: DataConnection) {
+  if (isHost.value) return;
+
+  connection.close();
+  exitRoom();
+}
+
+function validateNewPlayerName(name: string): boolean {
+  let isNameAvailable = true;
+  for (const key of playerMap.value.keys()) {
+    const value = playerMap.value.get(key);
+    if (name === value) {
+      isNameAvailable = false;
+      break;
+    }
+  }
+
+  return isNameAvailable;
+}
+
+function handlePlayerNameMessage(
+  message: Message<string>,
+  connection: DataConnection
+) {
   if (!message) return;
   if (!isHost.value) return;
+
+  if (!validateNewPlayerName(message.value)) {
+    sendMessage(connection, {
+      type: MessageType.UNAVAILABLE_PLAYER_NAME,
+      value: message.value,
+    });
+
+    return;
+  }
+
   playerMap.value = new Map([
     ...playerMap.value,
     [connection.peer, message.value.toString()],
   ]);
   console.info(`Peer ${connection.peer} updated its name as ${message.value}`);
+}
+
+function handleUnavailablePlayerNameMessage(
+  message: Message,
+  connection: DataConnection
+) {
+  alert(
+    `Name ${message.value} already been taken! Please choose a different name`
+  );
+
+  disconnectFromHost(connection);
 }
 
 function handlePlayerListMessage(message: Message) {
