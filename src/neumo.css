@@ -23,7 +23,7 @@
 
   --neumo-item-transition-protperty: box-shadow, color, background-color;
   --neumo-item-transition-duration: 0.5s;
-  --neumo-item-transition-timing-function: cubic-bezier(0.15, 1.15, 0.6, 1.45);
+  --neumo-item-transition-timing-function: cubic-bezier(0, 0.5, 0.5, 1.1);
 
   --neumo-item-shadow-x-offset-base: calc(
     var(--neumo-item-distance) * cos(var(--neumo-item-light-angle))

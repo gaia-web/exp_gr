@@ -2,7 +2,7 @@
   --accent-color: hsl(190, 50%, 75%);
   --neumo-item-transition-protperty: box-shadow, color, background-color;
   --neumo-item-transition-duration: 0.5s;
-  --neumo-item-transition-timing-function: cubic-bezier(0.15, 1.15, 0.6, 1.45);
+  --neumo-item-transition-timing-function: cubic-bezier(0, 0.5, 0.5, 1.1);
 
   transition-property: var(--neumo-item-transition-protperty);
   transition-duration: var(--neumo-item-transition-duration);
@@ -35,7 +35,6 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    view-transition-name: main;
 
     & > .page {
       max-width: 1280px;
@@ -43,12 +42,29 @@ body {
     }
   }
 }
-
-::view-transition-old(main) {
-  opacity: 0;
+::view-transition-group(*) {
+  animation-duration: var(--neumo-item-transition-duration);
+  animation-timing-function: var(--neumo-item-transition-timing-function);
 }
-::view-transition-new(main) {
-  animation: scale-fade 0.5s ease;
+::view-transition-old(*),
+::view-transition-new(*) {
+  animation-duration: var(--neumo-item-transition-duration);
+  animation-timing-function: var(--neumo-item-transition-timing-function);
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+}
+
+::view-transition-old(page),
+::view-transition-new(page) {
+  transform-origin: top right;
+  animation-name: scale-fade;
+  animation-duration: var(--neumo-item-transition-duration);
+  animation-timing-function: var(--neumo-item-transition-timing-function);
+}
+::view-transition-old(page) {
+  transform-origin: bottom left;
+  animation-name: scale-fade-reversed;
 }
 
 @keyframes scale-fade {
@@ -59,6 +75,17 @@ body {
   100% {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+@keyframes scale-fade-reversed {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0);
   }
 }
 

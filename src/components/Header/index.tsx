@@ -7,11 +7,33 @@ import {
   unreadPlayerListChanges,
 } from "../../utils/session";
 import { unreadChatMessages } from "../../utils/chat";
+import {
+  pageTranstionResolver,
+  startViewTransition,
+} from "../../utils/view-transition";
 
 export function Header() {
   const { url } = useLocation();
 
   const isRootUrl = () => url === "" || url === "/";
+
+  const pageViewTransitionHandler = () => {
+    (document.querySelector("main") as HTMLElement).style.viewTransitionName =
+      "page";
+    startViewTransition(
+      async () => {
+        await new Promise((resolve) => {
+          pageTranstionResolver.value = resolve;
+        });
+      },
+      void 0,
+      () => {
+        (
+          document.querySelector("main") as HTMLElement
+        ).style.viewTransitionName = "";
+      }
+    );
+  };
 
   return (
     <header class={`neumo hollow ${isRootUrl() ? "collapsed" : ""}`}>
@@ -23,6 +45,28 @@ export function Header() {
             style={{ marginRight: "auto" }}
             onClick={() => {
               exitRoom();
+              (
+                document.querySelector("main") as HTMLElement
+              ).style.viewTransitionName = "home-page";
+              startViewTransition(
+                async () => {
+                  (
+                    document.querySelector("main") as HTMLElement
+                  ).style.viewTransitionName = "";
+                  await new Promise((resolve) => {
+                    pageTranstionResolver.value = resolve;
+                  });
+                  (
+                    document.querySelector(".page form.card") as HTMLElement
+                  ).style.viewTransitionName = "home-page";
+                },
+                void 0,
+                () => {
+                  (
+                    document.querySelector(".page form.card") as HTMLElement
+                  ).style.viewTransitionName = "";
+                }
+              );
             }}
           >
             Exit
@@ -35,6 +79,7 @@ export function Header() {
               class={`neumo ${
                 url === `/room/${roomName.value}/players` ? "active hollow" : ""
               } ${unreadPlayerListChanges.value ? "attention" : ""}`}
+              onClick={pageViewTransitionHandler}
             >
               Players
             </a>
@@ -43,6 +88,7 @@ export function Header() {
               class={`neumo ${
                 url === `/room/${roomName.value}/chat` ? "active hollow" : ""
               } ${unreadChatMessages.value > 0 ? "attention" : ""}`}
+              onClick={pageViewTransitionHandler}
             >
               Chat
             </a>
@@ -51,6 +97,7 @@ export function Header() {
               class={`neumo ${
                 url === `/room/${roomName.value}/games` ? "active hollow" : ""
               }`}
+              onClick={pageViewTransitionHandler}
             >
               Games
             </a>
@@ -59,6 +106,7 @@ export function Header() {
               class={`neumo ${
                 url === `/room/${roomName.value}/play` ? "active hollow" : ""
               }`}
+              onClick={pageViewTransitionHandler}
             >
               Play
             </a>

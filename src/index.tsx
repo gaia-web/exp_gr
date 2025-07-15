@@ -18,12 +18,7 @@ export function App() {
     <LocationProvider>
       <Header />
       <main class="neumo hollow">
-        <Router
-          onRouteChange={() => {
-            // TODO may need another router lib so we can hook to the right time
-            startViewTransition(() => {});
-          }}
-        >
+        <Router>
           <Route path="/" component={Home} />
           <Route path="/room/:roomName/players" component={PlayerList} />
           <Route path="/room/:roomName/chat" component={Chatting} />

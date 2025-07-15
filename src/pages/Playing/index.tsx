@@ -2,6 +2,7 @@ import { useSignal, useSignalEffect } from "@preact/signals";
 import { useLocation } from "preact-iso";
 import { useEffect, useRef } from "preact/hooks";
 import { peer } from "../../utils/peer";
+import { pageTranstionResolver } from "../../utils/view-transition";
 
 export function Playing() {
   const { route } = useLocation();
@@ -21,6 +22,11 @@ export function Playing() {
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
   }, []);
+
+  useSignalEffect(() => {
+    pageTranstionResolver.value?.("");
+    pageTranstionResolver.value = void 0;
+  });
 
   useSignalEffect(() => {
     if (!peer.value) {
