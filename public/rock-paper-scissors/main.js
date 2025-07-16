@@ -192,11 +192,6 @@ function sendPartialUpdate(update) {
     ].filter(Boolean), // send only to host
     value: update,
   };
-  // Actually just send to host player id
-  msg.to = [
-    Array.from(playerMap.keys()).find((id) => playerMap.get(id)?.isHost) ||
-      null,
-  ].filter(Boolean);
   window.parent.postMessage(msg, "*");
 }
 
