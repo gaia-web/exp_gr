@@ -55,7 +55,11 @@ export function Playing() {
 
   return (
     <section class="playing page">
-      <iframe class="game-plugin" ref={iframeRef} src="/test.html" />
+      <iframe
+        class="game-plugin"
+        ref={iframeRef}
+        src="/rock-paper-scissors/index.html"
+      />
     </section>
   );
 }
