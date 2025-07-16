@@ -18,6 +18,7 @@ type PlayerName = string;
 export type GameListMessage = {
   id: string;
   label: string;
+  playerLimit: [number, number];
   description: string;
   pluginUrl: string;
 }[];
