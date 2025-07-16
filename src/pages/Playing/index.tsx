@@ -39,7 +39,7 @@ export function Playing() {
     if (!iframeRef.current) console.error("Iframe is not available.");
     iframeRef.current.addEventListener("load", () => {
       sendMessageToTheGamePlugin({
-        type: GameStateMessageType.PLAYER_INFO,
+        type: GameStateMessageType._PLAYER_INFO,
         value: {
           id: peer.value.id,
           name: playerName.value,
@@ -47,7 +47,7 @@ export function Playing() {
         },
       });
       sendMessageToTheGamePlugin({
-        type: GameStateMessageType.PLAYER_LIST,
+        type: GameStateMessageType._PLAYER_LIST,
         value: [...playerMap.value.entries()],
       });
     });

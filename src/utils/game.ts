@@ -8,8 +8,8 @@ export enum GameStatus {
 }
 
 export enum GameStateMessageType {
-  PLAYER_INFO = "player_info",
-  PLAYER_LIST = "player_list",
+  _PLAYER_INFO = "_player_info",
+  _PLAYER_LIST = "_player_list",
 }
 
 type PlayerID = string;
@@ -36,7 +36,7 @@ export type GameStateMessage = { to?: string } & (
       value: unknown;
     }
   | {
-      type: GameStateMessageType.PLAYER_INFO;
+      type: GameStateMessageType._PLAYER_INFO;
       value: {
         id: PlayerID;
         name: PlayerName;
@@ -44,7 +44,7 @@ export type GameStateMessage = { to?: string } & (
       };
     }
   | {
-      type: GameStateMessageType.PLAYER_LIST;
+      type: GameStateMessageType._PLAYER_LIST;
       value: [PlayerID, PlayerName][];
     }
 );

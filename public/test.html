@@ -28,11 +28,11 @@
       window.addEventListener("message", (event) => {
         const message = event.data;
         switch (message.type) {
-          case "player_info":
+          case "_player_info":
             console.info(`Player info: `, message.value);
             player = message.value;
             break;
-          case "player_list":
+          case "_player_list":
             console.info(`Player list: `, message.value);
             playerMap = new Map(message.value);
             break;
