@@ -185,11 +185,6 @@ function submitMove(move) {
 function sendPartialUpdate(update) {
   const msg = {
     type: "rps_update",
-    to: [
-      playerMap.get(player.id)
-        ? [...playerMap.keys()].find((id) => id === player.id)
-        : undefined,
-    ].filter(Boolean), // send only to host
     value: update,
   };
   window.parent.postMessage(msg, "*");
