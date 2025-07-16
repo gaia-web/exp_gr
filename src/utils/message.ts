@@ -5,12 +5,38 @@ import { exitRoom, playerMap } from "./session";
 import { GameListMessage, GameStatus, GameStatusMessage } from "./game";
 
 export enum MessageType {
+  /**
+   * Update player's name to the host.
+   * __It should only be sent from a non-host peer.__
+   */
   PLAYER_NAME = "player_name",
+  /**
+   * Notify the player's name is unavailable.
+   * __It should only be sent from the host peer.__
+   */
   UNAVAILABLE_PLAYER_NAME = "unavailable_player_name",
+  /**
+   * Update the player list, including player IDs and names.
+   * __It should only be sent from the host peer.__
+   */
   PLAYER_LIST = "player_list",
+  /**
+   * Send a chat message.
+   */
   CHAT_MESSAGE = "chat_message",
+  /**
+   * Update the game list.
+   * __It should only be sent from the host peer.__
+   */
   GAME_LIST = "game_list",
+  /**
+   * Update the game lifecycle status, such as `ready` and `retired`.
+   * __It should only be sent from the host peer.__
+   */
   GAME_STATUS = "game_status",
+  /**
+   * Notify a change of game internal state, which should be forwarded to the game plugin.
+   */
   GAME_STATE = "game_state",
 }
 
