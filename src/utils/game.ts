@@ -1,3 +1,6 @@
+import { signal } from "@preact/signals";
+import { Message } from "./message";
+
 export enum GameStatus {
   READY = "ready",
   RETIRED = "retired",
@@ -44,4 +47,10 @@ export type GameStateMessage = { to?: string } & (
     }
 );
 
-export function sendMessageToGamePlugin() {}
+export function handleMessageFromTheGameIframe(message: GameStateMessage) {
+  switch (message.type) {
+    default:
+      console.info(`From plugin to host:`, message);
+      break;
+  }
+}
