@@ -6,16 +6,47 @@
   </head>
   <body>
     <h1>Plugin</h1>
-    <button id="sendBtn">Send Message to the Host App</button>
+    <button id="sendBtn">Send Message to everyone</button>
+    <br />
+    <i
+      >Note the messages sent from here is totally handled by the plugin logic
+      and the host app is basically just forwarding the messages.</i
+    >
 
-    <script>
+    <script type="module">
       const sendBtn = document.getElementById("sendBtn");
+      let player;
+      let playerMap = new Map();
 
       window.addEventListener("message", (event) => {
         const message = event.data;
         switch (message.type) {
+          case "player_info":
+            console.info(`Player info: `, message.value);
+            player = message.value;
+            break;
+          case "player_list":
+            console.info(`Player list: `, message.value);
+            playerMap = new Map(message.value);
+            break;
+          case "test":
+            if (player.isHost) {
+              message.to = [...playerMap.keys()].filter(
+                (id) => id !== player.id && id !== message.value.sender
+              );
+              window.parent.postMessage(message, "*");
+            }
+            // to prevent blocking message
+            setTimeout(() => {
+              alert(
+                `${
+                  playerMap.get(message.value.sender) ?? "Unknown player"
+                } sent: ${message.value.content}`
+              );
+            });
+            break;
           default:
-            console.info(`From host to plugin:`, message);
+            console.info(`From host app to plugin:`, message);
             break;
         }
       });
@@ -23,12 +54,32 @@
       sendBtn.addEventListener("click", () => {
         const msg = {
           type: "test",
-          value: prompt("Enter message to send to parent:"),
+          to: player.isHost
+            ? [...playerMap.keys()].filter((id) => id !== player.id)
+            : void 0,
+          value: {
+            sender: player.id,
+            content: prompt("Enter the message:"),
+          },
         };
-        if (msg) {
-          window.parent.postMessage(msg, "*");
-        }
+        window.parent.postMessage(msg, "*");
       });
     </script>
+
+    <style>
+      :root {
+        --color: hsl(0, 0%, 35%);
+        --background-color: hsl(0, 0%, 90%);
+
+        font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+        color: var(--color);
+        background-color: var(--background-color);
+
+        @media (prefers-color-scheme: dark) {
+          --color: hsl(0, 0%, 65%);
+          --background-color: hsl(0, 0%, 10%);
+        }
+      }
+    </style>
   </body>
 </html>

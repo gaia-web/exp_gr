@@ -1,8 +1,15 @@
-import { useSignal, useSignalEffect } from "@preact/signals";
+import { useSignalEffect } from "@preact/signals";
 import { useLocation } from "preact-iso";
-import { peer } from "../../utils/peer";
+import { isHost, peer } from "../../utils/peer";
 import { useSignalRef } from "@preact/signals/utils";
-import { handleMessageFromTheGameIframe } from "../../utils/game";
+import {
+  currentGamePluginIframe,
+  GameStateMessageType,
+  handleMessageFromTheGamePlugin,
+  sendMessageToTheGamePlugin,
+} from "../../utils/game";
+import { playerMap, playerName } from "../../utils/session";
+import "./style.css";
 
 export function Playing() {
   const { route } = useLocation();
@@ -13,7 +20,7 @@ export function Playing() {
       // TODO Optional: restrict origin for security
       // if (event.origin !== window.origin) return;
       if (iframeRef.current?.contentWindow !== event.source) return;
-      handleMessageFromTheGameIframe(event.data);
+      handleMessageFromTheGamePlugin(event.data);
     }
 
     window.addEventListener("message", handleMessage);
@@ -27,25 +34,28 @@ export function Playing() {
     }
   });
 
+  useSignalEffect(() => {
+    currentGamePluginIframe.value = iframeRef.current;
+    if (!iframeRef.current) console.error("Iframe is not available.");
+    iframeRef.current.addEventListener("load", () => {
+      sendMessageToTheGamePlugin({
+        type: GameStateMessageType.PLAYER_INFO,
+        value: {
+          id: peer.value.id,
+          name: playerName.value,
+          isHost: isHost.value,
+        },
+      });
+      sendMessageToTheGamePlugin({
+        type: GameStateMessageType.PLAYER_LIST,
+        value: [...playerMap.value.entries()],
+      });
+    });
+  });
+
   return (
     <section class="playing page">
-      <iframe ref={iframeRef} src="/test.html" />
-      <div>
-        <button class="neumo" onClick={sendMessage}>
-          Send Message to the Plugin
-        </button>
-      </div>
+      <iframe class="game-plugin" ref={iframeRef} src="/test.html" />
     </section>
   );
-
-  function sendMessage() {
-    const message = {
-      type: "test",
-      value: prompt("Enter message to send to parent:"),
-    };
-    (iframeRef?.current as HTMLIFrameElement)?.contentWindow?.postMessage(
-      message ?? "",
-      "*"
-    );
-  }
 }

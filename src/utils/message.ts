@@ -2,7 +2,14 @@ import { DataConnection } from "peerjs";
 import { ChatMessage, insertChatMessageIntoHistory } from "./chat";
 import { connectionMap, isHost } from "./peer";
 import { exitRoom, playerMap } from "./session";
-import { GameListMessage, GameStatus, GameStatusMessage } from "./game";
+import {
+  currentGamePluginIframe,
+  GameListMessage,
+  GameStateMessage,
+  GameStatus,
+  GameStatusMessage,
+  sendMessageToTheGamePlugin,
+} from "./game";
 
 export enum MessageType {
   /**
@@ -147,10 +154,11 @@ function handleGameListMessage(message: Message<GameListMessage>) {
   // TODO update UI's game list based on the host-sent message
 }
 
-function handleGameStateMessage(message: Message<GameStatusMessage>) {
+function handleGameStateMessage(message: Message<GameStateMessage>) {
   if (message.type !== MessageType.GAME_STATE) throw "Wrong message type";
   if (message.value?.type == null) return;
-  // TODO pass the message to the game plugin
+  if (!currentGamePluginIframe.value) throw "Game plugin is not available.";
+  sendMessageToTheGamePlugin(message.value);
 }
 
 export const handleMessage = (message: Message, connection: DataConnection) => {
