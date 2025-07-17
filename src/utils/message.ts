@@ -2,12 +2,14 @@ import { DataConnection } from "peerjs";
 import { ChatMessage, insertChatMessageIntoHistory } from "./chat";
 import { connectionMap, isHost } from "./peer";
 import { exitRoom, playerMap } from "./session";
+import { GamePickMessage, insertGamePickMessageIntoState } from "./gamePick";
 
 export enum MessageType {
   PLAYER_NAME = "player_name",
   UNAVAILABLE_PLAYER_NAME = "unavailable_player_name",
   PLAYER_LIST = "player_list",
   CHAT_MESSAGE = "chat_message",
+  GAME_READY = "game_ready",
 }
 
 export type Message<T = unknown> = {
@@ -23,6 +25,7 @@ export const messageHandlerDict: Record<
   [MessageType.UNAVAILABLE_PLAYER_NAME]: handleUnavailablePlayerNameMessage,
   [MessageType.PLAYER_LIST]: handlePlayerListMessage,
   [MessageType.CHAT_MESSAGE]: handleChatMessage,
+  [MessageType.GAME_READY]: handleGameReady,
 };
 
 // TODO instead of letting client disconnect from Host, we should let host disconnect client
@@ -92,6 +95,14 @@ function handleChatMessage(message: Message<ChatMessage>) {
     chatMessage.content
   );
   insertChatMessageIntoHistory(chatMessage);
+}
+
+function handleGameReady(message: Message<GamePickMessage>) {
+  const gamePickMessage = message.value;
+  console.info(
+    `Player ${gamePickMessage.senderId} picked game at ${gamePickMessage.gameIndex}`
+  );
+  insertGamePickMessageIntoState(gamePickMessage);
 }
 
 export const handleMessage = (message: Message, connection: DataConnection) => {
