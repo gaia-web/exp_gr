@@ -20,6 +20,7 @@
   --neumo-item-highlight-2-color: hsl(
     from var(--neumo-item-background-color) h s l / 0.8
   );
+  --neumo-item-highlight-shadow-size-ratio: 0.6;
 
   --neumo-item-transition-protperty: box-shadow, color, background-color;
   --neumo-item-transition-duration: 0.5s;
@@ -32,16 +33,39 @@
     var(--neumo-item-distance) * sin(var(--neumo-item-light-angle))
   );
   --neumo-item-shadow-spread-base: calc(var(--neumo-item-distance) * 0.5);
-  --neumo-item-highlight: calc(var(--neumo-item-shadow-x-offset-base) * -0.5)
-    calc(var(--neumo-item-shadow-y-offset-base) * -0.5)
-    calc(var(--neumo-item-shadow-spread-base) * 1) 0px
+  --neumo-item-shadow-offset-factor: 0.5;
+  --neumo-item-highlight: calc(
+      var(--neumo-item-shadow-x-offset-base) *
+        var(--neumo-item-shadow-offset-factor) *
+        var(--neumo-item-highlight-shadow-size-ratio) * -1
+    )
+    calc(
+      var(--neumo-item-shadow-y-offset-base) *
+        var(--neumo-item-shadow-offset-factor) *
+        var(--neumo-item-highlight-shadow-size-ratio) * -1
+    )
+    calc(var(--neumo-item-shadow-spread-base) * 0.4) 0px
     var(--neumo-item-highlight-color);
-  --neumo-item-highlight-2: calc(var(--neumo-item-shadow-x-offset-base) * -0.5)
-    calc(var(--neumo-item-shadow-y-offset-base) * -0.5)
-    calc(var(--neumo-item-shadow-spread-base) * 1) 0px
+  --neumo-item-highlight-2: calc(
+      var(--neumo-item-shadow-x-offset-base) *
+        var(--neumo-item-shadow-offset-factor) *
+        var(--neumo-item-highlight-shadow-size-ratio) * -1
+    )
+    calc(
+      var(--neumo-item-shadow-y-offset-base) *
+        var(--neumo-item-shadow-offset-factor) *
+        var(--neumo-item-highlight-shadow-size-ratio) * -1
+    )
+    calc(var(--neumo-item-shadow-spread-base) * 0.4) 0px
     var(--neumo-item-highlight-2-color);
-  --neumo-item-shadow: calc(var(--neumo-item-shadow-x-offset-base) * 0.5)
-    calc(var(--neumo-item-shadow-y-offset-base) * 0.5)
+  --neumo-item-shadow: calc(
+      var(--neumo-item-shadow-x-offset-base) *
+        var(--neumo-item-shadow-offset-factor)
+    )
+    calc(
+      var(--neumo-item-shadow-y-offset-base) *
+        var(--neumo-item-shadow-offset-factor)
+    )
     calc(var(--neumo-item-shadow-spread-base) * 1) 0px
     var(--neumo-item-shadow-color);
 
