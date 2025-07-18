@@ -1,15 +1,14 @@
 import { DataConnection } from "peerjs";
 import { ChatMessage, insertChatMessageIntoHistory } from "./chat";
 import { connectionMap, isHost } from "./peer";
-import { exitRoom, playerMap } from "./session";
-import { GamePickMessage, insertGamePickMessageIntoState } from "./gamePick";
+import { exitRoom, playerMap, PlayerState } from "./session";
 
 export enum MessageType {
   PLAYER_NAME = "player_name",
   UNAVAILABLE_PLAYER_NAME = "unavailable_player_name",
   PLAYER_LIST = "player_list",
   CHAT_MESSAGE = "chat_message",
-  GAME_READY = "game_ready",
+  GAME_PICK = "game_pick",
 }
 
 export type Message<T = unknown> = {
@@ -25,7 +24,7 @@ export const messageHandlerDict: Record<
   [MessageType.UNAVAILABLE_PLAYER_NAME]: handleUnavailablePlayerNameMessage,
   [MessageType.PLAYER_LIST]: handlePlayerListMessage,
   [MessageType.CHAT_MESSAGE]: handleChatMessage,
-  [MessageType.GAME_READY]: handleGameReady,
+  [MessageType.GAME_PICK]: handleGamePick,
 };
 
 // TODO instead of letting client disconnect from Host, we should let host disconnect client
@@ -40,7 +39,7 @@ function validateNewPlayerName(name: string): boolean {
   let isNameAvailable = true;
   for (const key of playerMap.value.keys()) {
     const value = playerMap.value.get(key);
-    if (name === value) {
+    if (name === value.name) {
       isNameAvailable = false;
       break;
     }
@@ -67,9 +66,19 @@ function handlePlayerNameMessage(
 
   playerMap.value = new Map([
     ...playerMap.value,
-    [connection.peer, message.value.toString()],
+    [connection.peer, { name: message.value.toString(), gamePickedIndex: -1 }],
   ]);
   console.info(`Peer ${connection.peer} updated its name as ${message.value}`);
+}
+
+function handleGamePick(
+  message: Message<PlayerState>,
+  connection: DataConnection
+) {
+  playerMap.value = new Map([
+    ...playerMap.value,
+    [connection.peer, message.value],
+  ]);
 }
 
 function handleUnavailablePlayerNameMessage(
@@ -85,7 +94,7 @@ function handleUnavailablePlayerNameMessage(
 
 function handlePlayerListMessage(message: Message) {
   console.info(`Player list updated as: `, message.value);
-  playerMap.value = new Map(message.value as [string, string][]);
+  playerMap.value = new Map(message.value as [string, PlayerState][]);
 }
 
 function handleChatMessage(message: Message<ChatMessage>) {
@@ -95,14 +104,6 @@ function handleChatMessage(message: Message<ChatMessage>) {
     chatMessage.content
   );
   insertChatMessageIntoHistory(chatMessage);
-}
-
-function handleGameReady(message: Message<GamePickMessage>) {
-  const gamePickMessage = message.value;
-  console.info(
-    `Player ${gamePickMessage.senderId} picked game at ${gamePickMessage.gameIndex}`
-  );
-  insertGamePickMessageIntoState(gamePickMessage);
 }
 
 export const handleMessage = (message: Message, connection: DataConnection) => {

@@ -9,10 +9,15 @@ import {
 } from "./peer";
 import { boardcastMessage, MessageType } from "./message";
 
+export type PlayerState = {
+  name: string;
+  gamePickedIndex: number;
+};
+
 export const hostId = computed(() => `${PEER_ID_PREFIX}-${roomName}`);
 export const roomName = signal<string>();
 export const playerName = signal<string>();
-export const playerMap = signal<Map<string, string>>(new Map());
+export const playerMap = signal<Map<string, PlayerState>>(new Map());
 export const unreadPlayerListChanges = signal(false);
 
 effect(() => {
@@ -54,7 +59,9 @@ export function enterRoom() {
     console.info(
       `Create a room with name ${roomName} as ${playerName} and wait for players to join.`
     );
-    playerMap.value = new Map([[peer.value.id, playerName.value]]);
+    playerMap.value = new Map([
+      [peer.value.id, { name: playerName.value, gamePickedIndex: -1 }],
+    ]);
     peer.value?.off("error", errorHandler).off("open", openHandler);
   };
   peer.value.on("error", errorHandler).on("open", openHandler);
@@ -73,9 +80,10 @@ export function exitRoom() {
 
 export function boardcastPlayerList() {
   if (!isHost.value) return;
-  const playerIdAndNamePairs = [...playerMap.value];
+  console.log("I broad casted " ,[...playerMap.value])
+  const playerIdAndStatesPairs = [...playerMap.value];
   boardcastMessage(() => ({
     type: MessageType.PLAYER_LIST,
-    value: playerIdAndNamePairs,
+    value: playerIdAndStatesPairs,
   }));
 }

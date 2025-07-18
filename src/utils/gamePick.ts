@@ -1,47 +1,29 @@
-import { batch, signal } from "@preact/signals";
-import { connectionMap, connectionToTheHost, isHost, peer } from "./peer";
-import { boardcastChatMessage } from "./chat";
-import { boardcastMessage, MessageType, sendMessage } from "./message";
+import { connectionToTheHost, isHost, peer } from "./peer";
+import { MessageType, sendMessage } from "./message";
+import { boardcastPlayerList, playerMap, playerName, PlayerState } from "./session";
 
-export type GamePickMessage = {
-  senderId: string;
-  gameIndex: number;
-};
-
-export const gamePickState = signal<Map<string, number>>(new Map());
-export const gameReady = signal<boolean>(false);
-
-export function insertGamePickMessageIntoState(message: GamePickMessage) {
-  batch(() => {
-    gamePickState.value = new Map(gamePickState.value.set(message.senderId, message.gameIndex));
-    gameReady.value = gamePickState.value.size === connectionMap.value.size;
-
-    if (isHost.value) {
-        boardcastGamePickMessage(message);
-    }
-    if (message.senderId !== peer.value.id) return;
-      sendMessage(connectionToTheHost.value, {
-        type: MessageType.GAME_READY,
-        value: message,
-      });
-  });
-}
+export const GameList = [
+  "Game 1",
+  "Game 2",
+  "Game 3",
+  "Game 4"
+]
 
 export function sendGamePickMessage(gameIndex: number) {
-  const message: GamePickMessage = {
-    senderId: peer.value.id,
-    gameIndex,
-  };
-  insertGamePickMessageIntoState(message);
-}
+  const message: PlayerState = {
+    name: playerName.value,
+    gamePickedIndex: gameIndex
+  }
 
-export function boardcastGamePickMessage(message: GamePickMessage) {
-  boardcastMessage((c) =>
-    c.peer === message.senderId
-      ? null
-      : {
-          type: MessageType.GAME_READY,
-          value: message,
-        }
-  );
+  playerMap.value.get(peer.value.id).gamePickedIndex = gameIndex;
+
+  sendMessage(connectionToTheHost.value, {
+    type: MessageType.GAME_PICK,
+    value: message,
+  });
+
+  if(isHost.value) {
+    boardcastPlayerList()
+    playerMap.value = new Map(playerMap.value)
+  }
 }
