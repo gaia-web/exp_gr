@@ -26,13 +26,13 @@ export function PlayerList() {
       <div class="neumo hollow card">
         <div class="player-count-label">{playerMap.value.size} Player(s)</div>
         <ul>
-          {[...playerMap.value].map(([id, name]) => (
+          {[...playerMap.value].map(([id, playerState]) => (
             <li
               class={`neumo ${id === hostId.value ? "host" : ""} ${
                 id === peer.value.id ? "self" : ""
               }`}
             >
-              {name}
+              {playerState.name}
             </li>
           ))}
         </ul>
