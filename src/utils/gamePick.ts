@@ -2,13 +2,6 @@ import { connectionToTheHost, isHost, peer } from "./peer";
 import { MessageType, sendMessage } from "./message";
 import { boardcastPlayerList, playerMap, playerName, PlayerState } from "./session";
 
-export const GameList = [
-  "Game 1",
-  "Game 2",
-  "Game 3",
-  "Game 4"
-]
-
 export function sendGamePickMessage(gameIndex: number) {
   const message: PlayerState = {
     name: playerName.value,
