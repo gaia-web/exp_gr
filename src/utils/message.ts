@@ -2,12 +2,49 @@ import { DataConnection } from "peerjs";
 import { ChatMessage, insertChatMessageIntoHistory } from "./chat";
 import { connectionMap, isHost } from "./peer";
 import { exitRoom, playerMap } from "./session";
+import {
+  currentGamePluginIframe,
+  GameListMessage,
+  GameStateMessage,
+  GameStatus,
+  GameStatusMessage,
+  sendMessageToTheGamePlugin,
+} from "./game";
 
 export enum MessageType {
+  /**
+   * Update player's name to the host.
+   * __It should only be sent from a non-host peer.__
+   */
   PLAYER_NAME = "player_name",
+  /**
+   * Notify the player's name is unavailable.
+   * __It should only be sent from the host peer.__
+   */
   UNAVAILABLE_PLAYER_NAME = "unavailable_player_name",
+  /**
+   * Update the player list, including player IDs and names.
+   * __It should only be sent from the host peer.__
+   */
   PLAYER_LIST = "player_list",
+  /**
+   * Send a chat message.
+   */
   CHAT_MESSAGE = "chat_message",
+  /**
+   * Update the game list.
+   * __It should only be sent from the host peer.__
+   */
+  GAME_LIST = "game_list",
+  /**
+   * Update the game lifecycle status, such as `ready` and `retired`.
+   * __It should only be sent from the host peer.__
+   */
+  GAME_STATUS = "game_status",
+  /**
+   * Notify a change of game internal state, which should be forwarded to the game plugin.
+   */
+  GAME_STATE = "game_state",
 }
 
 export type Message<T = unknown> = {
@@ -23,6 +60,9 @@ export const messageHandlerDict: Record<
   [MessageType.UNAVAILABLE_PLAYER_NAME]: handleUnavailablePlayerNameMessage,
   [MessageType.PLAYER_LIST]: handlePlayerListMessage,
   [MessageType.CHAT_MESSAGE]: handleChatMessage,
+  [MessageType.GAME_LIST]: handleGameListMessage,
+  [MessageType.GAME_STATUS]: handleGameStatusMessage,
+  [MessageType.GAME_STATE]: handleGameStateMessage,
 };
 
 // TODO instead of letting client disconnect from Host, we should let host disconnect client
@@ -94,12 +134,40 @@ function handleChatMessage(message: Message<ChatMessage>) {
   insertChatMessageIntoHistory(chatMessage);
 }
 
+function handleGameStatusMessage(message: Message<GameStatusMessage>) {
+  if (message.type !== MessageType.GAME_STATUS) throw "Wrong message type";
+  if (isHost.value) return;
+  switch (message.value?.type) {
+    case GameStatus.READY:
+      // TODO loads the game and maybe also navigate to the playing page
+      console.info(`The host started a game with id ${message.value.value}.`);
+      break;
+    case GameStatus.RETIRED:
+      // TODO unloads the game and maybe also navigate out from the playing page
+      console.info(`The host ended the current game.`);
+      break;
+  }
+}
+
+function handleGameListMessage(message: Message<GameListMessage>) {
+  if (isHost.value) return;
+  // TODO update UI's game list based on the host-sent message
+}
+
+function handleGameStateMessage(message: Message<GameStateMessage>) {
+  if (message.type !== MessageType.GAME_STATE) throw "Wrong message type";
+  if (message.value?.type == null) return;
+  if (!currentGamePluginIframe.value) throw "Game plugin is not available.";
+  sendMessageToTheGamePlugin(message.value);
+}
+
 export const handleMessage = (message: Message, connection: DataConnection) => {
   const handler = messageHandlerDict[message.type];
   if (!handler) {
     console.error("No message handler found for", message);
     return;
   }
+  // TODO maybe only the inner message is needed to be passed to the handler
   handler(message, connection);
 };
 
