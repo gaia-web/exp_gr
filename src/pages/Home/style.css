@@ -1,3 +1,9 @@
+@property --neumo-item-distance {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 5px;
+}
+
 .home.page {
   display: flex;
   flex: 1 1 auto;
@@ -8,14 +14,21 @@
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
+    animation: card-init 1s ease-in-out forwards;
 
     &.neumo {
-         --neumo-item-distance: 25px;
-         padding: 25px;
+      --neumo-item-distance: 5px;
+      padding: 25px;
     }
 
     & > * {
       flex: 1 1 auto;
     }
+  }
+}
+
+@keyframes card-init {
+  0% {
+    --neumo-item-distance: 200px;
   }
 }

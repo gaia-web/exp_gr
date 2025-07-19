@@ -9,10 +9,16 @@ import {
 import { playerMap } from "../../utils/session";
 import "./style.css";
 import { useSignalRef } from "@preact/signals/utils";
+import { pageTranstionResolver } from "../../utils/view-transition";
 
 export function Chatting() {
   const { route } = useLocation();
   const chatMessageListRef = useSignalRef<HTMLUListElement>(void 0);
+
+  useSignalEffect(() => {
+    pageTranstionResolver.value?.("");
+    pageTranstionResolver.value = void 0;
+  });
 
   useSignalEffect(() => {
     if (!peer.value) {
