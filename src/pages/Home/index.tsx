@@ -1,4 +1,4 @@
-import { useLocation } from "preact-iso";
+import { useLocation, useRoute } from "preact-iso";
 import { useSignalEffect } from "@preact/signals";
 import { peer } from "../../utils/peer";
 import { enterRoom, playerName, roomName } from "../../utils/session";
@@ -6,6 +6,7 @@ import "./style.css";
 
 export function Home() {
   const { route } = useLocation();
+  const { params } = useRoute();
 
   useSignalEffect(() => {
     if (!peer.value) return;
@@ -22,20 +23,24 @@ export function Home() {
         }}
       >
         <input
+          class="neumo"
           name="room-name"
           required
+          type="text"
           pattern="^[\w]+$"
           title="Use only letters, numbers, and underscores."
-          class="neumo"
           placeholder="Enter room name here"
+          defaultValue={setInitialRoomName()}
+          disabled={!!params?.roomName}
           onChange={({ currentTarget }) =>
             (roomName.value = currentTarget.value?.trim())
           }
         />
         <input
+          class="neumo"
           name="player-name"
           required
-          class="neumo"
+          type="text"
           placeholder="Enter player name here"
           onChange={({ currentTarget }) =>
             (playerName.value = currentTarget.value)
@@ -50,4 +55,10 @@ export function Home() {
       </form>
     </section>
   );
+
+  function setInitialRoomName() {
+    if (!params?.roomName) return null;
+    roomName.value = params.roomName;
+    return params.roomName;
+  }
 }

@@ -25,6 +25,7 @@ export function App() {
           }}
         >
           <Route path="/" component={Home} />
+          <Route path="/enter/:roomName" component={Home} />
           <Route path="/room/:roomName/players" component={PlayerList} />
           <Route path="/room/:roomName/chat" component={Chatting} />
           <Route path="/room/:roomName/games" component={GameList} />
