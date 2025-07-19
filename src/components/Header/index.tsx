@@ -13,7 +13,7 @@ import {
 } from "../../utils/view-transition";
 
 export function Header() {
-  const { url } = useLocation();
+  const { url, route } = useLocation();
 
   const isRootUrl = () => url === "" || url === "/";
 
@@ -39,12 +39,10 @@ export function Header() {
     <header class={`neumo hollow ${isRootUrl() ? "collapsed" : ""}`}>
       <nav>
         <div class="left-group">
-          <a
-            href="/"
+          <button
             class="neumo"
             style={{ marginRight: "auto" }}
             onClick={() => {
-              exitRoom();
               (
                 document.querySelector("main") as HTMLElement
               ).style.viewTransitionName = "home-page";
@@ -53,6 +51,8 @@ export function Header() {
                   (
                     document.querySelector("main") as HTMLElement
                   ).style.viewTransitionName = "";
+                  route("/");
+                  exitRoom();
                   await new Promise((resolve) => {
                     pageTranstionResolver.value = resolve;
                   });
@@ -70,7 +70,7 @@ export function Header() {
             }}
           >
             Exit
-          </a>
+          </button>
         </div>
         <div class="right-group">
           <div class="scroll-helper">
