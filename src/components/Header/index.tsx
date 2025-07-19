@@ -11,10 +11,11 @@ import { unreadChatMessages } from "../../utils/chat";
 export function Header() {
   const { url } = useLocation();
 
-  const isRootUrl = () => url === "" || url === "/";
+  const shouldHideHeader = () =>
+    url === "" || url === "/" || /^\/enter\/[^\/]+$/.test(url);
 
   return (
-    <header class={`neumo hollow ${isRootUrl() ? "collapsed" : ""}`}>
+    <header class={`neumo hollow ${shouldHideHeader() ? "collapsed" : ""}`}>
       <nav>
         <div class="left-group">
           <a
