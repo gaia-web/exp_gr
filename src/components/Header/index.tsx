@@ -17,11 +17,13 @@ export function Header() {
 
   const isRootUrl = () => url === "" || url === "/";
 
-  const pageViewTransitionHandler = () => {
+  const pageViewTransitionHandler = (href: string) => {
+    if (!href) return;
     (document.querySelector("main") as HTMLElement).style.viewTransitionName =
       "page";
     startViewTransition(
       async () => {
+        route(href);
         await new Promise((resolve) => {
           pageTranstionResolver.value = resolve;
         });
@@ -74,42 +76,46 @@ export function Header() {
         </div>
         <div class="right-group">
           <div class="scroll-helper">
-            <a
-              href={`/room/${roomName.value}/players`}
+            <button
               class={`neumo ${
                 url === `/room/${roomName.value}/players` ? "active hollow" : ""
               } ${unreadPlayerListChanges.value ? "attention" : ""}`}
-              onClick={pageViewTransitionHandler}
+              onClick={() =>
+                pageViewTransitionHandler(`/room/${roomName.value}/players`)
+              }
             >
               Players
-            </a>
-            <a
-              href={`/room/${roomName.value}/chat`}
+            </button>
+            <button
               class={`neumo ${
                 url === `/room/${roomName.value}/chat` ? "active hollow" : ""
               } ${unreadChatMessages.value > 0 ? "attention" : ""}`}
-              onClick={pageViewTransitionHandler}
+              onClick={() =>
+                pageViewTransitionHandler(`/room/${roomName.value}/chat`)
+              }
             >
               Chat
-            </a>
-            <a
-              href={`/room/${roomName.value}/games`}
+            </button>
+            <button
               class={`neumo ${
                 url === `/room/${roomName.value}/games` ? "active hollow" : ""
               }`}
-              onClick={pageViewTransitionHandler}
+              onClick={() =>
+                pageViewTransitionHandler(`/room/${roomName.value}/games`)
+              }
             >
               Games
-            </a>
-            <a
-              href={`/room/${roomName.value}/play`}
+            </button>
+            <button
               class={`neumo ${
                 url === `/room/${roomName.value}/play` ? "active hollow" : ""
               }`}
-              onClick={pageViewTransitionHandler}
+              onClick={() =>
+                pageViewTransitionHandler(`/room/${roomName.value}/play`)
+              }
             >
               Play
-            </a>
+            </button>
           </div>
         </div>
       </nav>

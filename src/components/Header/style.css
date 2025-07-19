@@ -43,16 +43,16 @@ header {
         min-width: 100%;
       }
 
-      & a {
+      & button {
         flex: 0 0 auto;
       }
     }
 
-    & a.active {
+    & button.active {
       --neumo-item-background-color: var(--accent-color);
     }
 
-    & a.attention {
+    & button.attention {
       --max-shake-distance: 5%;
 
       animation: shake 1s ease-in-out infinite;
