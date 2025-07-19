@@ -8,7 +8,7 @@ header {
 
   /* Add specificity */
   &.neumo {
-    transition-property: var(--neumo-item-transition-protperty) max-height,
+    transition-property: var(--neumo-item-transition-protperty), max-height,
       padding, margin, opacity;
   }
 

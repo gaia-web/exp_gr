@@ -2,17 +2,21 @@
 
 :root {
   --accent-color: hsl(190, 50%, 75%);
-  --neumo-item-transition-protperty: box-shadow, color, background-color;
-  --neumo-item-transition-duration: 0.5s;
-  --neumo-item-transition-timing-function: cubic-bezier(0.5, 0, 0.3, 1.1);
-
-  transition-property: var(--neumo-item-transition-protperty);
-  transition-duration: var(--neumo-item-transition-duration);
-  transition-timing-function: var(--neumo-item-transition-timing-function);
+  --default-transition-protperty: box-shadow, color, background-color;
+  --default-transition-duration: 0.5s;
+  --default-transition-timing-function: cubic-bezier(0.5, 0, 0.3, 1.2);
 
   @media (prefers-color-scheme: dark) {
     --accent-color: hsl(190, 50%, 25%);
   }
+}
+
+.neumo {
+  --neumo-item-transition-protperty: box-shadow, color, background-color;
+  --neumo-item-transition-duration: var(--default-transition-duration);
+  --neumo-item-transition-timing-function: var(
+    --default-transition-timing-function
+  );
 }
 
 body {
@@ -46,13 +50,13 @@ body {
 }
 
 ::view-transition-group(*) {
-  animation-duration: var(--neumo-item-transition-duration);
-  animation-timing-function: var(--neumo-item-transition-timing-function);
+  animation-duration: var(--default-transition-duration);
+  animation-timing-function: var(--default-transition-timing-function);
 }
 ::view-transition-old(*),
 ::view-transition-new(*) {
-  animation-duration: var(--neumo-item-transition-duration);
-  animation-timing-function: var(--neumo-item-transition-timing-function);
+  animation-duration: var(--default-transition-duration);
+  animation-timing-function: var(--default-transition-timing-function);
   height: 100%;
   width: 100%;
   object-fit: contain;
@@ -62,8 +66,8 @@ body {
 ::view-transition-new(page) {
   transform-origin: top right;
   animation-name: scale-fade;
-  animation-duration: var(--neumo-item-transition-duration);
-  animation-timing-function: var(--neumo-item-transition-timing-function);
+  animation-duration: var(--default-transition-duration);
+  animation-timing-function: var(--default-transition-timing-function);
 }
 ::view-transition-old(page) {
   transform-origin: bottom left;
