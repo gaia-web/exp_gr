@@ -1,8 +1,10 @@
+@import url("./neumo.css") layer(neumo);
+
 :root {
   --accent-color: hsl(190, 50%, 75%);
   --neumo-item-transition-protperty: box-shadow, color, background-color;
   --neumo-item-transition-duration: 0.5s;
-  --neumo-item-transition-timing-function: cubic-bezier(0, 0.5, 0.5, 1.1);
+  --neumo-item-transition-timing-function: cubic-bezier(0.5, 0, 0.3, 1.1);
 
   transition-property: var(--neumo-item-transition-protperty);
   transition-duration: var(--neumo-item-transition-duration);

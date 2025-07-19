@@ -1,6 +1,5 @@
 import { render } from "preact";
 import { LocationProvider, Router, Route } from "preact-iso";
-import { startViewTransition } from "./utils/view-transition";
 
 import { Header } from "./components/Header/index.js";
 import { Home } from "./pages/Home/index.jsx";
@@ -11,7 +10,6 @@ import { Playing } from "./pages/Playing/index.js";
 import { NotFound } from "./pages/_404.jsx";
 
 import "./style.css";
-import "./neumo.css";
 
 export function App() {
   return (
