@@ -19,7 +19,7 @@ export function Home() {
 
   useSignalEffect(() => {
     if (!peer.value) return;
-    route(`/room/${encodeURIComponent(roomName.value)}/players`);
+    route(`/room/${encodeURIComponent(roomName.value)}/players`, true);
   });
 
   return (
@@ -70,7 +70,7 @@ export function Home() {
           }
         />
         <button type="submit" name="action" class="neumo">
-          Enter Room
+          <b>Enter Room</b>
         </button>
         <i style="text-align: center;">
           If the room does not exist, it would be created.

@@ -1,12 +1,16 @@
 import { useLocation } from "preact-iso";
 import { unreadChatMessages } from "../../utils/chat";
-import { roomName, unreadPlayerListChanges } from "../../utils/session";
+import {
+  exitRoom,
+  roomName,
+  unreadPlayerListChanges,
+} from "../../utils/session";
 import {
   startViewTransition,
   pageTranstionResolver,
 } from "../../utils/view-transition";
 import "./style.css";
-import { Joystick, List, MessagesSquare, Users } from "lucide-preact";
+import { Joystick, List, LogOut, MessagesSquare, Users } from "lucide-preact";
 
 export function BottomNavigationBar() {
   const { url, route } = useLocation();
@@ -69,6 +73,39 @@ export function BottomNavigationBar() {
       >
         <Joystick />
       </button>
+      <button
+        title="Leave Room"
+        class="neumo"
+        style={{ marginRight: "auto" }}
+        onClick={() => {
+          (
+            document.querySelector("main") as HTMLElement
+          ).style.viewTransitionName = "home-page";
+          startViewTransition(
+            async () => {
+              (
+                document.querySelector("main") as HTMLElement
+              ).style.viewTransitionName = "";
+              route("/", true);
+              exitRoom();
+              await new Promise((resolve) => {
+                pageTranstionResolver.value = resolve;
+              });
+              (
+                document.querySelector(".page form.card") as HTMLElement
+              ).style.viewTransitionName = "home-page";
+            },
+            void 0,
+            () => {
+              (
+                document.querySelector(".page form.card") as HTMLElement
+              ).style.viewTransitionName = "";
+            }
+          );
+        }}
+      >
+        <LogOut />
+      </button>
       <div class="space-taker" />
     </nav>
   );
@@ -88,7 +125,7 @@ export function BottomNavigationBar() {
     startViewTransition(
       async () => {
         target.style.viewTransitionName = "";
-        route(href);
+        route(href, true);
         await new Promise((resolve) => {
           pageTranstionResolver.value = resolve;
         });

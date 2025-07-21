@@ -15,7 +15,7 @@ export function GameList() {
   useSignalEffect(() => {
     if (!peer.value) {
       alert("Connection lost or timed out, exiting room...");
-      route("/");
+      route("/", true);
     }
   });
   return <section class="game-list page">A game list should be here.</section>;

@@ -36,7 +36,7 @@ export function Playing() {
   useSignalEffect(() => {
     if (!peer.value) {
       alert("Connection lost or timed out, exiting room...");
-      route("/");
+      route("/", true);
     }
   });
 

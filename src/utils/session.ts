@@ -15,19 +15,21 @@ export const playerName = signal<string>();
 export const playerMap = signal<Map<string, string>>(new Map());
 export const unreadPlayerListChanges = signal(false);
 
-effect(() => {
-  if (!peer.value) {
-    exitRoom();
-    return;
-  }
-});
+setTimeout(() => {
+  effect(() => {
+    if (!peer.value) {
+      exitRoom();
+      return;
+    }
+  });
 
-effect(() => {
-  if (!playerMap.value) return;
-  unreadPlayerListChanges.value = true;
+  effect(() => {
+    if (!playerMap.value) return;
+    unreadPlayerListChanges.value = true;
 
-  if (!isHost.value) return;
-  boardcastPlayerList();
+    if (!isHost.value) return;
+    boardcastPlayerList();
+  });
 });
 
 export function enterRoom() {

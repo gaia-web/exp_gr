@@ -21,7 +21,7 @@ export function PlayerList() {
   useSignalEffect(() => {
     if (!peer.value) {
       alert("Connection lost or timed out, exiting room...");
-      route("/");
+      route("/", true);
     }
   });
 

@@ -6,6 +6,7 @@ import {
   pageTranstionResolver,
   startViewTransition,
 } from "../../utils/view-transition";
+import { LogOut } from "lucide-preact";
 
 export function Header() {
   const { url, route } = useLocation();
@@ -46,7 +47,7 @@ export function Header() {
               );
             }}
           >
-            Exit
+            <LogOut />
           </button>
           <h1 style={{ marginLeft: "1em" }}>Waiting Room</h1>
         </div>
