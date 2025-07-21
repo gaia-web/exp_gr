@@ -1,6 +1,7 @@
 .nav-bar {
   display: flex;
   margin-bottom: -20px;
+  padding-bottom: 20px;
 
   & button {
     flex: 1 1 auto;
@@ -14,9 +15,13 @@
 
       animation: shake 1s ease-in-out infinite;
     }
-  }
 
-  & .space-taker {
-    height: 20px;
+    &[name="exit"] {
+      --neumo-item-color: hsl(0, 50%, 60%);
+
+      @media (prefers-color-scheme: dark) {
+        --neumo-item-color: hsl(0, 50%, 40%);
+      }
+    }
   }
 }

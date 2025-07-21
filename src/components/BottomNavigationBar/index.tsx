@@ -74,34 +74,38 @@ export function BottomNavigationBar() {
         <Joystick />
       </button>
       <button
+        name="exit"
         title="Leave Room"
         class="neumo"
         style={{ marginRight: "auto" }}
         onClick={() => {
-          (
-            document.querySelector("main") as HTMLElement
-          ).style.viewTransitionName = "home-page";
-          startViewTransition(
-            async () => {
-              (
-                document.querySelector("main") as HTMLElement
-              ).style.viewTransitionName = "";
-              route("/", true);
-              exitRoom();
-              await new Promise((resolve) => {
-                pageTranstionResolver.value = resolve;
-              });
-              (
-                document.querySelector(".page form.card") as HTMLElement
-              ).style.viewTransitionName = "home-page";
-            },
-            void 0,
-            () => {
-              (
-                document.querySelector(".page form.card") as HTMLElement
-              ).style.viewTransitionName = "";
-            }
-          );
+          setTimeout(() => {
+            if (!confirm("You sure you wanna leave the room?")) return;
+            (
+              document.querySelector("main") as HTMLElement
+            ).style.viewTransitionName = "home-page";
+            startViewTransition(
+              async () => {
+                (
+                  document.querySelector("main") as HTMLElement
+                ).style.viewTransitionName = "";
+                route("/", true);
+                exitRoom();
+                await new Promise((resolve) => {
+                  pageTranstionResolver.value = resolve;
+                });
+                (
+                  document.querySelector(".page form.card") as HTMLElement
+                ).style.viewTransitionName = "home-page";
+              },
+              void 0,
+              () => {
+                (
+                  document.querySelector(".page form.card") as HTMLElement
+                ).style.viewTransitionName = "";
+              }
+            );
+          });
         }}
       >
         <LogOut />
