@@ -1,0 +1,22 @@
+.nav-bar {
+  display: flex;
+  margin-bottom: -20px;
+
+  & button {
+    flex: 1 1 auto;
+
+    &.active {
+      --neumo-item-background-color: var(--accent-color);
+    }
+
+    &.attention {
+      --max-shake-distance: 5%;
+
+      animation: shake 1s ease-in-out infinite;
+    }
+  }
+
+  & .space-taker {
+    height: 20px;
+  }
+}

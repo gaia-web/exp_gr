@@ -1,12 +1,7 @@
 import { useLocation } from "preact-iso";
 
 import "./style.css";
-import {
-  exitRoom,
-  roomName,
-  unreadPlayerListChanges,
-} from "../../utils/session";
-import { unreadChatMessages } from "../../utils/chat";
+import { exitRoom } from "../../utils/session";
 import {
   pageTranstionResolver,
   startViewTransition,
@@ -16,26 +11,6 @@ export function Header() {
   const { url, route } = useLocation();
 
   const isRootUrl = () => url === "" || url === "/";
-
-  const pageViewTransitionHandler = (href: string) => {
-    if (!href) return;
-    (document.querySelector("main") as HTMLElement).style.viewTransitionName =
-      "page";
-    startViewTransition(
-      async () => {
-        route(href);
-        await new Promise((resolve) => {
-          pageTranstionResolver.value = resolve;
-        });
-      },
-      void 0,
-      () => {
-        (
-          document.querySelector("main") as HTMLElement
-        ).style.viewTransitionName = "";
-      }
-    );
-  };
 
   return (
     <header class={`neumo hollow ${isRootUrl() ? "collapsed" : ""}`}>
@@ -73,51 +48,9 @@ export function Header() {
           >
             Exit
           </button>
+          <h1 style={{ marginLeft: "1em" }}>Waiting Room</h1>
         </div>
-        <div class="right-group">
-          <div class="scroll-helper">
-            <button
-              class={`neumo ${
-                url === `/room/${roomName.value}/players` ? "active hollow" : ""
-              } ${unreadPlayerListChanges.value ? "attention" : ""}`}
-              onClick={() =>
-                pageViewTransitionHandler(`/room/${roomName.value}/players`)
-              }
-            >
-              Players
-            </button>
-            <button
-              class={`neumo ${
-                url === `/room/${roomName.value}/chat` ? "active hollow" : ""
-              } ${unreadChatMessages.value > 0 ? "attention" : ""}`}
-              onClick={() =>
-                pageViewTransitionHandler(`/room/${roomName.value}/chat`)
-              }
-            >
-              Chat
-            </button>
-            <button
-              class={`neumo ${
-                url === `/room/${roomName.value}/games` ? "active hollow" : ""
-              }`}
-              onClick={() =>
-                pageViewTransitionHandler(`/room/${roomName.value}/games`)
-              }
-            >
-              Games
-            </button>
-            <button
-              class={`neumo ${
-                url === `/room/${roomName.value}/play` ? "active hollow" : ""
-              }`}
-              onClick={() =>
-                pageViewTransitionHandler(`/room/${roomName.value}/play`)
-              }
-            >
-              Play
-            </button>
-          </div>
-        </div>
+        <div class="right-group"></div>
       </nav>
     </header>
   );

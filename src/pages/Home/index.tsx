@@ -7,6 +7,7 @@ import {
   pageTranstionResolver,
   startViewTransition,
 } from "../../utils/view-transition";
+import { BottomNavigationBar } from "../../components/BottomNavigationBar";
 
 export function Home() {
   const { route } = useLocation();

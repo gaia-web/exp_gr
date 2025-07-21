@@ -1,0 +1,23 @@
+.waiting-room.page {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  & .content-container {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  & .nav-bar {
+    flex: 0 0 auto;
+    animation: rise 1.5s var(--default-transition-timing-function) forwards;
+  }
+}
+
+@keyframes rise {
+  0% {
+    transform: translateY(100%);
+  }
+}
