@@ -4,19 +4,11 @@
   --accent-color: hsl(190, 50%, 75%);
   --default-transition-protperty: box-shadow, color, background-color;
   --default-transition-duration: 0.5s;
-  --default-transition-timing-function: cubic-bezier(0.5, 0, 0.3, 1.2);
+  --default-transition-timing-function: cubic-bezier(0.5, -0.25, 0.3, 1.2);
 
   @media (prefers-color-scheme: dark) {
     --accent-color: hsl(190, 50%, 25%);
   }
-}
-
-.neumo {
-  --neumo-item-transition-protperty: box-shadow, color, background-color;
-  --neumo-item-transition-duration: var(--default-transition-duration);
-  --neumo-item-transition-timing-function: var(
-    --default-transition-timing-function
-  );
 }
 
 body {
