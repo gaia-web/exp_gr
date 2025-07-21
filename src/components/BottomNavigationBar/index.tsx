@@ -11,6 +11,7 @@ import {
 } from "../../utils/view-transition";
 import "./style.css";
 import { Joystick, List, LogOut, MessagesSquare, Users } from "lucide-preact";
+import { vibrateForButtonClick } from "../../utils/vibration";
 
 export function BottomNavigationBar() {
   const { url, route } = useLocation();
@@ -79,6 +80,7 @@ export function BottomNavigationBar() {
         class="neumo"
         style={{ marginRight: "auto" }}
         onClick={() => {
+          vibrateForButtonClick();
           setTimeout(() => {
             if (!confirm("You sure you wanna leave the room?")) return;
             (
@@ -115,6 +117,7 @@ export function BottomNavigationBar() {
   );
 
   function pageViewTransitionHandler(href: string, target: HTMLElement) {
+    vibrateForButtonClick();
     if (!href) return;
     // TODO select better view transition target
     target.style.viewTransitionName = "page-enter";

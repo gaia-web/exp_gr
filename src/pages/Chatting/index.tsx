@@ -11,6 +11,7 @@ import "./style.css";
 import { useSignalRef } from "@preact/signals/utils";
 import { pageTranstionResolver } from "../../utils/view-transition";
 import { Send } from "lucide-preact";
+import { vibrateForButtonClick } from "../../utils/vibration";
 
 export function Chatting() {
   const { route } = useLocation();
@@ -70,7 +71,14 @@ export function Chatting() {
           name="content"
           placeholder="Type a message..."
         />
-        <button title="Send" class="neumo" type="submit">
+        <button
+          title="Send"
+          class="neumo"
+          type="submit"
+          onClick={() => {
+            vibrateForButtonClick();
+          }}
+        >
           <Send />
         </button>
       </form>

@@ -7,7 +7,7 @@ import {
   pageTranstionResolver,
   startViewTransition,
 } from "../../utils/view-transition";
-import { BottomNavigationBar } from "../../components/BottomNavigationBar";
+import { vibrateForButtonClick } from "../../utils/vibration";
 
 export function Home() {
   const { route } = useLocation();
@@ -69,7 +69,14 @@ export function Home() {
             (playerName.value = currentTarget.value)
           }
         />
-        <button type="submit" name="action" class="neumo">
+        <button
+          type="submit"
+          name="action"
+          class="neumo"
+          onClick={() => {
+            vibrateForButtonClick();
+          }}
+        >
           <b>Enter Room</b>
         </button>
         <i style="text-align: center;">
