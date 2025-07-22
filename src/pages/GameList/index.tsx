@@ -1,7 +1,7 @@
 import { useSignalEffect } from "@preact/signals";
 import { useLocation } from "preact-iso";
 import { peer } from "../../utils/peer";
-import { sendGamePickMessage } from "../../utils/gamePick";
+import { sendGamePickMessage } from "../../utils/game-pick";
 import { playerMap } from "../../utils/session";
 
 // Sample list of games
