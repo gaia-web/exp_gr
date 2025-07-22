@@ -1,8 +1,8 @@
-import { useSignalEffect } from "@preact/signals";
+import { useSignal, useSignalEffect } from "@preact/signals";
 import { useLocation } from "preact-iso";
 import { pageTranstionResolver } from "../../utils/view-transition";
 import { isHost, peer } from "../../utils/peer";
-import { useSignalRef } from "@preact/signals/utils";
+import { Show, useSignalRef } from "@preact/signals/utils";
 import {
   currentGamePluginIframe,
   GameStateMessageType,
@@ -15,6 +15,7 @@ import "./style.css";
 export function Playing() {
   const { route } = useLocation();
   const iframeRef = useSignalRef<HTMLIFrameElement>(null);
+  const game = useSignal(""); // TODO this is temp
 
   useSignalEffect(() => {
     function handleMessage(event: MessageEvent) {
@@ -42,7 +43,10 @@ export function Playing() {
 
   useSignalEffect(() => {
     currentGamePluginIframe.value = iframeRef.current;
-    if (!iframeRef.current) console.error("Iframe is not available.");
+    if (!iframeRef.current) {
+      console.error("Iframe is not available.");
+      return;
+    }
     iframeRef.current.addEventListener("load", () => {
       sendMessageToTheGamePlugin({
         type: GameStateMessageType._PLAYER_INFO,
@@ -61,11 +65,30 @@ export function Playing() {
 
   return (
     <section class="playing page">
-      <iframe
-        class="game-plugin"
-        ref={iframeRef}
-        src="/rock-paper-scissors/index.html"
-      />
+      {game.value ? (
+        <iframe class="game-plugin" ref={iframeRef} src={game.value} />
+      ) : (
+        <div>
+          <b>This is a temp selection</b>
+          <br />
+          <button
+            class="neumo"
+            onClick={() => {
+              game.value = "/games/rock-paper-scissors/index.html";
+            }}
+          >
+            Rock, Paper, and Scissors
+          </button>
+          <button
+            class="neumo"
+            onClick={() => {
+              game.value = "/games/tic-tac-toe/index.html";
+            }}
+          >
+            Tic Tac Toe
+          </button>
+        </div>
+      )}
     </section>
   );
 }
