@@ -58,7 +58,7 @@ export function Playing() {
       <iframe
         class="game-plugin"
         ref={iframeRef}
-        src="/rock-paper-scissors/index.html"
+        src="/tie-tac-toe/index.html"
       />
     </section>
   );
