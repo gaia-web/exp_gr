@@ -10,6 +10,7 @@ import {
   GameStatusMessage,
   sendMessageToTheGamePlugin,
 } from "./game";
+import { gamePickMap, GamePickStateMessage } from "./game-pick";
 
 export enum MessageType {
   /**
@@ -46,6 +47,7 @@ export enum MessageType {
    * Notify a change of game internal state, which should be forwarded to the game plugin.
    */
   GAME_STATE = "game_state",
+  GAME_PICK_STATE = "game_pick_state",
 }
 
 export type Message<T = unknown> = {
@@ -65,6 +67,7 @@ export const messageHandlerDict: Record<
   [MessageType.GAME_LIST]: handleGameListMessage,
   [MessageType.GAME_STATUS]: handleGameStatusMessage,
   [MessageType.GAME_STATE]: handleGameStateMessage,
+  [MessageType.GAME_PICK_STATE]: handleGamePickStateMessage,
 };
 
 // TODO instead of letting client disconnect from Host, we should let host disconnect client
@@ -171,6 +174,13 @@ function handleGameStateMessage(message: Message<GameStateMessage>) {
   if (message.value?.type == null) return;
   if (!currentGamePluginIframe.value) throw "Game plugin is not available.";
   sendMessageToTheGamePlugin(message.value);
+}
+
+function handleGamePickStateMessage(message: Message<GamePickStateMessage>) {
+  gamePickMap.value = new Map([
+    ...gamePickMap.value,
+    [message.value.name, message.value.gamePickedIndex],
+  ]);
 }
 
 export const handleMessage = (message: Message, connection: DataConnection) => {
