@@ -1,7 +1,7 @@
 import { DataConnection } from "peerjs";
 import { ChatMessage, insertChatMessageIntoHistory } from "./chat";
 import { connectionMap, isHost } from "./peer";
-import { exitRoom, playerMap, PlayerState } from "./session";
+import { exitRoom, playerMap } from "./session";
 import {
   currentGamePluginIframe,
   GameListMessage,
@@ -64,7 +64,6 @@ export const messageHandlerDict: Record<
   [MessageType.UNAVAILABLE_PLAYER_NAME]: handleUnavailablePlayerNameMessage,
   [MessageType.PLAYER_LIST]: handlePlayerListMessage,
   [MessageType.CHAT_MESSAGE]: handleChatMessage,
-  [MessageType.GAME_PICK]: handleGamePick,
   [MessageType.GAME_LIST]: handleGameListMessage,
   [MessageType.GAME_STATUS]: handleGameStatusMessage,
   [MessageType.GAME_STATE]: handleGameStateMessage,
@@ -84,7 +83,7 @@ function validateNewPlayerName(name: string): boolean {
   let isNameAvailable = true;
   for (const key of playerMap.value.keys()) {
     const value = playerMap.value.get(key);
-    if (name === value.name) {
+    if (name === value) {
       isNameAvailable = false;
       break;
     }
@@ -111,19 +110,9 @@ function handlePlayerNameMessage(
 
   playerMap.value = new Map([
     ...playerMap.value,
-    [connection.peer, { name: message.value.toString(), gamePickedIndex: -1 }],
+    [connection.peer, message.value.toString()],
   ]);
   console.info(`Peer ${connection.peer} updated its name as ${message.value}`);
-}
-
-function handleGamePick(
-  message: Message<PlayerState>,
-  connection: DataConnection
-) {
-  playerMap.value = new Map([
-    ...playerMap.value,
-    [connection.peer, message.value],
-  ]);
 }
 
 function handleUnavailablePlayerNameMessage(
@@ -138,8 +127,8 @@ function handleUnavailablePlayerNameMessage(
 }
 
 function handlePlayerListMessage(message: Message) {
-  // console.info(`Player list updated as: `, message.value);
-  playerMap.value = new Map(message.value as [string, PlayerState][]);
+  console.info(`Player list updated as: `, message.value);
+  playerMap.value = new Map(message.value as [string, string][]);
 }
 
 function handleChatMessage(message: Message<ChatMessage>) {
@@ -179,12 +168,11 @@ function handleGameStateMessage(message: Message<GameStateMessage>) {
 }
 
 function handleGamePickStateMessage(message: Message<GamePickStateMessage>) {
-  // console.log("handleGamePickStateMessage", message)
   gamePickMap.value = new Map([
     ...gamePickMap.value,
     [message.value.name, message.value.gamePickedIndex],
   ]);
-  console.log("gamePickMap is now", [...gamePickMap.value].map((v) => v))
+
   if(isHost.value) {
     broadCastGamePick();
   }

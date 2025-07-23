@@ -2,11 +2,9 @@ import { useSignalEffect } from "@preact/signals";
 import { useLocation } from "preact-iso";
 import { peer } from "../../utils/peer";
 import {
-  gamePickInit,
+  sendGamePick,
   gamePickMap,
-  sendGamePickMessage,
 } from "../../utils/game-pick";
-import { playerMap } from "../../utils/session";
 import { useEffect } from "preact/hooks";
 
 // Sample list of games
@@ -22,7 +20,7 @@ export function GameList() {
   const { route } = useLocation();
 
   useEffect(() => {
-    gamePickInit(-1);
+    sendGamePick(-1);
   }, []);
 
   useSignalEffect(() => {
@@ -32,11 +30,6 @@ export function GameList() {
     }
   });
 
-  console.log(
-    "gamePickMap is now",
-    [...gamePickMap.value].map((v) => v)
-  );
-
   return (
     <section class="game-list page">
       <h2>Select a Game</h2>
@@ -45,8 +38,7 @@ export function GameList() {
           <div
             class="neumo hollow card"
             onClick={() => {
-              sendGamePickMessage(index);
-              gamePickInit(index);
+              sendGamePick(index);
             }}
           >
             <p>
