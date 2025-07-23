@@ -1,5 +1,8 @@
 :root {
   font-family: Arial;
+  color: light-dark(black, white);
+  background: transparent;
+  color-scheme: light dark;
 }
 
 body {
