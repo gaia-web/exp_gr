@@ -1,0 +1,9 @@
+:root {
+  font-family: Arial;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
