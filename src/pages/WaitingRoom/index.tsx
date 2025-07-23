@@ -14,7 +14,7 @@ import {
   handleMessageFromTheGamePlugin,
 } from "../../utils/game";
 import { peer, isHost } from "../../utils/peer";
-import { playerName, playerMap } from "../../utils/session";
+import { playerName, playerMap, hostId } from "../../utils/session";
 
 export function WaitingRoom() {
   const iframeRef = useSignalRef<HTMLIFrameElement>(null);
@@ -54,6 +54,10 @@ export function WaitingRoom() {
           name: playerName.value,
           isHost: isHost.value,
         },
+      });
+      sendMessageToTheGamePlugin({
+        type: GameStateMessageType._HOST_PLAYER,
+        value: hostId.value,
       });
       sendMessageToTheGamePlugin({
         type: GameStateMessageType._PLAYER_LIST,
