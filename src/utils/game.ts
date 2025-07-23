@@ -1,4 +1,4 @@
-import { signal } from "@preact/signals";
+import { effect, signal } from "@preact/signals";
 import { boardcastMessage, Message, MessageType, sendMessage } from "./message";
 import { connectionToTheHost, isHost, peer } from "./peer";
 
@@ -50,6 +50,14 @@ export type GameStateMessage = { to?: string } & (
 );
 
 export const currentGamePluginIframe = signal<HTMLIFrameElement>(null);
+export const currentGamePluginSrc = signal("");
+
+effect(() => {
+  if (!currentGamePluginIframe.value) {
+    return;
+  }
+  currentGamePluginIframe.value.src = currentGamePluginSrc.value;
+});
 
 export function handleMessageFromTheGamePlugin(message: GameStateMessage) {
   switch (message.type) {

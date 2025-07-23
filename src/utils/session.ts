@@ -8,6 +8,7 @@ import {
   PEER_JS_OPTIONS,
 } from "./peer";
 import { boardcastMessage, MessageType } from "./message";
+import { currentGamePluginSrc } from "./game";
 
 export const hostId = computed(() => `${PEER_ID_PREFIX}-${roomName}`);
 export const roomName = signal<string>();
@@ -70,6 +71,7 @@ export function exitRoom() {
     connectionMap.value = new Map();
     peer.value?.destroy();
     peer.value = void 0;
+    currentGamePluginSrc.value = "";
   });
 }
 
