@@ -10,7 +10,7 @@ import {
   GameStatusMessage,
   sendMessageToTheGamePlugin,
 } from "./game";
-import { gamePickMap, GamePickStateMessage } from "./game-pick";
+import { broadCastGamePick, gamePickMap, GamePickStateMessage } from "./game-pick";
 
 export enum MessageType {
   /**
@@ -48,6 +48,7 @@ export enum MessageType {
    */
   GAME_STATE = "game_state",
   GAME_PICK_STATE = "game_pick_state",
+  GAME_PICK_STATE_BRODCAST = "game_pick_state_broadcast",
 }
 
 export type Message<T = unknown> = {
@@ -68,6 +69,7 @@ export const messageHandlerDict: Record<
   [MessageType.GAME_STATUS]: handleGameStatusMessage,
   [MessageType.GAME_STATE]: handleGameStateMessage,
   [MessageType.GAME_PICK_STATE]: handleGamePickStateMessage,
+  [MessageType.GAME_PICK_STATE_BRODCAST]: handleGamePickStateBrocastMessage,
 };
 
 // TODO instead of letting client disconnect from Host, we should let host disconnect client
@@ -136,7 +138,7 @@ function handleUnavailablePlayerNameMessage(
 }
 
 function handlePlayerListMessage(message: Message) {
-  console.info(`Player list updated as: `, message.value);
+  // console.info(`Player list updated as: `, message.value);
   playerMap.value = new Map(message.value as [string, PlayerState][]);
 }
 
@@ -177,9 +179,20 @@ function handleGameStateMessage(message: Message<GameStateMessage>) {
 }
 
 function handleGamePickStateMessage(message: Message<GamePickStateMessage>) {
+  // console.log("handleGamePickStateMessage", message)
   gamePickMap.value = new Map([
     ...gamePickMap.value,
     [message.value.name, message.value.gamePickedIndex],
+  ]);
+  console.log("gamePickMap is now", [...gamePickMap.value].map((v) => v))
+  if(isHost.value) {
+    broadCastGamePick();
+  }
+}
+
+function handleGamePickStateBrocastMessage(message:Message<[string, number][]>) {
+  gamePickMap.value = new Map([
+    ...message.value,
   ]);
 }
 

@@ -8,6 +8,7 @@ import {
   PEER_JS_OPTIONS,
 } from "./peer";
 import { boardcastMessage, MessageType } from "./message";
+import { gamePickMap } from "./game-pick";
 
 export type PlayerState = {
   name: string;
@@ -46,6 +47,7 @@ export function enterRoom() {
   }
   peer.value?.destroy();
   peer.value = new Peer(hostId.value, PEER_JS_OPTIONS);
+  gamePickMap.value = new Map([[playerName.value, -1]]);
   const errorHandler = (e: PeerError<string>) => {
     switch (e.type) {
       case "unavailable-id":
@@ -73,6 +75,7 @@ export function exitRoom() {
     playerName.value = void 0;
     playerMap.value = new Map();
     connectionMap.value = new Map();
+    gamePickMap.value = new Map();
     peer.value?.destroy();
     peer.value = void 0;
   });
@@ -80,7 +83,6 @@ export function exitRoom() {
 
 export function boardcastPlayerList() {
   if (!isHost.value) return;
-  console.log("I broad casted " ,[...playerMap.value])
   const playerIdAndStatesPairs = [...playerMap.value];
   boardcastMessage(() => ({
     type: MessageType.PLAYER_LIST,
