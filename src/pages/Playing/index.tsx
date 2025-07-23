@@ -8,7 +8,7 @@ import {
   handleMessageFromTheGamePlugin,
   sendMessageToTheGamePlugin,
 } from "../../utils/game";
-import { playerMap, playerName } from "../../utils/session";
+import { hostId, playerMap, playerName } from "../../utils/session";
 import "./style.css";
 
 export function Playing() {
@@ -49,6 +49,10 @@ export function Playing() {
           name: playerName.value,
           isHost: isHost.value,
         },
+      });
+      sendMessageToTheGamePlugin({
+        type: GameStateMessageType._HOST_PLAYER,
+        value: hostId.value,
       });
       sendMessageToTheGamePlugin({
         type: GameStateMessageType._PLAYER_LIST,
