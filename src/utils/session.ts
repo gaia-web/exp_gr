@@ -56,6 +56,7 @@ export function enterRoom() {
     console.info(
       `Create a room with name ${roomName} as ${playerName} and wait for players to join.`
     );
+    playerMap.value = new Map([[peer.value.id, playerName.value]]);
     peer.value?.off("error", errorHandler).off("open", openHandler);
   };
   peer.value.on("error", errorHandler).on("open", openHandler);
