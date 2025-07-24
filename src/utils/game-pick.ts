@@ -42,7 +42,7 @@ export function broadCastGamePick() {
   // broadcast messages
   const gamePickStatePair = [...gamePickMap.value];
   boardcastMessage(() => ({
-    type: MessageType.GAME_PICK_STATE_BRODCAST,
+    type: MessageType.GAME_PICK_STATE_BROADCAST,
     value: gamePickStatePair,
   }));
 }

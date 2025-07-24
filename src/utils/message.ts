@@ -32,7 +32,6 @@ export enum MessageType {
    * Send a chat message.
    */
   CHAT_MESSAGE = "chat_message",
-  GAME_PICK = "game_pick",
   /**
    * Update the game list.
    * __It should only be sent from the host peer.__
@@ -47,8 +46,14 @@ export enum MessageType {
    * Notify a change of game internal state, which should be forwarded to the game plugin.
    */
   GAME_STATE = "game_state",
+  /**
+   * Notify a change of game pick state 
+   */
   GAME_PICK_STATE = "game_pick_state",
-  GAME_PICK_STATE_BRODCAST = "game_pick_state_broadcast",
+  /**
+   * Broadcast game pick state from host to all clients
+   */
+  GAME_PICK_STATE_BROADCAST = "game_pick_state_broadcast",
 }
 
 export type Message<T = unknown> = {
@@ -68,7 +73,7 @@ export const messageHandlerDict: Record<
   [MessageType.GAME_STATUS]: handleGameStatusMessage,
   [MessageType.GAME_STATE]: handleGameStateMessage,
   [MessageType.GAME_PICK_STATE]: handleGamePickStateMessage,
-  [MessageType.GAME_PICK_STATE_BRODCAST]: handleGamePickStateBrocastMessage,
+  [MessageType.GAME_PICK_STATE_BROADCAST]: handleGamePickStateBrocastMessage,
 };
 
 // TODO instead of letting client disconnect from Host, we should let host disconnect client
