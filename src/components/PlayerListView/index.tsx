@@ -10,7 +10,7 @@ import {
 import "./style.css";
 import { pageTranstionResolver } from "../../utils/view-transition";
 
-export function PlayerList() {
+export function PlayerListView() {
   const { route } = useLocation();
   const { params } = useRoute();
 
@@ -32,7 +32,7 @@ export function PlayerList() {
   });
 
   return (
-    <section class="player-list page">
+    <section class="player-list view">
       <h1>Room: {params.roomName}</h1>
       <button
         class="neumo"

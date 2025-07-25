@@ -16,7 +16,7 @@ const games = [
   "Connect Four",
 ];
 
-export function GameList() {
+export function GameListView() {
   const { route } = useLocation();
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export function GameList() {
   });
 
   return (
-    <section class="game-list page">
+    <section class="game-list view">
       <h2>Select a Game</h2>
       <div class="game-options">
         {games.map((game, index) => (

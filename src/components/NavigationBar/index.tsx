@@ -13,7 +13,7 @@ import "./style.css";
 import { Joystick, List, LogOut, MessagesSquare, Users } from "lucide-preact";
 import { vibrateForButtonClick } from "../../utils/vibration";
 
-export function BottomNavigationBar() {
+export function NavigationBar() {
   const { url, route } = useLocation();
 
   return (

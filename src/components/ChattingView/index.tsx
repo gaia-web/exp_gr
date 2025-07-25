@@ -13,7 +13,7 @@ import { pageTranstionResolver } from "../../utils/view-transition";
 import { Send } from "lucide-preact";
 import { vibrateForButtonClick } from "../../utils/vibration";
 
-export function Chatting() {
+export function ChattingView() {
   const { route } = useLocation();
   const chatMessageListRef = useSignalRef<HTMLUListElement>(void 0);
 
@@ -41,7 +41,7 @@ export function Chatting() {
   });
 
   return (
-    <section class="chatting page">
+    <section class="chatting view">
       <div class="neumo hollow message-container">
         <div style={{ fontSize: "1.5em" }}>Messages</div>
         <ul class="message-list" ref={chatMessageListRef}>

@@ -8,7 +8,7 @@ import {
 } from "../../utils/game";
 import "./style.css";
 
-export function Playing() {
+export function PlayingView() {
   const { route } = useLocation();
 
   useSignalEffect(() => {
@@ -43,7 +43,7 @@ export function Playing() {
   });
 
   return (
-    <section class="playing page">
+    <section class="playing view">
       {currentGamePluginSrc.value ? null : "No game is selected yet."}
     </section>
   );

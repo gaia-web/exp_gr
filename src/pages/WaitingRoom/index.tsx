@@ -1,9 +1,9 @@
 import { Route, Router, useRoute } from "preact-iso";
-import { BottomNavigationBar } from "../../components/BottomNavigationBar";
-import { PlayerList } from "../PlayerList";
-import { Chatting } from "../Chatting";
-import { GameList } from "../GameList";
-import { Playing } from "../Playing";
+import { NavigationBar } from "../../components/NavigationBar";
+import { PlayerListView } from "../../components/PlayerListView";
+import { ChattingView } from "../../components/ChattingView";
+import { GameListView } from "../../components/GameListView";
+import { PlayingView } from "../../components/PlayingView";
 import "./style.css";
 import { useSignalRef } from "@preact/signals/utils";
 import { useSignalEffect } from "@preact/signals";
@@ -71,13 +71,13 @@ export function WaitingRoom() {
       <div class="content-container">
         <iframe class="game-plugin" ref={iframeRef} />
         <Router>
-          <Route path="/players" component={PlayerList} />
-          <Route path="/chat" component={Chatting} />
-          <Route path="/games" component={GameList} />
-          <Route path="/play" component={Playing} />
+          <Route path="/players" component={PlayerListView} />
+          <Route path="/chat" component={ChattingView} />
+          <Route path="/games" component={GameListView} />
+          <Route path="/play" component={PlayingView} />
         </Router>
       </div>
-      <BottomNavigationBar />
+      <NavigationBar />
     </section>
   );
 }
