@@ -3,10 +3,19 @@ import { useSignalEffect } from "@preact/signals";
 import { peer } from "../../utils/peer";
 import { enterRoom, playerName, roomName } from "../../utils/session";
 import "./style.css";
+import {
+  pageTranstionResolver,
+  startViewTransition,
+} from "../../utils/view-transition";
 
 export function Home() {
   const { route } = useLocation();
   const { params } = useRoute();
+
+  useSignalEffect(() => {
+    pageTranstionResolver.value?.("");
+    pageTranstionResolver.value = void 0;
+  });
 
   useSignalEffect(() => {
     if (!peer.value) return;
@@ -19,7 +28,25 @@ export function Home() {
         class="card neumo"
         onSubmit={(e) => {
           e.preventDefault();
-          enterRoom();
+          (e.target as HTMLElement).style.viewTransitionName = "home-page";
+          startViewTransition(
+            async () => {
+              enterRoom();
+              await new Promise((resolve) => {
+                (e.target as HTMLElement).style.viewTransitionName = "";
+                pageTranstionResolver.value = resolve;
+              });
+              (
+                document.querySelector("main") as HTMLElement
+              ).style.viewTransitionName = "home-page";
+            },
+            void 0,
+            () => {
+              (
+                document.querySelector("main") as HTMLElement
+              ).style.viewTransitionName = "";
+            }
+          );
         }}
       >
         <input

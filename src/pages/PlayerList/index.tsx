@@ -8,10 +8,16 @@ import {
   unreadPlayerListChanges,
 } from "../../utils/session";
 import "./style.css";
+import { pageTranstionResolver } from "../../utils/view-transition";
 
 export function PlayerList() {
   const { route } = useLocation();
   const { params } = useRoute();
+
+  useSignalEffect(() => {
+    pageTranstionResolver.value?.("");
+    pageTranstionResolver.value = void 0;
+  });
 
   useSignalEffect(() => {
     if (!peer.value) {

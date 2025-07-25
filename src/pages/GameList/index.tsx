@@ -1,10 +1,8 @@
 import { useSignalEffect } from "@preact/signals";
 import { useLocation } from "preact-iso";
 import { peer } from "../../utils/peer";
-import {
-  sendGamePick,
-  gamePickMap,
-} from "../../utils/game-pick";
+import { pageTranstionResolver } from "../../utils/view-transition";
+import { sendGamePick, gamePickMap } from "../../utils/game-pick";
 import { useEffect } from "preact/hooks";
 
 // Sample list of games
@@ -22,6 +20,11 @@ export function GameList() {
   useEffect(() => {
     sendGamePick(-1);
   }, []);
+
+  useSignalEffect(() => {
+    pageTranstionResolver.value?.("");
+    pageTranstionResolver.value = void 0;
+  });
 
   useSignalEffect(() => {
     if (!peer.value) {

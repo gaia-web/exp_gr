@@ -1,3 +1,45 @@
+@property --neumo-item-color {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: hsl(0, 0%, 35%);
+}
+
+@property --neumo-item-background-color {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: hsl(0, 0%, 90%);
+}
+
+@property --neumo-item-distance {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 10px;
+}
+
+@property --neumo-item-light-angle {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 45deg;
+}
+
+@property --neumo-item-shadow-color {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: hsl(0, 0%, 0%, 0.2);
+}
+
+@property --neumo-item-highlight-color {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: hsl(0, 0%, 100%, 0.8);
+}
+
+@property --neumo-item-highlight-2-color {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: hsl(0, 0%, 100%, 0.8);
+}
+
 :where(:root) {
   --neumo-item-color: hsl(0, 0%, 35%);
   --neumo-item-background-color: hsl(0, 0%, 90%);
@@ -13,68 +55,44 @@
 }
 
 .neumo {
-  --neumo-item-distance: 10px;
-  --neumo-item-light-angle: 45deg;
-  --neumo-item-shadow-color: hsl(0, 0%, 0%, 0.2);
-  --neumo-item-highlight-color: hsl(0, 0%, 100%, 0.8);
-  --neumo-item-highlight-2-color: hsl(
-    from var(--neumo-item-background-color) h s l / 0.8
-  );
-  --neumo-item-highlight-shadow-size-ratio: 0.6;
+  :where(&) {
+    --neuno-item-distance: 5px;
 
-  --neumo-item-transition-protperty: box-shadow, color, background-color;
-  --neumo-item-transition-duration: 0.5s;
-  --neumo-item-transition-timing-function: cubic-bezier(0.15, 1.15, 0.6, 1.45);
+    --neumo-item-transition-protperty: box-shadow, color, background-color;
+    --neumo-item-transition-duration: 0.5s;
+    --neumo-item-transition-timing-function: cubic-bezier(0.65, -0.5, 0.3, 2.5);
 
-  --neumo-item-shadow-x-offset-base: calc(
-    var(--neumo-item-distance) * cos(var(--neumo-item-light-angle))
-  );
-  --neumo-item-shadow-y-offset-base: calc(
-    var(--neumo-item-distance) * sin(var(--neumo-item-light-angle))
-  );
-  --neumo-item-shadow-spread-base: calc(var(--neumo-item-distance) * 0.5);
-  --neumo-item-shadow-offset-factor: 0.5;
-  --neumo-item-highlight: calc(
-      var(--neumo-item-shadow-x-offset-base) *
-        var(--neumo-item-shadow-offset-factor) *
-        var(--neumo-item-highlight-shadow-size-ratio) * -1
-    )
-    calc(
-      var(--neumo-item-shadow-y-offset-base) *
-        var(--neumo-item-shadow-offset-factor) *
-        var(--neumo-item-highlight-shadow-size-ratio) * -1
-    )
-    calc(var(--neumo-item-shadow-spread-base) * 0.4) 0px
-    var(--neumo-item-highlight-color);
-  --neumo-item-highlight-2: calc(
-      var(--neumo-item-shadow-x-offset-base) *
-        var(--neumo-item-shadow-offset-factor) *
-        var(--neumo-item-highlight-shadow-size-ratio) * -1
-    )
-    calc(
-      var(--neumo-item-shadow-y-offset-base) *
-        var(--neumo-item-shadow-offset-factor) *
-        var(--neumo-item-highlight-shadow-size-ratio) * -1
-    )
-    calc(var(--neumo-item-shadow-spread-base) * 0.4) 0px
-    var(--neumo-item-highlight-2-color);
-  --neumo-item-shadow: calc(
-      var(--neumo-item-shadow-x-offset-base) *
-        var(--neumo-item-shadow-offset-factor)
-    )
-    calc(
-      var(--neumo-item-shadow-y-offset-base) *
-        var(--neumo-item-shadow-offset-factor)
-    )
-    calc(var(--neumo-item-shadow-spread-base) * 1) 0px
-    var(--neumo-item-shadow-color);
-
-  @media (prefers-color-scheme: dark) {
-    --neumo-item-shadow-color: hsl(0, 0%, 0%, 0.8);
-    --neumo-item-highlight-color: hsl(0, 0%, 100%, 0.2);
-    --neumo-item-highlight-2-color: hsl(
-      from var(--neumo-item-background-color) h s l / 0.2
+    --neumo-item-shadow-x-offset-base: calc(
+      var(--neumo-item-distance) * cos(var(--neumo-item-light-angle)) * 0.5
     );
+    --neumo-item-shadow-y-offset-base: calc(
+      var(--neumo-item-distance) * sin(var(--neumo-item-light-angle)) * 0.5
+    );
+    --neumo-item-shadow-spread-base: calc(var(--neumo-item-distance) * 0.5);
+    --neumo-item-highlight: calc(var(--neumo-item-shadow-x-offset-base) * -0.5)
+      calc(var(--neumo-item-shadow-y-offset-base) * -0.5)
+      calc(var(--neumo-item-shadow-spread-base) * 1) 0px
+      var(--neumo-item-highlight-color);
+    --neumo-item-highlight-2: calc(
+        var(--neumo-item-shadow-x-offset-base) * -0.5
+      )
+      calc(var(--neumo-item-shadow-y-offset-base) * -0.5)
+      calc(var(--neumo-item-shadow-spread-base) * 1) 0px
+      var(--neumo-item-highlight-2-color);
+    --neumo-item-shadow: calc(var(--neumo-item-shadow-x-offset-base) * 0.5)
+      calc(var(--neumo-item-shadow-y-offset-base) * 0.5)
+      calc(var(--neumo-item-shadow-spread-base) * 1) 0px
+      var(--neumo-item-shadow-color);
+
+    @media (prefers-color-scheme: dark) {
+      --neumo-item-shadow-color: hsl(0, 0%, 0%, 0.8);
+      --neumo-item-highlight-color: hsl(0, 0%, 100%, 0.2);
+      --neumo-item-highlight-2-color: hsl(
+        from var(--neumo-item-background-color) h s l / 0.2
+      );
+    }
+
+    margin: 10px;
   }
 
   box-sizing: border-box;
@@ -88,11 +106,12 @@
   transition-duration: var(--neumo-item-transition-duration);
   transition-timing-function: var(--neumo-item-transition-timing-function);
 
-  :where(&) {
-    margin: 10px;
-  }
-
-  &.hollow {
+  &.hollow,
+  a&:active,
+  a&:focus,
+  button&:active,
+  input&,
+  textarea& {
     box-shadow: inset var(--neumo-item-shadow),
       inset var(--neumo-item-highlight), inset var(--neumo-item-highlight-2);
   }
@@ -110,7 +129,7 @@
 
   a&,
   button& {
-    --neumo-item-distance: 5px;
+    --neumo-item-distance: 10px;
 
     :where(&) {
       all: unset;
@@ -118,7 +137,7 @@
       -webkit-tap-highlight-color: transparent;
 
       cursor: pointer;
-      margin: 5px;
+      margin: 10px;
       overflow: hidden;
       text-align: center;
 
@@ -130,23 +149,23 @@
 
     &:not([disabled]) {
       &:hover {
-        --neumo-item-distance: 8px;
+        --neumo-item-distance: 15px;
       }
 
       &:active {
-        --neumo-item-distance: 5px;
+        --neumo-item-distance: 8px;
       }
     }
   }
 
   input&,
   textarea& {
-    --neumo-item-distance: 5px;
+    --neumo-item-distance: 8px;
 
     :where(&) {
       all: unset;
       text-align: left;
-      margin: 5px;
+      margin: 10px;
       overflow: hidden;
 
       &[disabled] {
@@ -156,12 +175,12 @@
 
     &:not([disabled]) {
       &:hover {
-        --neumo-item-distance: 8px;
+        --neumo-item-distance: 12px;
       }
 
       &:active,
       &:focus {
-        --neumo-item-distance: 3px;
+        --neumo-item-distance: 5px;
       }
     }
   }

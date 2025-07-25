@@ -1,3 +1,7 @@
+import { signal } from "@preact/signals";
+
+export const pageTranstionResolver = signal<(s: string) => void>(null);
+
 export async function startViewTransition(
   callback: () => void | Promise<void>,
   readyCallback?: () => void | Promise<void>,

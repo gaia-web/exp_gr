@@ -7,62 +7,116 @@ import {
   unreadPlayerListChanges,
 } from "../../utils/session";
 import { unreadChatMessages } from "../../utils/chat";
+import {
+  pageTranstionResolver,
+  startViewTransition,
+} from "../../utils/view-transition";
 
 export function Header() {
-  const { url } = useLocation();
+  const { url, route } = useLocation();
 
   const shouldHideHeader = () =>
     url === "" || url === "/" || /^\/enter\/[^\/]+$/.test(url);
+
+  const pageViewTransitionHandler = (href: string) => {
+    if (!href) return;
+    (document.querySelector("main") as HTMLElement).style.viewTransitionName =
+      "page";
+    startViewTransition(
+      async () => {
+        route(href);
+        await new Promise((resolve) => {
+          pageTranstionResolver.value = resolve;
+        });
+      },
+      void 0,
+      () => {
+        (
+          document.querySelector("main") as HTMLElement
+        ).style.viewTransitionName = "";
+      }
+    );
+  };
 
   return (
     <header class={`neumo hollow ${shouldHideHeader() ? "collapsed" : ""}`}>
       <nav>
         <div class="left-group">
-          <a
-            href="/"
+          <button
             class="neumo"
             style={{ marginRight: "auto" }}
             onClick={() => {
-              exitRoom();
+              (
+                document.querySelector("main") as HTMLElement
+              ).style.viewTransitionName = "home-page";
+              startViewTransition(
+                async () => {
+                  (
+                    document.querySelector("main") as HTMLElement
+                  ).style.viewTransitionName = "";
+                  route("/");
+                  exitRoom();
+                  await new Promise((resolve) => {
+                    pageTranstionResolver.value = resolve;
+                  });
+                  (
+                    document.querySelector(".page form.card") as HTMLElement
+                  ).style.viewTransitionName = "home-page";
+                },
+                void 0,
+                () => {
+                  (
+                    document.querySelector(".page form.card") as HTMLElement
+                  ).style.viewTransitionName = "";
+                }
+              );
             }}
           >
             Exit
-          </a>
+          </button>
         </div>
         <div class="right-group">
           <div class="scroll-helper">
-            <a
-              href={`/room/${roomName.value}/players`}
+            <button
               class={`neumo ${
                 url === `/room/${roomName.value}/players` ? "active hollow" : ""
               } ${unreadPlayerListChanges.value ? "attention" : ""}`}
+              onClick={() =>
+                pageViewTransitionHandler(`/room/${roomName.value}/players`)
+              }
             >
               Players
-            </a>
-            <a
-              href={`/room/${roomName.value}/chat`}
+            </button>
+            <button
               class={`neumo ${
                 url === `/room/${roomName.value}/chat` ? "active hollow" : ""
               } ${unreadChatMessages.value > 0 ? "attention" : ""}`}
+              onClick={() =>
+                pageViewTransitionHandler(`/room/${roomName.value}/chat`)
+              }
             >
               Chat
-            </a>
-            <a
-              href={`/room/${roomName.value}/games`}
+            </button>
+            <button
               class={`neumo ${
                 url === `/room/${roomName.value}/games` ? "active hollow" : ""
               }`}
+              onClick={() =>
+                pageViewTransitionHandler(`/room/${roomName.value}/games`)
+              }
             >
               Games
-            </a>
-            <a
-              href={`/room/${roomName.value}/play`}
+            </button>
+            <button
               class={`neumo ${
                 url === `/room/${roomName.value}/play` ? "active hollow" : ""
               }`}
+              onClick={() =>
+                pageViewTransitionHandler(`/room/${roomName.value}/play`)
+              }
             >
               Play
-            </a>
+            </button>
           </div>
         </div>
       </nav>

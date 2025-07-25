@@ -1,5 +1,6 @@
 import { useSignalEffect } from "@preact/signals";
 import { useLocation } from "preact-iso";
+import { pageTranstionResolver } from "../../utils/view-transition";
 import { isHost, peer } from "../../utils/peer";
 import { useSignalRef } from "@preact/signals/utils";
 import {
@@ -25,6 +26,11 @@ export function Playing() {
 
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
+  });
+
+  useSignalEffect(() => {
+    pageTranstionResolver.value?.("");
+    pageTranstionResolver.value = void 0;
   });
 
   useSignalEffect(() => {
