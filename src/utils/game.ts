@@ -50,6 +50,25 @@ export type GameStateMessage = { to?: string } & (
     }
 );
 
+export const DEFAULT_GAME_LIST: GameListMessage = [
+  {
+    id: "rps",
+    label: "Rock, Paper, Scissors",
+    description:
+      "A quick and simple hand game for one or more players. Choose rock, paper, or scissors to compete against others or the computer.",
+    playerLimit: [1, Infinity],
+    pluginUrl: "/games/rock-paper-scissors/index.html",
+  },
+  {
+    id: "ttt",
+    label: "Tic-Tac-Toe",
+    description:
+      "A classic 2-player strategy game. Take turns placing Xs and Os on a 3×3 grid to get three in a row and win.",
+    playerLimit: [2, 2],
+    pluginUrl: "/games/tic-tac-toe/index.html",
+  },
+];
+
 export const currentGamePluginIframe = signal<HTMLIFrameElement>(null);
 export const currentGamePluginSrc = signal("");
 

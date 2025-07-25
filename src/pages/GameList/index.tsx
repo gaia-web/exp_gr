@@ -4,6 +4,8 @@ import { peer } from "../../utils/peer";
 import { pageTranstionResolver } from "../../utils/view-transition";
 import { sendGamePick, gamePickMap } from "../../utils/game-pick";
 import { useEffect } from "preact/hooks";
+import { DEFAULT_GAME_LIST, currentGamePluginSrc } from "../../utils/game";
+import { roomName } from "../../utils/session";
 
 // Sample list of games
 const games = [
@@ -58,6 +60,34 @@ export function GameList() {
             </p>
           </div>
         ))}
+      </div>
+      <div
+        class="neumo hollow"
+        style={{ "--neumo-item-background-color": "hsl(0, 50%, 50%)" }}
+      >
+        <b>This is a temp selection</b>
+        <br />
+        {DEFAULT_GAME_LIST.map(
+          ({ label, description, playerLimit, pluginUrl }) => (
+            <button
+              class="neumo"
+              onClick={() => {
+                currentGamePluginSrc.value = pluginUrl;
+                route(`/room/${encodeURIComponent(roomName.value)}/play`, true);
+              }}
+            >
+              <div>
+                <b>{label}</b>
+                &nbsp;
+                <i>
+                  ({playerLimit[0] ?? "N/A"} - {playerLimit[1] ?? "N/A"})
+                </i>
+                <br />
+                <span>{description}</span>
+              </div>
+            </button>
+          )
+        )}
       </div>
     </section>
   );

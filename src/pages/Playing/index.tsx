@@ -44,29 +44,7 @@ export function Playing() {
 
   return (
     <section class="playing page">
-      {currentGamePluginSrc.value ? null : (
-        <div>
-          <b>This is a temp selection</b>
-          <br />
-          <button
-            class="neumo"
-            onClick={() => {
-              currentGamePluginSrc.value =
-                "/games/rock-paper-scissors/index.html";
-            }}
-          >
-            Rock, Paper, and Scissors
-          </button>
-          <button
-            class="neumo"
-            onClick={() => {
-              currentGamePluginSrc.value = "/games/tic-tac-toe/index.html";
-            }}
-          >
-            Tic Tac Toe
-          </button>
-        </div>
-      )}
+      {currentGamePluginSrc.value ? null : "No game is selected yet."}
     </section>
   );
 }

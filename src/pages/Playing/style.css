@@ -1,11 +1,4 @@
 .playing.page {
   height: 100%;
   width: 100%;
-
-  & .game-plugin {
-    height: 100%;
-    width: 100%;
-    border: none;
-    border-radius: 5px;
-  }
 }

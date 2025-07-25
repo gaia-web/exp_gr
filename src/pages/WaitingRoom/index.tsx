@@ -36,7 +36,7 @@ export function WaitingRoom() {
     if (!playerMap.value) {
       return;
     }
-    currentGamePluginIframe.value?.contentDocument.location.reload();
+    currentGamePluginIframe.value?.contentDocument?.location.reload();
   });
 
   useSignalEffect(() => {
