@@ -116,6 +116,17 @@
       inset var(--neumo-item-highlight), inset var(--neumo-item-highlight-2);
   }
 
+  &:not([disabled]) {
+    a&:active,
+    a&:focus,
+    button&:active,
+    input&,
+    textarea& {
+      box-shadow: inset var(--neumo-item-shadow),
+        inset var(--neumo-item-highlight), inset var(--neumo-item-highlight-2);
+    }
+  }
+
   a&,
   button& {
     --neumo-item-distance: 10px;
@@ -129,14 +140,21 @@
       margin: 10px;
       overflow: hidden;
       text-align: center;
+
+      &[disabled] {
+        cursor: default;
+        filter: contrast(0.8);
+      }
     }
 
-    &:hover {
-      --neumo-item-distance: 15px;
-    }
+    &:not([disabled]) {
+      &:hover {
+        --neumo-item-distance: 15px;
+      }
 
-    &:active {
-      --neumo-item-distance: 8px;
+      &:active {
+        --neumo-item-distance: 8px;
+      }
     }
   }
 
@@ -149,15 +167,21 @@
       text-align: left;
       margin: 10px;
       overflow: hidden;
+
+      &[disabled] {
+        filter: contrast(0.8);
+      }
     }
 
-    &:hover {
-      --neumo-item-distance: 12px;
-    }
+    &:not([disabled]) {
+      &:hover {
+        --neumo-item-distance: 12px;
+      }
 
-    &:active,
-    &:focus {
-      --neumo-item-distance: 5px;
+      &:active,
+      &:focus {
+        --neumo-item-distance: 5px;
+      }
     }
   }
 

@@ -17,6 +17,11 @@ export function Playing() {
   });
 
   useSignalEffect(() => {
+    pageTranstionResolver.value?.("");
+    pageTranstionResolver.value = void 0;
+  });
+
+  useSignalEffect(() => {
     if (!peer.value) {
       alert("Connection lost or timed out, exiting room...");
       route("/", true);

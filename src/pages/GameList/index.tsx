@@ -1,11 +1,30 @@
 import { useSignalEffect } from "@preact/signals";
-import { useLocation, useRoute } from "preact-iso";
+import { useLocation } from "preact-iso";
 import { peer } from "../../utils/peer";
 import { pageTranstionResolver } from "../../utils/view-transition";
+import { sendGamePick, gamePickMap } from "../../utils/game-pick";
+import { useEffect } from "preact/hooks";
+
+// Sample list of games
+const games = [
+  "Tic-Tac-Toe",
+  "Chess",
+  "Checkers",
+  "Rock Paper Scissors",
+  "Connect Four",
+];
 
 export function GameList() {
   const { route } = useLocation();
-  const { params } = useRoute();
+
+  useEffect(() => {
+    sendGamePick(-1);
+  }, []);
+
+  useSignalEffect(() => {
+    pageTranstionResolver.value?.("");
+    pageTranstionResolver.value = void 0;
+  });
 
   useSignalEffect(() => {
     pageTranstionResolver.value?.("");
@@ -18,5 +37,28 @@ export function GameList() {
       route("/", true);
     }
   });
-  return <section class="game-list page">A game list should be here.</section>;
+
+  return (
+    <section class="game-list page">
+      <h2>Select a Game</h2>
+      <div class="game-options">
+        {games.map((game, index) => (
+          <div
+            class="neumo hollow card"
+            onClick={() => {
+              sendGamePick(index);
+            }}
+          >
+            <p>
+              {game}:
+              {[...gamePickMap.value]
+                .filter(([_, playerState]) => playerState === index)
+                .map(([name, _]) => name)
+                .join(", ")}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
 }

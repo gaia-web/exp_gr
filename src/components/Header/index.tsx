@@ -11,10 +11,31 @@ import { LogOut } from "lucide-preact";
 export function Header() {
   const { url, route } = useLocation();
 
-  const isRootUrl = () => url === "" || url === "/";
+  const shouldHideHeader = () =>
+    url === "" || url === "/" || /^\/enter\/[^\/]+$/.test(url);
+
+  const pageViewTransitionHandler = (href: string) => {
+    if (!href) return;
+    (document.querySelector("main") as HTMLElement).style.viewTransitionName =
+      "page";
+    startViewTransition(
+      async () => {
+        route(href);
+        await new Promise((resolve) => {
+          pageTranstionResolver.value = resolve;
+        });
+      },
+      void 0,
+      () => {
+        (
+          document.querySelector("main") as HTMLElement
+        ).style.viewTransitionName = "";
+      }
+    );
+  };
 
   return (
-    <header class={`neumo hollow ${isRootUrl() ? "collapsed" : ""}`}>
+    <header class={`neumo hollow ${shouldHideHeader() ? "collapsed" : ""}`}>
       <nav>
         <div class="left-group">
           <button
