@@ -10,6 +10,7 @@ import {
   GameStatusMessage,
   sendMessageToTheGamePlugin,
 } from "./game";
+import { broadCastGamePick, gamePickMap, GamePickStateMessage } from "./game-pick";
 
 export enum MessageType {
   /**
@@ -45,6 +46,14 @@ export enum MessageType {
    * Notify a change of game internal state, which should be forwarded to the game plugin.
    */
   GAME_STATE = "game_state",
+  /**
+   * Notify a change of game pick state 
+   */
+  GAME_PICK_STATE = "game_pick_state",
+  /**
+   * Broadcast game pick state from host to all clients
+   */
+  GAME_PICK_STATE_BROADCAST = "game_pick_state_broadcast",
 }
 
 export type Message<T = unknown> = {
@@ -63,6 +72,8 @@ export const messageHandlerDict: Record<
   [MessageType.GAME_LIST]: handleGameListMessage,
   [MessageType.GAME_STATUS]: handleGameStatusMessage,
   [MessageType.GAME_STATE]: handleGameStateMessage,
+  [MessageType.GAME_PICK_STATE]: handleGamePickStateMessage,
+  [MessageType.GAME_PICK_STATE_BROADCAST]: handleGamePickStateBrocastMessage,
 };
 
 // TODO instead of letting client disconnect from Host, we should let host disconnect client
@@ -159,6 +170,23 @@ function handleGameStateMessage(message: Message<GameStateMessage>) {
   if (message.value?.type == null) return;
   if (!currentGamePluginIframe.value) throw "Game plugin is not available.";
   sendMessageToTheGamePlugin(message.value);
+}
+
+function handleGamePickStateMessage(message: Message<GamePickStateMessage>) {
+  gamePickMap.value = new Map([
+    ...gamePickMap.value,
+    [message.value.name, message.value.gamePickedIndex],
+  ]);
+
+  if(isHost.value) {
+    broadCastGamePick();
+  }
+}
+
+function handleGamePickStateBrocastMessage(message:Message<[string, number][]>) {
+  gamePickMap.value = new Map([
+    ...message.value,
+  ]);
 }
 
 export const handleMessage = (message: Message, connection: DataConnection) => {

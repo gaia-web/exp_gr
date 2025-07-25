@@ -15,7 +15,8 @@ import {
 export function Header() {
   const { url, route } = useLocation();
 
-  const isRootUrl = () => url === "" || url === "/";
+  const shouldHideHeader = () =>
+    url === "" || url === "/" || /^\/enter\/[^\/]+$/.test(url);
 
   const pageViewTransitionHandler = (href: string) => {
     if (!href) return;
@@ -38,7 +39,7 @@ export function Header() {
   };
 
   return (
-    <header class={`neumo hollow ${isRootUrl() ? "collapsed" : ""}`}>
+    <header class={`neumo hollow ${shouldHideHeader() ? "collapsed" : ""}`}>
       <nav>
         <div class="left-group">
           <button
