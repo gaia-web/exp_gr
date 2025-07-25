@@ -1,5 +1,5 @@
 import { effect, signal } from "@preact/signals";
-import { boardcastMessage, Message, MessageType, sendMessage } from "./message";
+import { boardcastMessage, MessageType, sendMessage } from "./message";
 import { connectionToTheHost, isHost, peer } from "./peer";
 
 export enum GameStatus {
