@@ -1,7 +1,12 @@
 import { useSignalEffect } from "@preact/signals";
 import { useLocation, useRoute } from "preact-iso";
 import { peer } from "../../utils/peer";
-import { hostId, playerMap, unreadPlayerListChanges } from "../../utils/session";
+import {
+  hostId,
+  playerMap,
+  roomName,
+  unreadPlayerListChanges,
+} from "../../utils/session";
 import "./style.css";
 
 export function PlayerList() {
@@ -23,6 +28,22 @@ export function PlayerList() {
   return (
     <section class="player-list page">
       <h1>Room: {params.roomName}</h1>
+      <button
+        class="neumo"
+        onClick={() => {
+          const url = new URL(
+            `/enter/${encodeURIComponent(roomName.value)}`,
+            location.origin
+          );
+          navigator.share({
+            title: `Join my game room - ${roomName.value}`,
+            text: `Hey, I am inviting you to join my game session here.`,
+            url: url.href,
+          });
+        }}
+      >
+        Invite
+      </button>
       <div class="neumo hollow card">
         <div class="player-count-label">{playerMap.value.size} Player(s)</div>
         <ul>
