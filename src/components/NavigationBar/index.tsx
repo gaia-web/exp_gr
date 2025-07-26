@@ -122,12 +122,10 @@ export function NavigationBar() {
     // TODO select better view transition target
     target.style.viewTransitionName = "page-enter";
     (
-      document.querySelector(
-        ".waiting-room.page .content-container"
-      ) as HTMLElement
+      document.querySelector(".room.page .content-container") as HTMLElement
     ).style.viewTransitionName = "page-leave";
     const previousButton = document.querySelector(
-      ".waiting-room.page .nav-bar button.active"
+      ".room.page .nav-bar button.active"
     ) as HTMLElement;
     startViewTransition(
       async () => {
@@ -138,18 +136,14 @@ export function NavigationBar() {
         });
         previousButton.style.viewTransitionName = "page-leave";
         (
-          document.querySelector(
-            ".waiting-room.page .content-container"
-          ) as HTMLElement
+          document.querySelector(".room.page .content-container") as HTMLElement
         ).style.viewTransitionName = "page-enter";
       },
       void 0,
       () => {
         previousButton.style.viewTransitionName = "";
         (
-          document.querySelector(
-            ".waiting-room.page .content-container"
-          ) as HTMLElement
+          document.querySelector(".room.page .content-container") as HTMLElement
         ).style.viewTransitionName = "";
       }
     );
