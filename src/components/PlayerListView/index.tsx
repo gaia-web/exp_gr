@@ -1,5 +1,5 @@
 import { useSignalEffect } from "@preact/signals";
-import { useLocation, useRoute } from "preact-iso";
+import { useRoute } from "preact-iso";
 import { peer } from "../../utils/peer";
 import {
   hostId,
@@ -11,19 +11,11 @@ import "./style.css";
 import { pageTranstionResolver } from "../../utils/view-transition";
 
 export function PlayerListView() {
-  const { route } = useLocation();
   const { params } = useRoute();
 
   useSignalEffect(() => {
     pageTranstionResolver.value?.("");
     pageTranstionResolver.value = void 0;
-  });
-
-  useSignalEffect(() => {
-    if (!peer.value) {
-      alert("Connection lost or timed out, exiting room...");
-      route("/", true);
-    }
   });
 
   useSignalEffect(() => {

@@ -28,18 +28,6 @@ export function GameListView() {
     pageTranstionResolver.value = void 0;
   });
 
-  useSignalEffect(() => {
-    pageTranstionResolver.value?.("");
-    pageTranstionResolver.value = void 0;
-  });
-
-  useSignalEffect(() => {
-    if (!peer.value) {
-      alert("Connection lost or timed out, exiting room...");
-      route("/", true);
-    }
-  });
-
   return (
     <section class="game-list view">
       <h2>Select a Game</h2>

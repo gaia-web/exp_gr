@@ -14,19 +14,11 @@ import { Send } from "lucide-preact";
 import { vibrateForButtonClick } from "../../utils/vibration";
 
 export function ChattingView() {
-  const { route } = useLocation();
   const chatMessageListRef = useSignalRef<HTMLUListElement>(void 0);
 
   useSignalEffect(() => {
     pageTranstionResolver.value?.("");
     pageTranstionResolver.value = void 0;
-  });
-
-  useSignalEffect(() => {
-    if (!peer.value) {
-      alert("Connection lost or timed out, exiting room...");
-      route("/", true);
-    }
   });
 
   useSignalEffect(() => {

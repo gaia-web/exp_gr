@@ -1,4 +1,4 @@
-import { Route, Router, useRoute } from "preact-iso";
+import { Route, Router, useLocation, useRoute } from "preact-iso";
 import { NavigationBar } from "../../components/NavigationBar";
 import { PlayerListView } from "../../components/PlayerListView";
 import { ChattingView } from "../../components/ChattingView";
@@ -17,8 +17,15 @@ import { peer, isHost } from "../../utils/peer";
 import { playerName, playerMap, hostId } from "../../utils/session";
 
 export function WaitingRoom() {
+  const { route } = useLocation();
   const iframeRef = useSignalRef<HTMLIFrameElement>(null);
-  const game = useSignal(""); // TODO this is temp
+
+  useSignalEffect(() => {
+    if (!peer.value) {
+      alert("Connection lost or timed out, exiting room...");
+      route("/", true);
+    }
+  });
 
   useSignalEffect(() => {
     function handleMessage(event: MessageEvent) {
