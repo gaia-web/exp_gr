@@ -10,21 +10,15 @@ import { playerMap } from "../../utils/session";
 import "./style.css";
 import { useSignalRef } from "@preact/signals/utils";
 import { pageTranstionResolver } from "../../utils/view-transition";
+import { Send } from "lucide-preact";
+import { vibrateForButtonClick } from "../../utils/vibration";
 
-export function Chatting() {
-  const { route } = useLocation();
+export function ChattingView() {
   const chatMessageListRef = useSignalRef<HTMLUListElement>(void 0);
 
   useSignalEffect(() => {
     pageTranstionResolver.value?.("");
     pageTranstionResolver.value = void 0;
-  });
-
-  useSignalEffect(() => {
-    if (!peer.value) {
-      alert("Connection lost or timed out, exiting room...");
-      route("/");
-    }
   });
 
   useSignalEffect(() => {
@@ -39,7 +33,7 @@ export function Chatting() {
   });
 
   return (
-    <section class="chatting page">
+    <section class="chatting view">
       <div class="neumo hollow message-container">
         <div style={{ fontSize: "1.5em" }}>Messages</div>
         <ul class="message-list" ref={chatMessageListRef}>
@@ -69,8 +63,15 @@ export function Chatting() {
           name="content"
           placeholder="Type a message..."
         />
-        <button class="neumo" type="submit">
-          Send
+        <button
+          title="Send"
+          class="neumo"
+          type="submit"
+          onClick={() => {
+            vibrateForButtonClick();
+          }}
+        >
+          <Send />
         </button>
       </form>
     </section>
