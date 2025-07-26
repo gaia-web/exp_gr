@@ -1,5 +1,5 @@
 :root {
-  --bg-color: #f0f0f0;
+  --bg-color: transparent;
   --text-color: #333;
   --accent-color: #d00;
   --button-bg: #fff;
@@ -9,7 +9,6 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg-color: #121212;
     --text-color: #eee;
     --accent-color: #ff4444;
     --button-bg: #222;

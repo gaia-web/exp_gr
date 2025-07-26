@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tic-Tac-Toe</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script type="module" src="./game-board.el.js"></script>
+    <script type="module" src="./player-list.el.js"></script>
+    <script type="module" src="./main.js"></script>
+  </head>
+  <body>
+    <h1>Tic-Tac-Toe</h1>
+
+    <ttt-game-board id="game-board" disabled></ttt-game-board>
+    <ttt-player-list id="player-list"></ttt-player-list>
+    <button id="join-button" hidden>Join to start a new round</button>
+    <button id="end-button" hidden>End current round</button>
+    <p id="result"></p>
+  </body>
+</html>

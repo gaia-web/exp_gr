@@ -9,6 +9,7 @@ export enum GameStatus {
 
 export enum GameStateMessageType {
   _PLAYER_INFO = "_player_info",
+  _HOST_PLAYER = "_host_player",
   _PLAYER_LIST = "_player_list",
 }
 
@@ -61,7 +62,7 @@ export function handleMessageFromTheGamePlugin(message: GameStateMessage) {
         }
         if (message.to.includes(peer.value.id)) {
           // TODO or just discard it
-          sendMessageToTheGamePlugin(message);
+          sendMessageToTheGamePlugin({ ...message, to: void 0 });
         }
         boardcastMessage((c) =>
           message.to.includes(c.peer)
