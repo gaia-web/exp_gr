@@ -6,7 +6,7 @@ import { GameListView } from "../../components/GameListView";
 import { PlayingView } from "../../components/PlayingView";
 import "./style.css";
 import { useSignalRef } from "@preact/signals/utils";
-import { useSignal, useSignalEffect } from "@preact/signals";
+import { useSignalEffect } from "@preact/signals";
 import {
   currentGamePluginIframe,
   sendMessageToTheGamePlugin,
