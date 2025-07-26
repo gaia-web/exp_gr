@@ -3,7 +3,7 @@ import { LocationProvider, Router, Route } from "preact-iso";
 
 import { Home } from "./pages/Home/index.jsx";
 import { NotFound } from "./pages/_404.jsx";
-import { WaitingRoom } from "./pages/WaitingRoom/index.js";
+import { Room } from "./pages/Room/index.js";
 
 import "./style.css";
 
@@ -13,7 +13,7 @@ export function App() {
       <main class="neumo hollow">
         <Router>
           <Route path="/" component={Home} />
-          <Route path="/room/:roomName/*" component={WaitingRoom} />
+          <Route path="/room/:roomName/*" component={Room} />
           <Route default component={NotFound} />
         </Router>
       </main>

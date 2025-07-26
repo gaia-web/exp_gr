@@ -16,7 +16,7 @@ import {
 import { peer, isHost } from "../../utils/peer";
 import { playerName, playerMap, hostId } from "../../utils/session";
 
-export function WaitingRoom() {
+export function Room() {
   const { route } = useLocation();
   const iframeRef = useSignalRef<HTMLIFrameElement>(null);
 
@@ -74,7 +74,7 @@ export function WaitingRoom() {
   });
 
   return (
-    <section class="waiting-room page">
+    <section class="room page">
       <div class="content-container">
         <iframe class="game-plugin" ref={iframeRef} />
         <Router>
