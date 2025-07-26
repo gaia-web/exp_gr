@@ -6,7 +6,7 @@ import { GameListView } from "../../components/GameListView";
 import { PlayingView } from "../../components/PlayingView";
 import "./style.css";
 import { useSignalRef } from "@preact/signals/utils";
-import { useSignalEffect } from "@preact/signals";
+import { useSignal, useSignalEffect } from "@preact/signals";
 import {
   currentGamePluginIframe,
   sendMessageToTheGamePlugin,
@@ -18,6 +18,7 @@ import { playerName, playerMap, hostId } from "../../utils/session";
 
 export function WaitingRoom() {
   const iframeRef = useSignalRef<HTMLIFrameElement>(null);
+  const game = useSignal(""); // TODO this is temp
 
   useSignalEffect(() => {
     function handleMessage(event: MessageEvent) {
@@ -45,7 +46,6 @@ export function WaitingRoom() {
       console.error("Iframe is not available.");
       return;
     }
-
     iframeRef.current.addEventListener("load", () => {
       sendMessageToTheGamePlugin({
         type: GameStateMessageType._PLAYER_INFO,
