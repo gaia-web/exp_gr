@@ -7,6 +7,7 @@ import {
   pageTranstionResolver,
   startViewTransition,
 } from "../../utils/view-transition";
+import { vibrateForButtonClick } from "../../utils/vibration";
 
 export function Home() {
   const { route } = useLocation();
@@ -18,8 +19,13 @@ export function Home() {
   });
 
   useSignalEffect(() => {
+    pageTranstionResolver.value?.("");
+    pageTranstionResolver.value = void 0;
+  });
+
+  useSignalEffect(() => {
     if (!peer.value) return;
-    route(`/room/${encodeURIComponent(roomName.value)}/players`);
+    route(`/room/${encodeURIComponent(roomName.value)}/players`, true);
   });
 
   return (
@@ -73,8 +79,15 @@ export function Home() {
             (playerName.value = currentTarget.value)
           }
         />
-        <button type="submit" name="action" class="neumo">
-          Enter Room
+        <button
+          type="submit"
+          name="action"
+          class="neumo"
+          onClick={() => {
+            vibrateForButtonClick();
+          }}
+        >
+          <b>Enter Room</b>
         </button>
         <i style="text-align: center;">
           If the room does not exist, it would be created.

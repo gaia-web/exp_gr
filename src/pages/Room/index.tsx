@@ -1,21 +1,31 @@
-import { useSignal, useSignalEffect } from "@preact/signals";
-import { useLocation } from "preact-iso";
-import { pageTranstionResolver } from "../../utils/view-transition";
-import { isHost, peer } from "../../utils/peer";
-import { Show, useSignalRef } from "@preact/signals/utils";
+import { Route, Router, useLocation, useRoute } from "preact-iso";
+import { NavigationBar } from "../../components/NavigationBar";
+import { PlayerListView } from "../../components/PlayerListView";
+import { ChattingView } from "../../components/ChattingView";
+import { GameListView } from "../../components/GameListView";
+import { PlayingView } from "../../components/PlayingView";
+import "./style.css";
+import { useSignalRef } from "@preact/signals/utils";
+import { useSignalEffect } from "@preact/signals";
 import {
   currentGamePluginIframe,
+  sendMessageToTheGamePlugin,
   GameStateMessageType,
   handleMessageFromTheGamePlugin,
-  sendMessageToTheGamePlugin,
 } from "../../utils/game";
-import { hostId, playerMap, playerName } from "../../utils/session";
-import "./style.css";
+import { peer, isHost } from "../../utils/peer";
+import { playerName, playerMap, hostId } from "../../utils/session";
 
-export function Playing() {
+export function Room() {
   const { route } = useLocation();
   const iframeRef = useSignalRef<HTMLIFrameElement>(null);
-  const game = useSignal(""); // TODO this is temp
+
+  useSignalEffect(() => {
+    if (!peer.value) {
+      alert("Connection lost or timed out, exiting room...");
+      route("/", true);
+    }
+  });
 
   useSignalEffect(() => {
     function handleMessage(event: MessageEvent) {
@@ -29,16 +39,12 @@ export function Playing() {
     return () => window.removeEventListener("message", handleMessage);
   });
 
+  // TODO this is a temp solution
   useSignalEffect(() => {
-    pageTranstionResolver.value?.("");
-    pageTranstionResolver.value = void 0;
-  });
-
-  useSignalEffect(() => {
-    if (!peer.value) {
-      alert("Connection lost or timed out, exiting room...");
-      route("/");
+    if (!playerMap.value) {
+      return;
     }
+    currentGamePluginIframe.value?.contentDocument?.location.reload();
   });
 
   useSignalEffect(() => {
@@ -68,31 +74,17 @@ export function Playing() {
   });
 
   return (
-    <section class="playing page">
-      {game.value ? (
-        <iframe class="game-plugin" ref={iframeRef} src={game.value} />
-      ) : (
-        <div>
-          <b>This is a temp selection</b>
-          <br />
-          <button
-            class="neumo"
-            onClick={() => {
-              game.value = "/games/rock-paper-scissors/index.html";
-            }}
-          >
-            Rock, Paper, and Scissors
-          </button>
-          <button
-            class="neumo"
-            onClick={() => {
-              game.value = "/games/tic-tac-toe/index.html";
-            }}
-          >
-            Tic Tac Toe
-          </button>
-        </div>
-      )}
+    <section class="room page">
+      <div class="content-container">
+        <iframe class="game-plugin" ref={iframeRef} />
+        <Router>
+          <Route path="/players" component={PlayerListView} />
+          <Route path="/chat" component={ChattingView} />
+          <Route path="/games" component={GameListView} />
+          <Route path="/play" component={PlayingView} />
+        </Router>
+      </div>
+      <NavigationBar />
     </section>
   );
 }

@@ -8,6 +8,7 @@ import {
   PEER_JS_OPTIONS,
 } from "./peer";
 import { boardcastMessage, MessageType } from "./message";
+import { currentGamePluginSrc } from "./game";
 import { gamePickMap } from "./game-pick";
 
 export const hostId = computed(() => `${PEER_ID_PREFIX}-${roomName}`);
@@ -16,19 +17,21 @@ export const playerName = signal<string>();
 export const playerMap = signal<Map<string, string>>(new Map());
 export const unreadPlayerListChanges = signal(false);
 
-effect(() => {
-  if (!peer.value) {
-    exitRoom();
-    return;
-  }
-});
+setTimeout(() => {
+  effect(() => {
+    if (!peer.value) {
+      exitRoom();
+      return;
+    }
+  });
 
-effect(() => {
-  if (!playerMap.value) return;
-  unreadPlayerListChanges.value = true;
+  effect(() => {
+    if (!playerMap.value) return;
+    unreadPlayerListChanges.value = true;
 
-  if (!isHost.value) return;
-  boardcastPlayerList();
+    if (!isHost.value) return;
+    boardcastPlayerList();
+  });
 });
 
 export function enterRoom() {
@@ -71,6 +74,7 @@ export function exitRoom() {
     gamePickMap.value = new Map();
     peer.value?.destroy();
     peer.value = void 0;
+    currentGamePluginSrc.value = "";
   });
 }
 

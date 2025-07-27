@@ -1,5 +1,7 @@
-.player-list.page {
+.player-list.view {
   text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
 
   & .card {
     --neumo-item-distance: 5px;
