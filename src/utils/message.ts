@@ -3,6 +3,7 @@ import { ChatMessage, insertChatMessageIntoHistory } from "./chat";
 import { connectionMap$, isHost$ } from "./peer";
 import { exitRoom, playerMap$ } from "./session";
 import {
+  currentGameList$,
   currentGamePluginIframe$,
   GameListMessage,
   GameStateMessage,
@@ -10,7 +11,11 @@ import {
   GameStatusMessage,
   sendMessageToTheGamePlugin,
 } from "./game";
-import { broadCastGamePick, gamePickMap$, GamePickStateMessage } from "./game-pick";
+import {
+  broadCastGamePick,
+  gamePickMap$,
+  GamePickStateMessage,
+} from "./game-pick";
 
 export enum MessageType {
   /**
@@ -47,7 +52,7 @@ export enum MessageType {
    */
   GAME_STATE = "game_state",
   /**
-   * Notify a change of game pick state 
+   * Notify a change of game pick state
    */
   GAME_PICK_STATE = "game_pick_state",
   /**
@@ -162,7 +167,8 @@ function handleGameStatusMessage(message: Message<GameStatusMessage>) {
 
 function handleGameListMessage(message: Message<GameListMessage>) {
   if (isHost$.value) return;
-  // TODO update UI's game list based on the host-sent message
+  console.info(`Updating current game list:`, message.value);
+  currentGameList$.value = message.value;
 }
 
 function handleGameStateMessage(message: Message<GameStateMessage>) {
@@ -178,15 +184,15 @@ function handleGamePickStateMessage(message: Message<GamePickStateMessage>) {
     [message.value.name, message.value.gamePickedIndex],
   ]);
 
-  if(isHost$.value) {
+  if (isHost$.value) {
     broadCastGamePick();
   }
 }
 
-function handleGamePickStateBrocastMessage(message:Message<[string, number][]>) {
-  gamePickMap$.value = new Map([
-    ...message.value,
-  ]);
+function handleGamePickStateBrocastMessage(
+  message: Message<[string, number][]>
+) {
+  gamePickMap$.value = new Map([...message.value]);
 }
 
 export const handleMessage = (message: Message, connection: DataConnection) => {

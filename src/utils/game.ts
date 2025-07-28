@@ -16,13 +16,15 @@ export enum GameStateMessageType {
 type PlayerID = string;
 type PlayerName = string;
 
-export type GameListMessage = {
+export type GameInfo = {
   id: string;
   label: string;
   playerLimit: [number, number];
   description: string;
   pluginUrl: string;
-}[];
+};
+
+export type GameListMessage = GameInfo[];
 
 export type GameStatusMessage =
   | {
@@ -50,7 +52,7 @@ export type GameStateMessage = { to?: string } & (
     }
 );
 
-export const DEFAULT_GAME_LIST: GameListMessage = [
+export const DEFAULT_GAME_LIST: GameInfo[] = [
   {
     id: "rps",
     label: "Rock, Paper, Scissors",
@@ -71,6 +73,25 @@ export const DEFAULT_GAME_LIST: GameListMessage = [
 
 export const currentGamePluginIframe$ = signal<HTMLIFrameElement>(null);
 export const currentGamePluginSrc$ = signal("");
+export const currentGameList$ = signal<GameInfo[]>();
+
+setTimeout(() => {
+  effect(() => {
+    if (!peer$.value) return;
+    if (!isHost$.value) return;
+    currentGameList$.value =
+      JSON.parse(localStorage.getItem("game-list") ?? "null") ??
+      DEFAULT_GAME_LIST;
+  });
+
+  effect(() => {
+    if (!isHost$.value) return;
+    const list = currentGameList$.value;
+    localStorage.setItem("game-list", JSON.stringify(list));
+    console.info(`Broadcasting current game list:`, list);
+    boardcastMessage(() => ({ type: MessageType.GAME_LIST, value: list }));
+  });
+});
 
 effect(() => {
   if (!currentGamePluginIframe$.value) {

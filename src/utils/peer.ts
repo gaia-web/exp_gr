@@ -2,6 +2,7 @@ import { batch, computed, effect, signal } from "@preact/signals";
 import Peer, { DataConnection, PeerError, PeerJSOption } from "peerjs";
 import { exitRoom, hostId$, playerMap$, playerName$ } from "./session";
 import { handleMessage, MessageType, sendMessage } from "./message";
+import { currentGameList$ } from "./game";
 
 export const PEER_ID_PREFIX = "1uX68Fu0mzVKNp5h";
 export const PEER_JS_OPTIONS: PeerJSOption = { debug: 0 };
@@ -100,6 +101,10 @@ function handleNonHostPeerOpen(p: Peer) {
 
 function handleHostConnectionOpened(c: DataConnection) {
   console.info(`New player ${c.peer} joined.`);
+  sendMessage(c, {
+    type: MessageType.GAME_LIST,
+    value: currentGameList$.value,
+  });
 }
 
 function HandleNonHostConnectionOpened(c: DataConnection) {
