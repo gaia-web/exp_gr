@@ -15,6 +15,7 @@ import {
 } from "../../utils/game";
 import { peer, isHost } from "../../utils/peer";
 import { playerName, playerMap, hostId } from "../../utils/session";
+import { showAlert } from "../..";
 
 export function Room() {
   const { route } = useLocation();
@@ -22,8 +23,13 @@ export function Room() {
 
   useSignalEffect(() => {
     if (!peer.value) {
-      alert("Connection lost or timed out, exiting room...");
-      route("/", true);
+      showAlert({
+        title: "Disconnected",
+        content: "Connection lost or timed out, exiting room...",
+        cancelText: null,
+      }).then(() => {
+        route("/");
+      });
     }
   });
 

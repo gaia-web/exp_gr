@@ -10,6 +10,7 @@ import {
 import { boardcastMessage, MessageType } from "./message";
 import { currentGamePluginSrc } from "./game";
 import { gamePickMap } from "./game-pick";
+import { showAlert } from "..";
 
 export const hostId = computed(() => `${PEER_ID_PREFIX}-${roomName}`);
 export const roomName = signal<string>();
@@ -36,11 +37,19 @@ setTimeout(() => {
 
 export function enterRoom() {
   if (!roomName.value) {
-    alert("A room name is required.");
+    showAlert({
+      title: "Invalid input",
+      content: "A room name is required.",
+      cancelText: null,
+    });
     return;
   }
   if (!playerName.value) {
-    alert("A player name is required.");
+    showAlert({
+      title: "Invalid input",
+      content: "A player name is required.",
+      cancelText: null,
+    });
     return;
   }
   peer.value?.destroy();
