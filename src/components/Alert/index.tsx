@@ -39,14 +39,18 @@ function Alert({
       dialogRef$.current?.showModal();
       dialogRef$.current?.animate([{ opacity: 0, transform: "scale(0)" }, {}], {
         duration: 500,
-        easing: "ease-in-out",
+        easing: getComputedStyle(dialogRef$.current).getPropertyValue(
+          "--default-transition-timing-function"
+        ),
         fill: "forwards",
       });
     } else {
       dialogRef$.current
         ?.animate([{}, { opacity: 0, transform: "scale(0)" }], {
           duration: 500,
-          easing: "ease-in-out",
+          easing: getComputedStyle(dialogRef$.current).getPropertyValue(
+            "--default-transition-timing-function"
+          ),
           fill: "forwards",
         })
         .finished.then(() => {
