@@ -1,6 +1,6 @@
 import { effect, signal } from "@preact/signals";
 import { boardcastMessage, MessageType, sendMessage } from "./message";
-import { connectionToTheHost, isHost, peer } from "./peer";
+import { connectionToTheHost$, isHost$, peer$ } from "./peer";
 
 export enum GameStatus {
   READY = "ready",
@@ -69,25 +69,25 @@ export const DEFAULT_GAME_LIST: GameListMessage = [
   },
 ];
 
-export const currentGamePluginIframe = signal<HTMLIFrameElement>(null);
-export const currentGamePluginSrc = signal("");
+export const currentGamePluginIframe$ = signal<HTMLIFrameElement>(null);
+export const currentGamePluginSrc$ = signal("");
 
 effect(() => {
-  if (!currentGamePluginIframe.value) {
+  if (!currentGamePluginIframe$.value) {
     return;
   }
-  currentGamePluginIframe.value.src = currentGamePluginSrc.value;
+  currentGamePluginIframe$.value.src = currentGamePluginSrc$.value;
 });
 
 export function handleMessageFromTheGamePlugin(message: GameStateMessage) {
   switch (message.type) {
     default:
       console.info(`From plugin to host app:`, message);
-      if (isHost.value) {
+      if (isHost$.value) {
         if (!message.to) {
           break;
         }
-        if (message.to.includes(peer.value.id)) {
+        if (message.to.includes(peer$.value.id)) {
           // TODO or just discard it
           sendMessageToTheGamePlugin({ ...message, to: void 0 });
         }
@@ -100,7 +100,7 @@ export function handleMessageFromTheGamePlugin(message: GameStateMessage) {
             : null
         );
       } else {
-        sendMessage(connectionToTheHost.value, {
+        sendMessage(connectionToTheHost$.value, {
           type: MessageType.GAME_STATE,
           value: message,
         });
@@ -110,6 +110,6 @@ export function handleMessageFromTheGamePlugin(message: GameStateMessage) {
 }
 
 export function sendMessageToTheGamePlugin(message: GameStateMessage) {
-  if (!currentGamePluginIframe.value) throw "Game plugin is not available.";
-  currentGamePluginIframe.value.contentWindow.postMessage(message, "*");
+  if (!currentGamePluginIframe$.value) throw "Game plugin is not available.";
+  currentGamePluginIframe$.value.contentWindow.postMessage(message, "*");
 }

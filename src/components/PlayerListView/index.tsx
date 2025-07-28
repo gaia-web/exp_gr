@@ -1,26 +1,26 @@
 import { useSignalEffect } from "@preact/signals";
 import { useRoute } from "preact-iso";
-import { peer } from "../../utils/peer";
+import { peer$ } from "../../utils/peer";
 import {
-  hostId,
-  playerMap,
-  roomName,
-  unreadPlayerListChanges,
+  hostId$,
+  playerMap$,
+  roomName$,
+  unreadPlayerListChanges$,
 } from "../../utils/session";
 import "./style.css";
-import { pageTranstionResolver } from "../../utils/view-transition";
+import { pageTranstionResolver$ } from "../../utils/view-transition";
 
 export function PlayerListView() {
   const { params } = useRoute();
 
   useSignalEffect(() => {
-    pageTranstionResolver.value?.("");
-    pageTranstionResolver.value = void 0;
+    pageTranstionResolver$.value?.("");
+    pageTranstionResolver$.value = void 0;
   });
 
   useSignalEffect(() => {
-    if (!unreadPlayerListChanges.value) return;
-    unreadPlayerListChanges.value = false;
+    if (!unreadPlayerListChanges$.value) return;
+    unreadPlayerListChanges$.value = false;
   });
 
   return (
@@ -30,11 +30,11 @@ export function PlayerListView() {
         class="neumo"
         onClick={() => {
           const url = new URL(
-            `/enter/${encodeURIComponent(roomName.value)}`,
+            `/enter/${encodeURIComponent(roomName$.value)}`,
             location.origin
           );
           navigator.share({
-            title: `Join my game room - ${roomName.value}`,
+            title: `Join my game room - ${roomName$.value}`,
             text: `Hey, I am inviting you to join my game session here.`,
             url: url.href,
           });
@@ -43,12 +43,12 @@ export function PlayerListView() {
         Invite
       </button>
       <div class="neumo hollow card">
-        <div class="player-count-label">{playerMap.value.size} Player(s)</div>
+        <div class="player-count-label">{playerMap$.value.size} Player(s)</div>
         <ul>
-          {[...playerMap.value].map(([id, name]) => (
+          {[...playerMap$.value].map(([id, name]) => (
             <li
-              class={`neumo ${id === hostId.value ? "host" : ""} ${
-                id === peer.value.id ? "self" : ""
+              class={`neumo ${id === hostId$.value ? "host" : ""} ${
+                id === peer$.value.id ? "self" : ""
               }`}
             >
               {name}
