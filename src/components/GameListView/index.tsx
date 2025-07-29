@@ -1,24 +1,32 @@
-import { useSignalEffect } from "@preact/signals";
+import { useSignal, useSignalEffect } from "@preact/signals";
 import { useLocation } from "preact-iso";
 import { pageTranstionResolver$ } from "../../utils/view-transition";
 import { sendGamePick, gamePickMap$ } from "../../utils/game-pick";
 import { useEffect } from "preact/hooks";
 import {
   DEFAULT_GAME_LIST,
+  GameInfo,
   currentGameList$,
   currentGamePluginSrc$,
 } from "../../utils/game";
 import { roomName$ } from "../../utils/session";
 import { useSignalRef } from "@preact/signals/utils";
 import { isHost$ } from "../../utils/peer";
+import { githubDarkTheme, githubLightTheme, JsonEditor } from "json-edit-react";
+import "./style.css";
 
 export function GameListView() {
   const { route } = useLocation();
   const gameListConfigDialogRef$ = useSignalRef<HTMLDialogElement>(null);
+  const editingGameList$ = useSignal<GameInfo[]>([]);
 
   useEffect(() => {
     sendGamePick(-1);
   }, []);
+
+  useSignalEffect(() => {
+    resetEditingGameList();
+  });
 
   useSignalEffect(() => {
     pageTranstionResolver$.value?.("");
@@ -38,36 +46,48 @@ export function GameListView() {
             Config the list
           </button>
           {/* TODO update it to a user-friendly UI/UX */}
-          <dialog
-            class="config-dialog"
-            ref={gameListConfigDialogRef$}
-            onClose={({ currentTarget }) => {
-              try {
-                const data = JSON.parse(
-                  currentTarget.querySelector("textarea")?.value
-                );
-                if (!Array.isArray(data)) {
-                  alert(
-                    "The JSON content must be an array of game definitions."
-                  );
-                  return;
+          <dialog class="neumo config-dialog" ref={gameListConfigDialogRef$}>
+            <div class="json-editor-scroll-wrapper">
+              <JsonEditor
+                data={editingGameList$.value}
+                setData={(d: GameInfo[]) => {
+                  editingGameList$.value = d;
+                }}
+                theme={
+                  window.matchMedia("(prefers-color-scheme: dark)").matches
+                    ? githubDarkTheme
+                    : githubLightTheme
                 }
-                currentGameList$.value = data;
-              } catch {
-                alert("Fail to parse the JSON.");
-              }
-            }}
-          >
-            <textarea
-              value={JSON.stringify(currentGameList$.value)}
-              style={{ height: "200px", width: "200px" }}
-            />
+              />
+            </div>
             <button
+              class="neumo confirm"
               onClick={() => {
                 gameListConfigDialogRef$.current?.close();
+                try {
+                  const data = editingGameList$.value;
+                  if (!Array.isArray(data)) {
+                    alert(
+                      "The JSON content must be an array of game definitions."
+                    );
+                    return;
+                  }
+                  currentGameList$.value = data;
+                } catch {
+                  alert("Fail to parse the JSON.");
+                }
               }}
             >
               Save
+            </button>
+            <button
+              class="neumo cancel"
+              onClick={() => {
+                gameListConfigDialogRef$.current?.close();
+                resetEditingGameList();
+              }}
+            >
+              Cancel
             </button>
           </dialog>
         </div>
@@ -124,4 +144,8 @@ export function GameListView() {
       </div>
     </section>
   );
+
+  function resetEditingGameList() {
+    editingGameList$.value = currentGameList$.value;
+  }
 }

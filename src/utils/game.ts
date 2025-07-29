@@ -87,7 +87,7 @@ setTimeout(() => {
   effect(() => {
     if (!isHost$.value) return;
     const list = currentGameList$.value;
-    localStorage.setItem("game-list", JSON.stringify(list));
+    localStorage.setItem("game-list", JSON.stringify(list) ?? "null");
     console.info(`Broadcasting current game list:`, list);
     boardcastMessage(() => ({ type: MessageType.GAME_LIST, value: list }));
   });
