@@ -5,7 +5,7 @@ import { sendGamePick, gamePickMap$ } from "../../utils/game-pick";
 import { useEffect } from "preact/hooks";
 import {
   DEFAULT_GAME_LIST,
-  GameInfo,
+  type GameInfo,
   currentGameList$,
   currentGamePluginSrc$,
 } from "../../utils/game";
