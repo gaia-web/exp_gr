@@ -1,16 +1,16 @@
 import { DataConnection } from "peerjs";
 import { ChatMessage, insertChatMessageIntoHistory } from "./chat";
-import { connectionMap, isHost } from "./peer";
-import { exitRoom, playerMap } from "./session";
+import { connectionMap$, isHost$ } from "./peer";
+import { exitRoom, playerMap$ } from "./session";
 import {
-  currentGamePluginIframe,
+  currentGamePluginIframe$,
   GameListMessage,
   GameStateMessage,
   GameStatus,
   GameStatusMessage,
   sendMessageToTheGamePlugin,
 } from "./game";
-import { broadCastGamePick, gamePickMap, GamePickStateMessage } from "./game-pick";
+import { broadCastGamePick, gamePickMap$, GamePickStateMessage } from "./game-pick";
 
 export enum MessageType {
   /**
@@ -78,7 +78,7 @@ export const messageHandlerDict: Record<
 
 // TODO instead of letting client disconnect from Host, we should let host disconnect client
 function disconnectFromHost(connection: DataConnection) {
-  if (isHost.value) return;
+  if (isHost$.value) return;
 
   connection.close();
   exitRoom();
@@ -86,8 +86,8 @@ function disconnectFromHost(connection: DataConnection) {
 
 function validateNewPlayerName(name: string): boolean {
   let isNameAvailable = true;
-  for (const key of playerMap.value.keys()) {
-    const value = playerMap.value.get(key);
+  for (const key of playerMap$.value.keys()) {
+    const value = playerMap$.value.get(key);
     if (name === value) {
       isNameAvailable = false;
       break;
@@ -102,7 +102,7 @@ function handlePlayerNameMessage(
   connection: DataConnection
 ) {
   if (!message) return;
-  if (!isHost.value) return;
+  if (!isHost$.value) return;
 
   if (!validateNewPlayerName(message.value)) {
     sendMessage(connection, {
@@ -113,8 +113,8 @@ function handlePlayerNameMessage(
     return;
   }
 
-  playerMap.value = new Map([
-    ...playerMap.value,
+  playerMap$.value = new Map([
+    ...playerMap$.value,
     [connection.peer, message.value.toString()],
   ]);
   console.info(`Peer ${connection.peer} updated its name as ${message.value}`);
@@ -133,7 +133,7 @@ function handleUnavailablePlayerNameMessage(
 
 function handlePlayerListMessage(message: Message) {
   console.info(`Player list updated as: `, message.value);
-  playerMap.value = new Map(message.value as [string, string][]);
+  playerMap$.value = new Map(message.value as [string, string][]);
 }
 
 function handleChatMessage(message: Message<ChatMessage>) {
@@ -147,7 +147,7 @@ function handleChatMessage(message: Message<ChatMessage>) {
 
 function handleGameStatusMessage(message: Message<GameStatusMessage>) {
   if (message.type !== MessageType.GAME_STATUS) throw "Wrong message type";
-  if (isHost.value) return;
+  if (isHost$.value) return;
   switch (message.value?.type) {
     case GameStatus.READY:
       // TODO loads the game and maybe also navigate to the playing page
@@ -161,30 +161,30 @@ function handleGameStatusMessage(message: Message<GameStatusMessage>) {
 }
 
 function handleGameListMessage(message: Message<GameListMessage>) {
-  if (isHost.value) return;
+  if (isHost$.value) return;
   // TODO update UI's game list based on the host-sent message
 }
 
 function handleGameStateMessage(message: Message<GameStateMessage>) {
   if (message.type !== MessageType.GAME_STATE) throw "Wrong message type";
   if (message.value?.type == null) return;
-  if (!currentGamePluginIframe.value) throw "Game plugin is not available.";
+  if (!currentGamePluginIframe$.value) throw "Game plugin is not available.";
   sendMessageToTheGamePlugin(message.value);
 }
 
 function handleGamePickStateMessage(message: Message<GamePickStateMessage>) {
-  gamePickMap.value = new Map([
-    ...gamePickMap.value,
+  gamePickMap$.value = new Map([
+    ...gamePickMap$.value,
     [message.value.name, message.value.gamePickedIndex],
   ]);
 
-  if(isHost.value) {
+  if(isHost$.value) {
     broadCastGamePick();
   }
 }
 
 function handleGamePickStateBrocastMessage(message:Message<[string, number][]>) {
-  gamePickMap.value = new Map([
+  gamePickMap$.value = new Map([
     ...message.value,
   ]);
 }
@@ -210,11 +210,11 @@ export function sendMessage(connection: DataConnection, message: Message) {
 export function boardcastMessage(
   callback: (c: DataConnection) => Message | null
 ) {
-  if (!isHost.value) {
+  if (!isHost$.value) {
     console.error("Non-host cannot boardcast message.");
     return;
   }
-  for (const [_, c] of connectionMap.value) {
+  for (const [_, c] of connectionMap$.value) {
     const message = callback(c);
     if (message == null) continue;
     sendMessage(c, message);

@@ -8,20 +8,20 @@ import "./style.css";
 import { useSignalRef } from "@preact/signals/utils";
 import { useSignalEffect } from "@preact/signals";
 import {
-  currentGamePluginIframe,
+  currentGamePluginIframe$,
   sendMessageToTheGamePlugin,
   GameStateMessageType,
   handleMessageFromTheGamePlugin,
 } from "../../utils/game";
-import { peer, isHost } from "../../utils/peer";
-import { playerName, playerMap, hostId } from "../../utils/session";
+import { peer$, isHost$ } from "../../utils/peer";
+import { playerName$, playerMap$, hostId$ } from "../../utils/session";
 
 export function Room() {
   const { route } = useLocation();
-  const iframeRef = useSignalRef<HTMLIFrameElement>(null);
+  const iframeRef$ = useSignalRef<HTMLIFrameElement>(null);
 
   useSignalEffect(() => {
-    if (!peer.value) {
+    if (!peer$.value) {
       alert("Connection lost or timed out, exiting room...");
       route("/", true);
     }
@@ -31,7 +31,7 @@ export function Room() {
     function handleMessage(event: MessageEvent) {
       // TODO Optional: restrict origin for security
       // if (event.origin !== window.origin) return;
-      if (iframeRef.current?.contentWindow !== event.source) return;
+      if (iframeRef$.current?.contentWindow !== event.source) return;
       handleMessageFromTheGamePlugin(event.data);
     }
 
@@ -41,34 +41,34 @@ export function Room() {
 
   // TODO this is a temp solution
   useSignalEffect(() => {
-    if (!playerMap.value) {
+    if (!playerMap$.value) {
       return;
     }
-    currentGamePluginIframe.value?.contentDocument?.location.reload();
+    currentGamePluginIframe$.value?.contentDocument?.location.reload();
   });
 
   useSignalEffect(() => {
-    currentGamePluginIframe.value = iframeRef.current;
-    if (!iframeRef.current) {
+    currentGamePluginIframe$.value = iframeRef$.current;
+    if (!iframeRef$.current) {
       console.error("Iframe is not available.");
       return;
     }
-    iframeRef.current.addEventListener("load", () => {
+    iframeRef$.current.addEventListener("load", () => {
       sendMessageToTheGamePlugin({
         type: GameStateMessageType._PLAYER_INFO,
         value: {
-          id: peer.value.id,
-          name: playerName.value,
-          isHost: isHost.value,
+          id: peer$.value.id,
+          name: playerName$.value,
+          isHost: isHost$.value,
         },
       });
       sendMessageToTheGamePlugin({
         type: GameStateMessageType._HOST_PLAYER,
-        value: hostId.value,
+        value: hostId$.value,
       });
       sendMessageToTheGamePlugin({
         type: GameStateMessageType._PLAYER_LIST,
-        value: [...playerMap.value.entries()],
+        value: [...playerMap$.value.entries()],
       });
     });
   });
@@ -76,7 +76,7 @@ export function Room() {
   return (
     <section class="room page">
       <div class="content-container">
-        <iframe class="game-plugin" ref={iframeRef} />
+        <iframe class="game-plugin" ref={iframeRef$} />
         <Router>
           <Route path="/players" component={PlayerListView} />
           <Route path="/chat" component={ChattingView} />
