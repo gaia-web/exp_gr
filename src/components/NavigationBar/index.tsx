@@ -1,13 +1,13 @@
 import { useLocation } from "preact-iso";
-import { unreadChatMessages } from "../../utils/chat";
+import { unreadChatMessages$ } from "../../utils/chat";
 import {
   exitRoom,
-  roomName,
-  unreadPlayerListChanges,
+  roomName$,
+  unreadPlayerListChanges$,
 } from "../../utils/session";
 import {
   startViewTransition,
-  pageTranstionResolver,
+  pageTranstionResolver$,
 } from "../../utils/view-transition";
 import "./style.css";
 import { Joystick, List, LogOut, MessagesSquare, Users } from "lucide-preact";
@@ -22,11 +22,11 @@ export function NavigationBar() {
       <button
         title="Player List"
         class={`neumo ${
-          url === `/room/${roomName.value}/players` ? "active hollow" : ""
-        } ${unreadPlayerListChanges.value ? "attention" : ""}`}
+          url === `/room/${roomName$.value}/players` ? "active hollow" : ""
+        } ${unreadPlayerListChanges$.value ? "attention" : ""}`}
         onClick={(e) =>
           pageViewTransitionHandler(
-            `/room/${roomName.value}/players`,
+            `/room/${roomName$.value}/players`,
             e.currentTarget
           )
         }
@@ -36,11 +36,11 @@ export function NavigationBar() {
       <button
         title="Chats"
         class={`neumo ${
-          url === `/room/${roomName.value}/chat` ? "active hollow" : ""
-        } ${unreadChatMessages.value > 0 ? "attention" : ""}`}
+          url === `/room/${roomName$.value}/chat` ? "active hollow" : ""
+        } ${unreadChatMessages$.value > 0 ? "attention" : ""}`}
         onClick={(e) =>
           pageViewTransitionHandler(
-            `/room/${roomName.value}/chat`,
+            `/room/${roomName$.value}/chat`,
             e.currentTarget
           )
         }
@@ -50,11 +50,11 @@ export function NavigationBar() {
       <button
         title="Game List"
         class={`neumo ${
-          url === `/room/${roomName.value}/games` ? "active hollow" : ""
+          url === `/room/${roomName$.value}/games` ? "active hollow" : ""
         }`}
         onClick={(e) =>
           pageViewTransitionHandler(
-            `/room/${roomName.value}/games`,
+            `/room/${roomName$.value}/games`,
             e.currentTarget
           )
         }
@@ -64,11 +64,11 @@ export function NavigationBar() {
       <button
         title="Playing"
         class={`neumo ${
-          url === `/room/${roomName.value}/play` ? "active hollow" : ""
+          url === `/room/${roomName$.value}/play` ? "active hollow" : ""
         }`}
         onClick={(e) =>
           pageViewTransitionHandler(
-            `/room/${roomName.value}/play`,
+            `/room/${roomName$.value}/play`,
             e.currentTarget
           )
         }
@@ -101,7 +101,7 @@ export function NavigationBar() {
                 route("/", true);
                 exitRoom();
                 await new Promise((resolve) => {
-                  pageTranstionResolver.value = resolve;
+                  pageTranstionResolver$.value = resolve;
                 });
                 (
                   document.querySelector(".page form.card") as HTMLElement
@@ -139,7 +139,7 @@ export function NavigationBar() {
         target.style.viewTransitionName = "";
         route(href, true);
         await new Promise((resolve) => {
-          pageTranstionResolver.value = resolve;
+          pageTranstionResolver$.value = resolve;
         });
         previousButton.style.viewTransitionName = "page-leave";
         (

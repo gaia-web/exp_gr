@@ -1,10 +1,10 @@
 import { useLocation, useRoute } from "preact-iso";
 import { useSignalEffect } from "@preact/signals";
-import { peer } from "../../utils/peer";
-import { enterRoom, playerName, roomName } from "../../utils/session";
+import { peer$ } from "../../utils/peer";
+import { enterRoom, playerName$, roomName$ } from "../../utils/session";
 import "./style.css";
 import {
-  pageTranstionResolver,
+  pageTranstionResolver$,
   startViewTransition,
 } from "../../utils/view-transition";
 import { vibrateForButtonClick } from "../../utils/vibration";
@@ -14,18 +14,18 @@ export function Home() {
   const { params } = useRoute();
 
   useSignalEffect(() => {
-    pageTranstionResolver.value?.("");
-    pageTranstionResolver.value = void 0;
+    pageTranstionResolver$.value?.("");
+    pageTranstionResolver$.value = void 0;
   });
 
   useSignalEffect(() => {
-    pageTranstionResolver.value?.("");
-    pageTranstionResolver.value = void 0;
+    pageTranstionResolver$.value?.("");
+    pageTranstionResolver$.value = void 0;
   });
 
   useSignalEffect(() => {
-    if (!peer.value) return;
-    route(`/room/${encodeURIComponent(roomName.value)}/players`, true);
+    if (!peer$.value) return;
+    route(`/room/${encodeURIComponent(roomName$.value)}/players`, true);
   });
 
   return (
@@ -40,7 +40,7 @@ export function Home() {
               enterRoom();
               await new Promise((resolve) => {
                 (e.target as HTMLElement).style.viewTransitionName = "";
-                pageTranstionResolver.value = resolve;
+                pageTranstionResolver$.value = resolve;
               });
               (
                 document.querySelector("main") as HTMLElement
@@ -66,7 +66,7 @@ export function Home() {
           defaultValue={setInitialRoomName()}
           disabled={!!params?.roomName}
           onChange={({ currentTarget }) =>
-            (roomName.value = currentTarget.value?.trim())
+            (roomName$.value = currentTarget.value?.trim())
           }
         />
         <input
@@ -76,7 +76,7 @@ export function Home() {
           type="text"
           placeholder="Enter player name here"
           onChange={({ currentTarget }) =>
-            (playerName.value = currentTarget.value)
+            (playerName$.value = currentTarget.value)
           }
         />
         <button
@@ -98,7 +98,7 @@ export function Home() {
 
   function setInitialRoomName() {
     if (!params?.roomName) return null;
-    roomName.value = params.roomName;
+    roomName$.value = params.roomName;
     return params.roomName;
   }
 }

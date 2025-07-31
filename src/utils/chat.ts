@@ -1,5 +1,5 @@
 import { batch, signal } from "@preact/signals";
-import { connectionToTheHost, isHost, peer } from "./peer";
+import { connectionToTheHost$, isHost$, peer$ } from "./peer";
 import { boardcastMessage, MessageType, sendMessage } from "./message";
 
 export type ChatMessage = {
@@ -8,21 +8,21 @@ export type ChatMessage = {
   timestamp: string;
 };
 
-export const chatMessageHistory = signal<ChatMessage[]>([]);
-export const unreadChatMessages = signal(0);
+export const chatMessageHistory$ = signal<ChatMessage[]>([]);
+export const unreadChatMessages$ = signal(0);
 
 export function insertChatMessageIntoHistory(message: ChatMessage) {
   batch(() => {
-    chatMessageHistory.value = chatMessageHistory.value.concat(message);
-    unreadChatMessages.value++;
+    chatMessageHistory$.value = chatMessageHistory$.value.concat(message);
+    unreadChatMessages$.value++;
   });
 
-  if (isHost.value) {
+  if (isHost$.value) {
     boardcastChatMessage(message);
     return;
   }
-  if (message.senderId !== peer.value.id) return;
-  sendMessage(connectionToTheHost.value, {
+  if (message.senderId !== peer$.value.id) return;
+  sendMessage(connectionToTheHost$.value, {
     type: MessageType.CHAT_MESSAGE,
     value: message,
   });
@@ -30,7 +30,7 @@ export function insertChatMessageIntoHistory(message: ChatMessage) {
 
 export function sendChatMessage(content: string) {
   const message: ChatMessage = {
-    senderId: peer.value.id,
+    senderId: peer$.value.id,
     content,
     timestamp: new Date().toISOString(),
   };

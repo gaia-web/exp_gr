@@ -1,11 +1,11 @@
 import { useSignalEffect } from "@preact/signals";
 import { useLocation } from "preact-iso";
-import { peer } from "../../utils/peer";
-import { pageTranstionResolver } from "../../utils/view-transition";
-import { sendGamePick, gamePickMap } from "../../utils/game-pick";
+import { peer$ } from "../../utils/peer";
+import { pageTranstionResolver$ } from "../../utils/view-transition";
+import { sendGamePick, gamePickMap$ } from "../../utils/game-pick";
 import { useEffect } from "preact/hooks";
-import { DEFAULT_GAME_LIST, currentGamePluginSrc } from "../../utils/game";
-import { roomName } from "../../utils/session";
+import { DEFAULT_GAME_LIST, currentGamePluginSrc$ } from "../../utils/game";
+import { roomName$ } from "../../utils/session";
 
 // Sample list of games
 const games = [
@@ -24,8 +24,8 @@ export function GameListView() {
   }, []);
 
   useSignalEffect(() => {
-    pageTranstionResolver.value?.("");
-    pageTranstionResolver.value = void 0;
+    pageTranstionResolver$.value?.("");
+    pageTranstionResolver$.value = void 0;
   });
 
   return (
@@ -41,7 +41,7 @@ export function GameListView() {
           >
             <p>
               {game}:
-              {[...gamePickMap.value]
+              {[...gamePickMap$.value]
                 .filter(([_, playerState]) => playerState === index)
                 .map(([name, _]) => name)
                 .join(", ")}
@@ -60,8 +60,8 @@ export function GameListView() {
             <button
               class="neumo"
               onClick={() => {
-                currentGamePluginSrc.value = pluginUrl;
-                route(`/room/${encodeURIComponent(roomName.value)}/play`, true);
+                currentGamePluginSrc$.value = pluginUrl;
+                route(`/room/${encodeURIComponent(roomName$.value)}/play`, true);
               }}
             >
               <div>
