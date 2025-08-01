@@ -10,7 +10,12 @@ import {
   GameStatusMessage,
   sendMessageToTheGamePlugin,
 } from "./game";
-import { broadCastGamePick, gamePickMap$, GamePickStateMessage } from "./game-pick";
+import {
+  broadCastGamePick,
+  gamePickMap$,
+  GamePickStateMessage,
+} from "./game-pick";
+import { showAlert } from "..";
 
 export enum MessageType {
   /**
@@ -47,7 +52,7 @@ export enum MessageType {
    */
   GAME_STATE = "game_state",
   /**
-   * Notify a change of game pick state 
+   * Notify a change of game pick state
    */
   GAME_PICK_STATE = "game_pick_state",
   /**
@@ -120,14 +125,15 @@ function handlePlayerNameMessage(
   console.info(`Peer ${connection.peer} updated its name as ${message.value}`);
 }
 
-function handleUnavailablePlayerNameMessage(
+async function handleUnavailablePlayerNameMessage(
   message: Message,
   connection: DataConnection
 ) {
-  alert(
-    `Name ${message.value} already been taken! Please choose a different name`
-  );
-
+  await showAlert({
+    title: "Ivalid name",
+    content: `Name ${message.value} already been taken! Please choose a different name`,
+    cancelText: null,
+  });
   disconnectFromHost(connection);
 }
 
@@ -178,15 +184,15 @@ function handleGamePickStateMessage(message: Message<GamePickStateMessage>) {
     [message.value.name, message.value.gamePickedIndex],
   ]);
 
-  if(isHost$.value) {
+  if (isHost$.value) {
     broadCastGamePick();
   }
 }
 
-function handleGamePickStateBrocastMessage(message:Message<[string, number][]>) {
-  gamePickMap$.value = new Map([
-    ...message.value,
-  ]);
+function handleGamePickStateBrocastMessage(
+  message: Message<[string, number][]>
+) {
+  gamePickMap$.value = new Map([...message.value]);
 }
 
 export const handleMessage = (message: Message, connection: DataConnection) => {
