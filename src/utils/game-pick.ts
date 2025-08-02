@@ -17,7 +17,7 @@ effect(() => {
   hasGamePickPending$.value = true;
 });
 
-export function sendGamePick(gameId: string | null) {
+export function sendGamePickMessage(gameId: string | null) {
   gamePick$.value = gameId;
   if (gameId == null) {
     gamePickMap$.value.set(playerName$.value, gameId);
@@ -30,7 +30,7 @@ export function sendGamePick(gameId: string | null) {
   }
 
   if (isHost$.value) {
-    broadCastGamePick();
+    broadCastGamePickMessage();
   } else {
     const message: GamePickStateMessage = {
       name: playerName$.value,
@@ -43,9 +43,8 @@ export function sendGamePick(gameId: string | null) {
   }
 }
 
-export function broadCastGamePick() {
+export function broadCastGamePickMessage() {
   if (!isHost$.value) return;
-  // broadcast messages
   const gamePickStatePair = [...gamePickMap$.value];
   boardcastMessage(() => ({
     type: MessageType.GAME_PICK_STATE_BROADCAST,

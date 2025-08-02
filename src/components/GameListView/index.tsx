@@ -1,7 +1,7 @@
 import { useComputed, useSignal, useSignalEffect } from "@preact/signals";
 import { pageTranstionResolver$ } from "../../utils/view-transition";
 import {
-  sendGamePick,
+  sendGamePickMessage,
   gamePickMap$,
   hasGamePickPending$,
 } from "../../utils/game-pick";
@@ -128,7 +128,7 @@ export function GameListView() {
               <button
                 class="neumo"
                 onClick={() => {
-                  sendGamePick(id);
+                  sendGamePickMessage(id);
                 }}
               >
                 <b>{label}</b>

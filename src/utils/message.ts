@@ -14,7 +14,7 @@ import {
   sendMessageToTheGamePlugin,
 } from "./game";
 import {
-  broadCastGamePick,
+  broadCastGamePickMessage,
   gamePickMap$,
   GamePickStateMessage,
 } from "./game-pick";
@@ -193,7 +193,7 @@ function handleGamePickStateMessage(message: Message<GamePickStateMessage>) {
   ]);
 
   if (isHost$.value) {
-    broadCastGamePick();
+    broadCastGamePickMessage();
   }
 }
 
