@@ -128,25 +128,22 @@ export function GameListView() {
               <button
                 class="neumo"
                 onClick={() => {
-                  // TODO use game id instead of index
                   sendGamePick(id);
                 }}
               >
-                <div>
-                  <b>{label}</b>
-                  &nbsp;
-                  <i>
-                    ({playerLimit[0] ?? "N/A"} - {playerLimit[1] ?? "N/A"})
-                  </i>
-                  <br />
-                  <span>{description}</span>
-                  <div class="player-name-list">
-                    {[...gamePickMap$.value]
-                      .filter(([_, playerState]) => playerState === id)
-                      .map(([name, _]) => (
-                        <span class="neumo hollow player-name">{name}</span>
-                      ))}
-                  </div>
+                <b>{label}</b>
+                &nbsp;
+                <i>
+                  ({playerLimit[0] ?? "N/A"} - {playerLimit[1] ?? "N/A"})
+                </i>
+                <br />
+                <span>{description}</span>
+                <div class="player-name-list">
+                  {[...gamePickMap$.value]
+                    .filter(([_, playerState]) => playerState === id)
+                    .map(([name, _]) => (
+                      <span class="neumo hollow player-name">{name}</span>
+                    ))}
                 </div>
               </button>
             )
@@ -178,34 +175,42 @@ export function GameListView() {
         >
           Start Game
         </button>
-        <dialog class="neumo" ref={gameSelectionDialogRef$}>
-          {polledGameList$.value?.map(
-            ({ id, label, description, playerLimit, pluginUrl, pollCount }) => (
-              <button
-                class="neumo"
-                onClick={() => {
-                  boardcastGameStatus({ type: GameStatus.READY, value: id });
-                  currentGamePluginSrc$.value = pluginUrl;
-                  hasStartedGamePending$.value = true;
-                }}
-              >
-                <div>
-                  <b>{label}</b>
-                  &nbsp;
-                  <i>
-                    ({playerLimit[0] ?? "N/A"} - {playerLimit[1] ?? "N/A"})
-                  </i>
-                  <br />
-                  <span>{description}</span>
-                  <br />
-                  <span>
-                    <b>{pollCount}</b> vote(s)
-                  </span>
-                </div>
-              </button>
-            )
-          )}
-          <br />
+        <dialog class="neumo start-game-dialog" ref={gameSelectionDialogRef$}>
+          <div>
+            {polledGameList$.value?.map(
+              ({
+                id,
+                label,
+                description,
+                playerLimit,
+                pluginUrl,
+                pollCount,
+              }) => (
+                <button
+                  class="neumo"
+                  onClick={() => {
+                    boardcastGameStatus({ type: GameStatus.READY, value: id });
+                    currentGamePluginSrc$.value = pluginUrl;
+                    hasStartedGamePending$.value = true;
+                  }}
+                >
+                  <div>
+                    <b>{label}</b>
+                    &nbsp;
+                    <i>
+                      ({playerLimit[0] ?? "N/A"} - {playerLimit[1] ?? "N/A"})
+                    </i>
+                    <br />
+                    <span>{description}</span>
+                    <br />
+                    <span>
+                      <b>{pollCount}</b> vote(s)
+                    </span>
+                  </div>
+                </button>
+              )
+            )}
+          </div>
           <button
             class="neumo cancel"
             onClick={() => {

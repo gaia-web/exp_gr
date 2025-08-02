@@ -1,17 +1,18 @@
 .game-list.view {
   dialog {
+    height: 80%;
+    width: 80%;
+
+    &[open] {
+      display: flex;
+    }
+
     &::backdrop {
       backdrop-filter: blur(20px);
     }
 
-    .config-dialog {
-      height: 80%;
-      width: 80%;
+    &.config-dialog {
       flex-direction: column;
-
-      &[open] {
-        display: flex;
-      }
 
       & > .json-editor-scroll-wrapper {
         overflow-y: auto;
@@ -26,14 +27,36 @@
         }
       }
     }
+
+    &.start-game-dialog {
+      flex-direction: column;
+
+      & > div {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        overflow: auto;
+
+        & button {
+          flex: 0 0 auto;
+        }
+      }
+    }
   }
 
   & div.game-list {
-    & .player-name-list {
-      display: flex;
+    display: flex;
+    flex-direction: column;
 
-      & .player-name {
-        --neumo-item-distance: 5px;
+    & > button {
+      flex: 0 0 auto;
+
+      & .player-name-list {
+        display: flex;
+
+        & .player-name {
+          --neumo-item-distance: 5px;
+        }
       }
     }
   }
