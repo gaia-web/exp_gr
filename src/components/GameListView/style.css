@@ -25,4 +25,14 @@
       }
     }
   }
+
+  & div.game-list {
+    & .player-name-list {
+      display: flex;
+
+      & .player-name {
+        --neumo-item-distance: 5px;
+      }
+    }
+  }
 }

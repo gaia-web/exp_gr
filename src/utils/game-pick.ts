@@ -5,21 +5,21 @@ import { signal } from "@preact/signals";
 
 export type GamePickStateMessage = {
   name: string;
-  gamePickedIndex: number;
+  gamePickedId: string | null;
 };
 
-export const gamePick$ = signal<number>(-1);
-export const gamePickMap$ = signal<Map<string, number>>(new Map());
+export const gamePick$ = signal<string>(null);
+export const gamePickMap$ = signal<Map<string, string>>(new Map());
 
-export function sendGamePick(gameIndex: number) {
-  gamePick$.value = gameIndex;
-  if (gameIndex === -1) {
-    gamePickMap$.value.set(playerName$.value, gameIndex);
+export function sendGamePick(gameId: string | null) {
+  gamePick$.value = gameId;
+  if (gameId == null) {
+    gamePickMap$.value.set(playerName$.value, gameId);
     gamePickMap$.value = new Map([...gamePickMap$.value]);
   } else {
     gamePickMap$.value = new Map([
       ...gamePickMap$.value,
-      [playerName$.value, gameIndex],
+      [playerName$.value, gameId],
     ]);
   }
 
@@ -28,7 +28,7 @@ export function sendGamePick(gameIndex: number) {
   } else {
     const message: GamePickStateMessage = {
       name: playerName$.value,
-      gamePickedIndex: gameIndex,
+      gamePickedId: gameId,
     };
     sendMessage(connectionToTheHost$.value, {
       type: MessageType.GAME_PICK_STATE,
@@ -46,3 +46,4 @@ export function broadCastGamePick() {
     value: gamePickStatePair,
   }));
 }
+

@@ -134,3 +134,7 @@ export function sendMessageToTheGamePlugin(message: GameStateMessage) {
   if (!currentGamePluginIframe$.value) throw "Game plugin is not available.";
   currentGamePluginIframe$.value.contentWindow.postMessage(message, "*");
 }
+
+export function boardcastGameStatus(message: GameStatusMessage) {
+  boardcastMessage(() => ({ type: MessageType.GAME_STATUS, value: message }));
+}

@@ -5,6 +5,7 @@ import { exitRoom, playerMap$ } from "./session";
 import {
   currentGameList$,
   currentGamePluginIframe$,
+  currentGamePluginSrc$,
   GameListMessage,
   GameStateMessage,
   GameStatus,
@@ -151,16 +152,23 @@ function handleChatMessage(message: Message<ChatMessage>) {
 }
 
 function handleGameStatusMessage(message: Message<GameStatusMessage>) {
+  debugger
   if (message.type !== MessageType.GAME_STATUS) throw "Wrong message type";
   if (isHost$.value) return;
   switch (message.value?.type) {
-    case GameStatus.READY:
+    case GameStatus.READY: {
       // TODO loads the game and maybe also navigate to the playing page
+      const gameId = message.value.value;
       console.info(`The host started a game with id ${message.value.value}.`);
+      const game = currentGameList$.value?.find(({ id }) => id === gameId);
+      currentGamePluginSrc$.value = game?.pluginUrl;
+      confirm("A game is started, you can go to the playing page.");
       break;
+    }
     case GameStatus.RETIRED:
       // TODO unloads the game and maybe also navigate out from the playing page
       console.info(`The host ended the current game.`);
+      currentGamePluginSrc$.value = null;
       break;
   }
 }
@@ -181,7 +189,7 @@ function handleGameStateMessage(message: Message<GameStateMessage>) {
 function handleGamePickStateMessage(message: Message<GamePickStateMessage>) {
   gamePickMap$.value = new Map([
     ...gamePickMap$.value,
-    [message.value.name, message.value.gamePickedIndex],
+    [message.value.name, message.value.gamePickedId],
   ]);
 
   if (isHost$.value) {
@@ -190,7 +198,7 @@ function handleGamePickStateMessage(message: Message<GamePickStateMessage>) {
 }
 
 function handleGamePickStateBrocastMessage(
-  message: Message<[string, number][]>
+  message: Message<[string, string | null][]>
 ) {
   gamePickMap$.value = new Map([...message.value]);
 }
