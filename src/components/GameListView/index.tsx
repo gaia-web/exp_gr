@@ -178,7 +178,7 @@ export function GameListView() {
         >
           Start Game
         </button>
-        <dialog ref={gameSelectionDialogRef$}>
+        <dialog class="neumo" ref={gameSelectionDialogRef$}>
           {polledGameList$.value?.map(
             ({ id, label, description, playerLimit, pluginUrl, pollCount }) => (
               <button
