@@ -8,7 +8,7 @@ import {
   PEER_JS_OPTIONS,
 } from "./peer";
 import { boardcastMessage, MessageType } from "./message";
-import { currentGamePluginSrc$ } from "./game";
+import { currentGameList$, currentGamePluginSrc$ } from "./game";
 import { gamePickMap$ } from "./game-pick";
 
 export const hostId$ = computed(() => `${PEER_ID_PREFIX}-${roomName$}`);
@@ -45,7 +45,7 @@ export function enterRoom() {
   }
   peer$.value?.destroy();
   peer$.value = new Peer(hostId$.value, PEER_JS_OPTIONS);
-  gamePickMap$.value = new Map([[playerName$.value, -1]]);
+  gamePickMap$.value = new Map([[playerName$.value, null]]);
   const errorHandler = (e: PeerError<string>) => {
     switch (e.type) {
       case "unavailable-id":
@@ -75,6 +75,7 @@ export function exitRoom() {
     peer$.value?.destroy();
     peer$.value = void 0;
     currentGamePluginSrc$.value = "";
+    currentGameList$.value = void 0;
   });
 }
 

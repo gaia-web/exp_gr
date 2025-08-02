@@ -1,27 +1,48 @@
-import { useSignalEffect } from "@preact/signals";
-import { useLocation } from "preact-iso";
-import { peer$ } from "../../utils/peer";
+import { useComputed, useSignal, useSignalEffect } from "@preact/signals";
 import { pageTranstionResolver$ } from "../../utils/view-transition";
-import { sendGamePick, gamePickMap$ } from "../../utils/game-pick";
-import { useEffect } from "preact/hooks";
-import { DEFAULT_GAME_LIST, currentGamePluginSrc$ } from "../../utils/game";
-import { roomName$ } from "../../utils/session";
-
-// Sample list of games
-const games = [
-  "Tic-Tac-Toe",
-  "Chess",
-  "Checkers",
-  "Rock Paper Scissors",
-  "Connect Four",
-];
+import {
+  sendGamePick,
+  gamePickMap$,
+  hasGamePickPending$,
+} from "../../utils/game-pick";
+import {
+  type GameInfo,
+  GameStatus,
+  boardcastGameStatus,
+  currentGameList$,
+  currentGamePluginSrc$,
+  isGameActive$,
+  hasStartedGamePending$,
+} from "../../utils/game";
+import { useSignalRef } from "@preact/signals/utils";
+import { isHost$ } from "../../utils/peer";
+import { githubDarkTheme, githubLightTheme, JsonEditor } from "json-edit-react";
+import "./style.css";
 
 export function GameListView() {
-  const { route } = useLocation();
+  const gameListConfigDialogRef$ = useSignalRef<HTMLDialogElement>(null);
+  const gameSelectionDialogRef$ = useSignalRef<HTMLDialogElement>(null);
+  const editingGameList$ = useSignal<GameInfo[]>([]);
+  const polledGameList$ = useComputed(() =>
+    currentGameList$.value
+      .map((gameInfo) => ({
+        ...gameInfo,
+        pollCount:
+          [...gamePickMap$.value].filter(
+            ([_, gameId]) => gameId === gameInfo.id
+          ).length ?? 0,
+      }))
+      .sort((a, b) => b.pollCount - a.pollCount)
+  );
 
-  useEffect(() => {
-    sendGamePick(-1);
-  }, []);
+  useSignalEffect(() => {
+    resetEditingGameList();
+  });
+
+  useSignalEffect(() => {
+    if (!hasGamePickPending$.value) return;
+    hasGamePickPending$.value = false;
+  });
 
   useSignalEffect(() => {
     pageTranstionResolver$.value?.("");
@@ -30,53 +51,175 @@ export function GameListView() {
 
   return (
     <section class="game-list view">
-      <h2>Select a Game</h2>
-      <div class="game-options">
-        {games.map((game, index) => (
-          <div
-            class="neumo hollow card"
-            onClick={() => {
-              sendGamePick(index);
-            }}
-          >
-            <p>
-              {game}:
-              {[...gamePickMap$.value]
-                .filter(([_, playerState]) => playerState === index)
-                .map(([name, _]) => name)
-                .join(", ")}
-            </p>
-          </div>
-        ))}
-      </div>
-      <div
-        class="neumo hollow"
-        style={{ "--neumo-item-background-color": "hsl(0, 50%, 50%)" }}
-      >
-        <b>This is a temp selection</b>
-        <br />
-        {DEFAULT_GAME_LIST.map(
-          ({ label, description, playerLimit, pluginUrl }) => (
-            <button
-              class="neumo"
-              onClick={() => {
-                currentGamePluginSrc$.value = pluginUrl;
-                route(`/room/${encodeURIComponent(roomName$.value)}/play`, true);
-              }}
-            >
-              <div>
-                <b>{label}</b>
-                &nbsp;
-                <i>
-                  ({playerLimit[0] ?? "N/A"} - {playerLimit[1] ?? "N/A"})
-                </i>
-                <br />
-                <span>{description}</span>
-              </div>
-            </button>
-          )
-        )}
-      </div>
+      {renderConfigView()}
+      {renderGameList()}
+      {renderGameControl()}
     </section>
   );
+
+  function renderConfigView() {
+    if (!isHost$.value) return null;
+    return (
+      <div class="config">
+        <button
+          class="neumo"
+          onClick={() => {
+            gameListConfigDialogRef$.current?.showModal();
+          }}
+        >
+          Config the list
+        </button>
+        {/* TODO update it to a user-friendly UI/UX */}
+        <dialog class="neumo config-dialog" ref={gameListConfigDialogRef$}>
+          <div class="json-editor-scroll-wrapper">
+            <JsonEditor
+              data={editingGameList$.value}
+              setData={(d: GameInfo[]) => {
+                editingGameList$.value = d;
+              }}
+              theme={
+                window.matchMedia("(prefers-color-scheme: dark)").matches
+                  ? githubDarkTheme
+                  : githubLightTheme
+              }
+            />
+          </div>
+          <button
+            class="neumo confirm"
+            onClick={() => {
+              gameListConfigDialogRef$.current?.close();
+              try {
+                const data = editingGameList$.value;
+                if (!Array.isArray(data)) {
+                  alert(
+                    "The JSON content must be an array of game definitions."
+                  );
+                  return;
+                }
+                currentGameList$.value = data;
+              } catch {
+                alert("Fail to parse the JSON.");
+              }
+            }}
+          >
+            Save
+          </button>
+          <button
+            class="neumo cancel"
+            onClick={() => {
+              gameListConfigDialogRef$.current?.close();
+              resetEditingGameList();
+            }}
+          >
+            Cancel
+          </button>
+        </dialog>
+      </div>
+    );
+  }
+
+  function renderGameList() {
+    return (
+      <>
+        <h2>Vote a Game</h2>
+        <div class="game-list neumo hollow">
+          {currentGameList$.value?.map(
+            ({ id, label, description, playerLimit }) => (
+              <button
+                class="neumo"
+                onClick={() => {
+                  // TODO use game id instead of index
+                  sendGamePick(id);
+                }}
+              >
+                <div>
+                  <b>{label}</b>
+                  &nbsp;
+                  <i>
+                    ({playerLimit[0] ?? "N/A"} - {playerLimit[1] ?? "N/A"})
+                  </i>
+                  <br />
+                  <span>{description}</span>
+                  <div class="player-name-list">
+                    {[...gamePickMap$.value]
+                      .filter(([_, playerState]) => playerState === id)
+                      .map(([name, _]) => (
+                        <span class="neumo hollow player-name">{name}</span>
+                      ))}
+                  </div>
+                </div>
+              </button>
+            )
+          )}
+        </div>
+      </>
+    );
+  }
+
+  function renderGameControl() {
+    if (!isHost$.value) return null;
+    return isGameActive$.value ? (
+      <button
+        class="neumo"
+        onClick={() => {
+          boardcastGameStatus({ type: GameStatus.RETIRED });
+          currentGamePluginSrc$.value = "";
+        }}
+      >
+        End Game
+      </button>
+    ) : (
+      <>
+        <button
+          class="neumo"
+          onClick={() => {
+            gameSelectionDialogRef$.current?.showModal();
+          }}
+        >
+          Start Game
+        </button>
+        <dialog class="neumo" ref={gameSelectionDialogRef$}>
+          {polledGameList$.value?.map(
+            ({ id, label, description, playerLimit, pluginUrl, pollCount }) => (
+              <button
+                class="neumo"
+                onClick={() => {
+                  boardcastGameStatus({ type: GameStatus.READY, value: id });
+                  currentGamePluginSrc$.value = pluginUrl;
+                  hasStartedGamePending$.value = true;
+                }}
+              >
+                <div>
+                  <b>{label}</b>
+                  &nbsp;
+                  <i>
+                    ({playerLimit[0] ?? "N/A"} - {playerLimit[1] ?? "N/A"})
+                  </i>
+                  <br />
+                  <span>{description}</span>
+                  <br />
+                  <span>
+                    <b>{pollCount}</b> vote(s)
+                  </span>
+                </div>
+              </button>
+            )
+          )}
+          <br />
+          <button
+            class="neumo cancel"
+            onClick={() => {
+              gameSelectionDialogRef$.current?.close();
+            }}
+          >
+            Cancel
+          </button>
+        </dialog>
+      </>
+    );
+  }
+
+  function resetEditingGameList() {
+    editingGameList$.value = currentGameList$.value;
+  }
 }

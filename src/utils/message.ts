@@ -3,14 +3,21 @@ import { ChatMessage, insertChatMessageIntoHistory } from "./chat";
 import { connectionMap$, isHost$ } from "./peer";
 import { exitRoom, playerMap$ } from "./session";
 import {
+  currentGameList$,
   currentGamePluginIframe$,
+  currentGamePluginSrc$,
   GameListMessage,
   GameStateMessage,
   GameStatus,
   GameStatusMessage,
+  hasStartedGamePending$,
   sendMessageToTheGamePlugin,
 } from "./game";
-import { broadCastGamePick, gamePickMap$, GamePickStateMessage } from "./game-pick";
+import {
+  broadCastGamePick,
+  gamePickMap$,
+  GamePickStateMessage,
+} from "./game-pick";
 
 export enum MessageType {
   /**
@@ -47,7 +54,7 @@ export enum MessageType {
    */
   GAME_STATE = "game_state",
   /**
-   * Notify a change of game pick state 
+   * Notify a change of game pick state
    */
   GAME_PICK_STATE = "game_pick_state",
   /**
@@ -149,20 +156,27 @@ function handleGameStatusMessage(message: Message<GameStatusMessage>) {
   if (message.type !== MessageType.GAME_STATUS) throw "Wrong message type";
   if (isHost$.value) return;
   switch (message.value?.type) {
-    case GameStatus.READY:
+    case GameStatus.READY: {
       // TODO loads the game and maybe also navigate to the playing page
+      const gameId = message.value.value;
       console.info(`The host started a game with id ${message.value.value}.`);
+      const game = currentGameList$.value?.find(({ id }) => id === gameId);
+      currentGamePluginSrc$.value = game?.pluginUrl;
+      hasStartedGamePending$.value = true;
       break;
+    }
     case GameStatus.RETIRED:
       // TODO unloads the game and maybe also navigate out from the playing page
       console.info(`The host ended the current game.`);
+      currentGamePluginSrc$.value = "";
       break;
   }
 }
 
 function handleGameListMessage(message: Message<GameListMessage>) {
   if (isHost$.value) return;
-  // TODO update UI's game list based on the host-sent message
+  console.info(`Updating current game list:`, message.value);
+  currentGameList$.value = message.value;
 }
 
 function handleGameStateMessage(message: Message<GameStateMessage>) {
@@ -175,18 +189,18 @@ function handleGameStateMessage(message: Message<GameStateMessage>) {
 function handleGamePickStateMessage(message: Message<GamePickStateMessage>) {
   gamePickMap$.value = new Map([
     ...gamePickMap$.value,
-    [message.value.name, message.value.gamePickedIndex],
+    [message.value.name, message.value.gamePickedId],
   ]);
 
-  if(isHost$.value) {
+  if (isHost$.value) {
     broadCastGamePick();
   }
 }
 
-function handleGamePickStateBrocastMessage(message:Message<[string, number][]>) {
-  gamePickMap$.value = new Map([
-    ...message.value,
-  ]);
+function handleGamePickStateBrocastMessage(
+  message: Message<[string, string | null][]>
+) {
+  gamePickMap$.value = new Map([...message.value]);
 }
 
 export const handleMessage = (message: Message, connection: DataConnection) => {

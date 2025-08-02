@@ -2,7 +2,8 @@ import { useSignalEffect } from "@preact/signals";
 import { pageTranstionResolver$ } from "../../utils/view-transition";
 import {
   currentGamePluginIframe$,
-  currentGamePluginSrc$,
+  isGameActive$,
+  hasStartedGamePending$,
 } from "../../utils/game";
 import "./style.css";
 
@@ -13,12 +14,17 @@ export function PlayingView() {
   });
 
   useSignalEffect(() => {
+    if (!hasStartedGamePending$) return;
+    hasStartedGamePending$.value = false;
+  });
+
+  useSignalEffect(() => {
     if (!currentGamePluginIframe$.value) {
       console.error("Iframe is not available.");
       return;
     }
 
-    currentGamePluginIframe$.value.style.visibility = currentGamePluginSrc$.value
+    currentGamePluginIframe$.value.style.visibility = isGameActive$.value
       ? "visible"
       : "hidden";
     return () => {
@@ -28,7 +34,7 @@ export function PlayingView() {
 
   return (
     <section class="playing view">
-      {currentGamePluginSrc$.value ? null : "No game is selected yet."}
+      {isGameActive$.value ? null : "No game is selected yet."}
     </section>
   );
 }
