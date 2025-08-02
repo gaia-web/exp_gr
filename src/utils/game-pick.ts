@@ -1,7 +1,7 @@
 import { connectionToTheHost$, isHost$ } from "./peer";
 import { boardcastMessage, MessageType, sendMessage } from "./message";
 import { playerName$ } from "./session";
-import { signal } from "@preact/signals";
+import { effect, signal } from "@preact/signals";
 
 export type GamePickStateMessage = {
   name: string;
@@ -10,6 +10,12 @@ export type GamePickStateMessage = {
 
 export const gamePick$ = signal<string>(null);
 export const gamePickMap$ = signal<Map<string, string>>(new Map());
+export const hasGamePickPending$ = signal(false);
+
+effect(() => {
+  gamePickMap$.value;
+  hasGamePickPending$.value = true;
+});
 
 export function sendGamePick(gameId: string | null) {
   gamePick$.value = gameId;
@@ -46,4 +52,3 @@ export function broadCastGamePick() {
     value: gamePickStatePair,
   }));
 }
-

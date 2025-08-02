@@ -10,6 +10,7 @@ import {
   GameStateMessage,
   GameStatus,
   GameStatusMessage,
+  hasStartedGamePending$,
   sendMessageToTheGamePlugin,
 } from "./game";
 import {
@@ -152,7 +153,6 @@ function handleChatMessage(message: Message<ChatMessage>) {
 }
 
 function handleGameStatusMessage(message: Message<GameStatusMessage>) {
-  debugger
   if (message.type !== MessageType.GAME_STATUS) throw "Wrong message type";
   if (isHost$.value) return;
   switch (message.value?.type) {
@@ -162,13 +162,13 @@ function handleGameStatusMessage(message: Message<GameStatusMessage>) {
       console.info(`The host started a game with id ${message.value.value}.`);
       const game = currentGameList$.value?.find(({ id }) => id === gameId);
       currentGamePluginSrc$.value = game?.pluginUrl;
-      confirm("A game is started, you can go to the playing page.");
+      hasStartedGamePending$.value = true;
       break;
     }
     case GameStatus.RETIRED:
       // TODO unloads the game and maybe also navigate out from the playing page
       console.info(`The host ended the current game.`);
-      currentGamePluginSrc$.value = null;
+      currentGamePluginSrc$.value = "";
       break;
   }
 }

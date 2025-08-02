@@ -1,24 +1,25 @@
 import { useComputed, useSignal, useSignalEffect } from "@preact/signals";
-import { useLocation } from "preact-iso";
 import { pageTranstionResolver$ } from "../../utils/view-transition";
-import { sendGamePick, gamePickMap$ } from "../../utils/game-pick";
-import { useEffect } from "preact/hooks";
 import {
-  DEFAULT_GAME_LIST,
+  sendGamePick,
+  gamePickMap$,
+  hasGamePickPending$,
+} from "../../utils/game-pick";
+import {
   type GameInfo,
   GameStatus,
   boardcastGameStatus,
   currentGameList$,
   currentGamePluginSrc$,
+  isGameActive$,
+  hasStartedGamePending$,
 } from "../../utils/game";
-import { roomName$ } from "../../utils/session";
 import { useSignalRef } from "@preact/signals/utils";
 import { isHost$ } from "../../utils/peer";
 import { githubDarkTheme, githubLightTheme, JsonEditor } from "json-edit-react";
 import "./style.css";
 
 export function GameListView() {
-  const { route } = useLocation();
   const gameListConfigDialogRef$ = useSignalRef<HTMLDialogElement>(null);
   const gameSelectionDialogRef$ = useSignalRef<HTMLDialogElement>(null);
   const editingGameList$ = useSignal<GameInfo[]>([]);
@@ -34,12 +35,13 @@ export function GameListView() {
       .sort((a, b) => b.pollCount - a.pollCount)
   );
 
-  useEffect(() => {
-    sendGamePick(null);
-  }, []);
-
   useSignalEffect(() => {
     resetEditingGameList();
+  });
+
+  useSignalEffect(() => {
+    if (!hasGamePickPending$.value) return;
+    hasGamePickPending$.value = false;
   });
 
   useSignalEffect(() => {
@@ -52,37 +54,6 @@ export function GameListView() {
       {renderConfigView()}
       {renderGameList()}
       {renderGameControl()}
-      {/* <div
-        class="neumo hollow"
-        style={{ "--neumo-item-background-color": "hsl(0, 50%, 50%)" }}
-      >
-        <b>This is a temp selection</b>
-        <br />
-        {DEFAULT_GAME_LIST.map(
-          ({ label, description, playerLimit, pluginUrl }) => (
-            <button
-              class="neumo"
-              onClick={() => {
-                currentGamePluginSrc$.value = pluginUrl;
-                route(
-                  `/room/${encodeURIComponent(roomName$.value)}/play`,
-                  true
-                );
-              }}
-            >
-              <div>
-                <b>{label}</b>
-                &nbsp;
-                <i>
-                  ({playerLimit[0] ?? "N/A"} - {playerLimit[1] ?? "N/A"})
-                </i>
-                <br />
-                <span>{description}</span>
-              </div>
-            </button>
-          )
-        )}
-      </div> */}
     </section>
   );
 
@@ -187,12 +158,12 @@ export function GameListView() {
 
   function renderGameControl() {
     if (!isHost$.value) return null;
-    return currentGamePluginSrc$.value ? (
+    return isGameActive$.value ? (
       <button
         class="neumo"
         onClick={() => {
           boardcastGameStatus({ type: GameStatus.RETIRED });
-          currentGamePluginSrc$.value = null;
+          currentGamePluginSrc$.value = "";
         }}
       >
         End Game
@@ -215,12 +186,7 @@ export function GameListView() {
                 onClick={() => {
                   boardcastGameStatus({ type: GameStatus.READY, value: id });
                   currentGamePluginSrc$.value = pluginUrl;
-                  if (confirm("A game is started, go to the playing page?")) {
-                    route(
-                      `/room/${encodeURIComponent(roomName$.value)}/play`,
-                      true
-                    );
-                  }
+                  hasStartedGamePending$.value = true;
                 }}
               >
                 <div>
