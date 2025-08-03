@@ -78,34 +78,12 @@ export const isGameActive$ = computed(() => !!currentGamePluginSrc$.value);
 export const hasStartedGamePending$ = signal(false);
 
 setTimeout(() => {
-  effect(() => {
-    if (!peer$.value) return;
-    if (!isHost$.value) return;
-    currentGameList$.value =
-      JSON.parse(localStorage.getItem("game-list") ?? "null") ??
-      DEFAULT_GAME_LIST;
-  });
-
-  effect(() => {
-    if (!isHost$.value) return;
-    const list = currentGameList$.value;
-    localStorage.setItem("game-list", JSON.stringify(list) ?? "null");
-    console.info(`Broadcasting current game list:`, list);
-    boardcastMessage(() => ({ type: MessageType.GAME_LIST, value: list }));
-  });
+  effect(initializeCurrrentGameList);
+  effect(handleCurrentGameListChange);
 });
 
-effect(() => {
-  if (!currentGamePluginIframe$.value) {
-    return;
-  }
-  currentGamePluginIframe$.value.src = currentGamePluginSrc$.value;
-});
-
-effect(() => {
-  if (!isGameActive$.value) return;
-  hasStartedGamePending$.value = true;
-});
+effect(handleCurrrentGamePluginChange);
+effect(setAttentionStatus);
 
 export function handleMessageFromTheGamePlugin(message: GameStateMessage) {
   switch (message.type) {
@@ -144,4 +122,32 @@ export function sendMessageToTheGamePlugin(message: GameStateMessage) {
 
 export function boardcastGameStatus(message: GameStatusMessage) {
   boardcastMessage(() => ({ type: MessageType.GAME_STATUS, value: message }));
+}
+
+function initializeCurrrentGameList() {
+  if (!peer$.value) return;
+  if (!isHost$.value) return;
+  currentGameList$.value =
+    JSON.parse(localStorage.getItem("game-list") ?? "null") ??
+    DEFAULT_GAME_LIST;
+}
+
+function handleCurrentGameListChange() {
+  if (!isHost$.value) return;
+  const list = currentGameList$.value;
+  localStorage.setItem("game-list", JSON.stringify(list) ?? "null");
+  console.info(`Broadcasting current game list:`, list);
+  boardcastMessage(() => ({ type: MessageType.GAME_LIST, value: list }));
+}
+
+function handleCurrrentGamePluginChange() {
+  if (!currentGamePluginIframe$.value) {
+    return;
+  }
+  currentGamePluginIframe$.value.src = currentGamePluginSrc$.value;
+}
+
+function setAttentionStatus() {
+  if (!isGameActive$.value) return;
+  hasStartedGamePending$.value = true;
 }

@@ -9,28 +9,15 @@ import {
 import { playerMap$ } from "../../utils/session";
 import "./style.css";
 import { useSignalRef } from "@preact/signals/utils";
-import { pageTranstionResolver$ } from "../../utils/view-transition";
+import { resolvePageTransitionPromise } from "../../utils/view-transition";
 import { Send } from "lucide-preact";
 import { vibrateForButtonClick } from "../../utils/vibration";
 
 export function ChattingView() {
   const chatMessageListRef$ = useSignalRef<HTMLUListElement>(void 0);
 
-  useSignalEffect(() => {
-    pageTranstionResolver$.value?.("");
-    pageTranstionResolver$.value = void 0;
-  });
-
-  useSignalEffect(() => {
-    if (chatMessageHistory$.value.length <= 0) return;
-    const el = chatMessageListRef$.current;
-    if (!el) return;
-    el.scrollTo({
-      top: el.scrollHeight,
-      behavior: "smooth",
-    });
-    unreadChatMessages$.value = 0;
-  });
+  useSignalEffect(resolvePageTransitionPromise);
+  useSignalEffect(handleNewChatMessage);
 
   return (
     <section class="chatting view">
@@ -76,4 +63,15 @@ export function ChattingView() {
       </form>
     </section>
   );
+
+  function handleNewChatMessage() {
+    if (chatMessageHistory$.value.length <= 0) return;
+    const el = chatMessageListRef$.current;
+    if (!el) return;
+    el.scrollTo({
+      top: el.scrollHeight,
+      behavior: "smooth",
+    });
+    unreadChatMessages$.value = 0;
+  }
 }

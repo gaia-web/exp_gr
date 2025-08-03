@@ -1,5 +1,5 @@
 import { useComputed, useSignal, useSignalEffect } from "@preact/signals";
-import { pageTranstionResolver$ } from "../../utils/view-transition";
+import { resolvePageTransitionPromise } from "../../utils/view-transition";
 import {
   sendGamePickMessage,
   gamePickMap$,
@@ -36,23 +36,9 @@ export function GameListView() {
       .sort((a, b) => b.pollCount - a.pollCount)
   );
 
-  useSignalEffect(() => {
-    resetEditingGameList();
-  });
-
-  useSignalEffect(() => {
-    if (!hasGamePickPending$.value) return;
-    hasGamePickPending$.value = false;
-  });
-
-  useSignalEffect(() => {
-    resetEditingGameList();
-  });
-
-  useSignalEffect(() => {
-    pageTranstionResolver$.value?.("");
-    pageTranstionResolver$.value = void 0;
-  });
+  useSignalEffect(resolvePageTransitionPromise);
+  useSignalEffect(resetEditingGameList);
+  useSignalEffect(resetAttentionStatus);
 
   return (
     <section class="game-list view">
@@ -232,5 +218,10 @@ export function GameListView() {
 
   function resetEditingGameList() {
     editingGameList$.value = currentGameList$.value;
+  }
+
+  function resetAttentionStatus() {
+    if (!hasGamePickPending$.value) return;
+    hasGamePickPending$.value = false;
   }
 }

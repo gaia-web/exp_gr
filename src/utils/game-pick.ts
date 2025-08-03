@@ -12,10 +12,7 @@ export const gamePick$ = signal<string>(null);
 export const gamePickMap$ = signal<Map<string, string>>(new Map());
 export const hasGamePickPending$ = signal(false);
 
-effect(() => {
-  gamePickMap$.value;
-  hasGamePickPending$.value = true;
-});
+effect(setAttentionStatus);
 
 export function sendGamePickMessage(gameId: string | null) {
   gamePick$.value = gameId;
@@ -50,4 +47,9 @@ export function broadCastGamePickMessage() {
     type: MessageType.GAME_PICK_STATE_BROADCAST,
     value: gamePickStatePair,
   }));
+}
+
+function setAttentionStatus() {
+  gamePickMap$.value;
+  hasGamePickPending$.value = true;
 }

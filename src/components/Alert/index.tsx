@@ -34,43 +34,8 @@ function Alert({
 }: AlertProps) {
   const dialogRef$ = useSignalRef<HTMLDialogElement>(null);
 
-  useEffect(() => {
-    if (visible) {
-      dialogRef$.current?.showModal();
-      dialogRef$.current?.animate([{ opacity: 0, transform: "scale(0)" }, {}], {
-        duration: 500,
-        easing: getComputedStyle(dialogRef$.current).getPropertyValue(
-          "--default-transition-timing-function"
-        ),
-        fill: "forwards",
-      });
-    } else {
-      dialogRef$.current
-        ?.animate([{}, { opacity: 0, transform: "scale(0)" }], {
-          duration: 500,
-          easing: getComputedStyle(dialogRef$.current).getPropertyValue(
-            "--default-transition-timing-function"
-          ),
-          fill: "forwards",
-        })
-        .finished.then(() => {
-          dialogRef$.current?.close();
-          onClosed?.();
-        });
-    }
-  }, [visible]);
-
-  useEffect(() => {
-    const dialog = dialogRef$.current;
-    if (!dialog) return;
-
-    const onCancel = (e: Event) => {
-      e.preventDefault();
-      onClose?.(false);
-    };
-    dialog.addEventListener("cancel", onCancel);
-    return () => dialog.removeEventListener("cancel", onCancel);
-  }, [onClose]);
+  useEffect(handleVisibleEffect, [visible]);
+  useEffect(handleOnCloseEffect, [onClose]);
 
   return (
     <dialog class="neumo alert" ref={dialogRef$}>
@@ -98,6 +63,44 @@ function Alert({
       </div>
     </dialog>
   );
+
+  function handleOnCloseEffect() {
+    const dialog = dialogRef$.current;
+    if (!dialog) return;
+
+    const onCancel = (e: Event) => {
+      e.preventDefault();
+      onClose?.(false);
+    };
+    dialog.addEventListener("cancel", onCancel);
+    return () => dialog.removeEventListener("cancel", onCancel);
+  }
+
+  function handleVisibleEffect() {
+    if (visible) {
+      dialogRef$.current?.showModal();
+      dialogRef$.current?.animate([{ opacity: 0, transform: "scale(0)" }, {}], {
+        duration: 500,
+        easing: getComputedStyle(dialogRef$.current).getPropertyValue(
+          "--default-transition-timing-function"
+        ),
+        fill: "forwards",
+      });
+    } else {
+      dialogRef$.current
+        ?.animate([{}, { opacity: 0, transform: "scale(0)" }], {
+          duration: 500,
+          easing: getComputedStyle(dialogRef$.current).getPropertyValue(
+            "--default-transition-timing-function"
+          ),
+          fill: "forwards",
+        })
+        .finished.then(() => {
+          dialogRef$.current?.close();
+          onClosed?.();
+        });
+    }
+  }
 }
 
 export function AlertProvider({
