@@ -45,6 +45,10 @@ export function GameListView() {
   });
 
   useSignalEffect(() => {
+    resetEditingGameList();
+  });
+
+  useSignalEffect(() => {
     pageTranstionResolver$.value?.("");
     pageTranstionResolver$.value = void 0;
   });
