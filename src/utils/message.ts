@@ -16,6 +16,7 @@ import {
   gamePickMap$,
   GamePickStateMessage,
 } from "./game-pick";
+import { showAlert } from "..";
 
 export enum MessageType {
   /**
@@ -125,14 +126,15 @@ function handlePlayerNameMessage(
   console.info(`Peer ${connection.peer} updated its name as ${message.value}`);
 }
 
-function handleUnavailablePlayerNameMessage(
+async function handleUnavailablePlayerNameMessage(
   message: Message,
   connection: DataConnection
 ) {
-  alert(
-    `Name ${message.value} already been taken! Please choose a different name`
-  );
-
+  await showAlert({
+    title: "Ivalid name",
+    content: `Name ${message.value} already been taken! Please choose a different name`,
+    cancelText: null,
+  });
   disconnectFromHost(connection);
 }
 

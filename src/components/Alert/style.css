@@ -1,0 +1,18 @@
+dialog.alert {
+  .dialog-title {
+    font-size: 1.5em;
+  }
+
+  .button-group {
+    display: flex;
+    justify-content: center;
+
+    button.confirm {
+      --neumo-item-background-color: var(--accent-color);
+    }
+  }
+
+  &::backdrop {
+    backdrop-filter: blur(20px);
+  }
+}

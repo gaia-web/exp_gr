@@ -12,6 +12,7 @@ import {
 import "./style.css";
 import { Joystick, List, LogOut, MessagesSquare, Users } from "lucide-preact";
 import { vibrateForButtonClick } from "../../utils/vibration";
+import { showAlert } from "../..";
 
 export function NavigationBar() {
   const { url, route } = useLocation();
@@ -81,8 +82,14 @@ export function NavigationBar() {
         style={{ marginRight: "auto" }}
         onClick={() => {
           vibrateForButtonClick();
-          setTimeout(() => {
-            if (!confirm("You sure you wanna leave the room?")) return;
+          setTimeout(async () => {
+            if (
+              !(await showAlert({
+                title: "Exiting room",
+                content: "You sure you wanna leave the room?",
+              }))
+            )
+              return;
             (
               document.querySelector("main") as HTMLElement
             ).style.viewTransitionName = "home-page";
