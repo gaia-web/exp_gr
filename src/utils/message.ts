@@ -3,6 +3,7 @@ import { ChatMessage, insertChatMessageIntoHistory } from "./chat";
 import { connectionMap$, isHost$ } from "./peer";
 import { exitRoom, playerMap$ } from "./session";
 import {
+  currentGameList$,
   currentGamePluginIframe$,
   GameListMessage,
   GameStateMessage,
@@ -168,7 +169,8 @@ function handleGameStatusMessage(message: Message<GameStatusMessage>) {
 
 function handleGameListMessage(message: Message<GameListMessage>) {
   if (isHost$.value) return;
-  // TODO update UI's game list based on the host-sent message
+  console.info(`Updating current game list:`, message.value);
+  currentGameList$.value = message.value;
 }
 
 function handleGameStateMessage(message: Message<GameStateMessage>) {

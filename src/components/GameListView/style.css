@@ -1,0 +1,28 @@
+.game-list.view {
+  .config-dialog {
+    height: 80%;
+    width: 80%;
+    flex-direction: column;
+
+    &[open] {
+      display: flex;
+    }
+
+    &::backdrop {
+      backdrop-filter: blur(20px);
+    }
+
+    & > .json-editor-scroll-wrapper {
+      overflow-y: auto;
+      flex: 1 1 auto;
+    }
+
+    & > button {
+      flex: 0 0 auto;
+
+      &.confirm {
+        --neumo-item-background-color: var(--accent-color);
+      }
+    }
+  }
+}

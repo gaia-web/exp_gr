@@ -8,7 +8,7 @@ import {
   PEER_JS_OPTIONS,
 } from "./peer";
 import { boardcastMessage, MessageType } from "./message";
-import { currentGamePluginSrc$ } from "./game";
+import { currentGameList$, currentGamePluginSrc$ } from "./game";
 import { gamePickMap$ } from "./game-pick";
 import { showAlert } from "..";
 
@@ -84,6 +84,7 @@ export function exitRoom() {
     peer$.value?.destroy();
     peer$.value = void 0;
     currentGamePluginSrc$.value = "";
+    currentGameList$.value = void 0;
   });
 }
 
