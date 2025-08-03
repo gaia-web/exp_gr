@@ -83,7 +83,7 @@ function handleConnectionClosed(c: DataConnection) {
 
 function handleReceivedPeerConnectionToTheHost(c: DataConnection) {
   applyMessageHandler(c);
-  connectionMap$.value = new Map([...connectionMap$.value, [c.peer, c]]);
+  connectionMap$.value = new Map(connectionMap$.value).set(c.peer, c);
   c.on("open", () => {
     handleConnectionOpened(c);
   }).on("close", () => handleConnectionClosed(c));
@@ -108,7 +108,7 @@ function handleHostConnectionOpened(c: DataConnection) {
 }
 
 function HandleNonHostConnectionOpened(c: DataConnection) {
-  connectionMap$.value = new Map([...connectionMap$.value, [c.peer, c]]);
+  connectionMap$.value = new Map(connectionMap$.value).set(c.peer, c);
   sendPlayerName(c);
 }
 
@@ -116,10 +116,12 @@ function HandleHostConnectionClosed(c: DataConnection) {
   const peerId = c.peer;
   console.info(`Player ${c.peer} left.`);
   batch(() => {
-    connectionMap$.value.delete(peerId);
-    connectionMap$.value = new Map(connectionMap$.value);
-    playerMap$.value.delete(peerId);
-    playerMap$.value = new Map(playerMap$.value);
+    connectionMap$.value = new Map(
+      (connectionMap$.value.delete(peerId), connectionMap$.value)
+    );
+    playerMap$.value = new Map(
+      (playerMap$.value.delete(peerId), playerMap$.value)
+    );
   });
 }
 

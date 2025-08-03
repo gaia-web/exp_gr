@@ -54,7 +54,7 @@ export function enterRoom() {
   }
   peer$.value?.destroy();
   peer$.value = new Peer(hostId$.value, PEER_JS_OPTIONS);
-  gamePickMap$.value = new Map([[playerName$.value, null]]);
+  gamePickMap$.value = new Map([[playerName$.value, null]]); // TODO check if this is necessary
   const errorHandler = (e: PeerError<string>) => {
     switch (e.type) {
       case "unavailable-id":
@@ -68,7 +68,7 @@ export function enterRoom() {
     console.info(
       `Create a room with name ${roomName$} as ${playerName$} and wait for players to join.`
     );
-    playerMap$.value = new Map([[peer$.value.id, playerName$.value]]);
+    playerMap$.value = new Map().set(peer$.value.id, playerName$.value);
     peer$.value?.off("error", errorHandler).off("open", openHandler);
   };
   peer$.value.on("error", errorHandler).on("open", openHandler);

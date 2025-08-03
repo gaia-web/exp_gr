@@ -121,10 +121,10 @@ function handlePlayerNameMessage(
     return;
   }
 
-  playerMap$.value = new Map([
-    ...playerMap$.value,
-    [connection.peer, message.value.toString()],
-  ]);
+  playerMap$.value = new Map(playerMap$.value).set(
+    connection.peer,
+    message.value.toString()
+  );
   console.info(`Peer ${connection.peer} updated its name as ${message.value}`);
 }
 
@@ -189,10 +189,10 @@ function handleGameStateMessage(message: Message<GameStateMessage>) {
 }
 
 function handleGamePickStateMessage(message: Message<GamePickStateMessage>) {
-  gamePickMap$.value = new Map([
-    ...gamePickMap$.value,
-    [message.value.name, message.value.gamePickedId],
-  ]);
+  gamePickMap$.value = new Map(gamePickMap$.value).set(
+    message.value.name,
+    message.value.gamePickedId
+  );
 
   if (isHost$.value) {
     broadCastGamePickMessage();

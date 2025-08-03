@@ -20,13 +20,15 @@ effect(() => {
 export function sendGamePickMessage(gameId: string | null) {
   gamePick$.value = gameId;
   if (gameId == null) {
-    gamePickMap$.value.set(playerName$.value, gameId);
-    gamePickMap$.value = new Map([...gamePickMap$.value]);
+    gamePickMap$.value = new Map(gamePickMap$.value).set(
+      playerName$.value,
+      gameId
+    );
   } else {
-    gamePickMap$.value = new Map([
-      ...gamePickMap$.value,
-      [playerName$.value, gameId],
-    ]);
+    gamePickMap$.value = new Map(gamePickMap$.value).set(
+      playerName$.value,
+      gameId
+    );
   }
 
   if (isHost$.value) {
