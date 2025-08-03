@@ -18,6 +18,7 @@ import { useSignalRef } from "@preact/signals/utils";
 import { isHost$ } from "../../utils/peer";
 import { githubDarkTheme, githubLightTheme, JsonEditor } from "json-edit-react";
 import "./style.css";
+import { showAlert } from "../..";
 
 export function GameListView() {
   const gameListConfigDialogRef$ = useSignalRef<HTMLDialogElement>(null);
@@ -90,19 +91,20 @@ export function GameListView() {
           </div>
           <button
             class="neumo confirm"
-            onClick={() => {
+            onClick={async () => {
               gameListConfigDialogRef$.current?.close();
               try {
                 const data = editingGameList$.value;
                 if (!Array.isArray(data)) {
-                  alert(
-                    "The JSON content must be an array of game definitions."
-                  );
+                  await showAlert({
+                    content:
+                      "The JSON content must be an array of game definitions.",
+                  });
                   return;
                 }
                 currentGameList$.value = data;
               } catch {
-                alert("Fail to parse the JSON.");
+                await showAlert({ content: "Fail to parse the JSON." });
               }
             }}
           >
