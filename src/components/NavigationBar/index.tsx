@@ -12,6 +12,8 @@ import {
 import "./style.css";
 import { Joystick, List, LogOut, MessagesSquare, Users } from "lucide-preact";
 import { vibrateForButtonClick } from "../../utils/vibration";
+import { hasStartedGamePending$ } from "../../utils/game";
+import { hasGamePickPending$ } from "../../utils/game-pick";
 import { showAlert } from "../..";
 
 export function NavigationBar() {
@@ -51,7 +53,7 @@ export function NavigationBar() {
         title="Game List"
         class={`neumo ${
           url === `/room/${roomName$.value}/games` ? "active hollow" : ""
-        }`}
+        } ${hasGamePickPending$.value ? "attention" : ""}`}
         onClick={(e) =>
           pageViewTransitionHandler(
             `/room/${roomName$.value}/games`,
@@ -65,7 +67,7 @@ export function NavigationBar() {
         title="Playing"
         class={`neumo ${
           url === `/room/${roomName$.value}/play` ? "active hollow" : ""
-        }`}
+        } ${hasStartedGamePending$.value ? "attention" : ""}`}
         onClick={(e) =>
           pageViewTransitionHandler(
             `/room/${roomName$.value}/play`,

@@ -1,4 +1,4 @@
-import { effect, signal } from "@preact/signals";
+import { computed, effect, signal } from "@preact/signals";
 import { boardcastMessage, MessageType, sendMessage } from "./message";
 import { connectionToTheHost$, isHost$, peer$ } from "./peer";
 
@@ -74,6 +74,8 @@ export const DEFAULT_GAME_LIST: GameInfo[] = [
 export const currentGamePluginIframe$ = signal<HTMLIFrameElement>(null);
 export const currentGamePluginSrc$ = signal("");
 export const currentGameList$ = signal<GameInfo[]>();
+export const isGameActive$ = computed(() => !!currentGamePluginSrc$.value);
+export const hasStartedGamePending$ = signal(false);
 
 setTimeout(() => {
   effect(() => {
@@ -98,6 +100,11 @@ effect(() => {
     return;
   }
   currentGamePluginIframe$.value.src = currentGamePluginSrc$.value;
+});
+
+effect(() => {
+  if (!isGameActive$.value) return;
+  hasStartedGamePending$.value = true;
 });
 
 export function handleMessageFromTheGamePlugin(message: GameStateMessage) {
@@ -133,4 +140,8 @@ export function handleMessageFromTheGamePlugin(message: GameStateMessage) {
 export function sendMessageToTheGamePlugin(message: GameStateMessage) {
   if (!currentGamePluginIframe$.value) throw "Game plugin is not available.";
   currentGamePluginIframe$.value.contentWindow.postMessage(message, "*");
+}
+
+export function boardcastGameStatus(message: GameStatusMessage) {
+  boardcastMessage(() => ({ type: MessageType.GAME_STATUS, value: message }));
 }
