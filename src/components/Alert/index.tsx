@@ -14,7 +14,6 @@ export type AlertOptions = {
 type AlertProps = AlertOptions & {
   visible: boolean;
   onClose: (isConfirmed: boolean) => void;
-  onClosed: () => void;
 };
 
 type AlertContextType = {
@@ -30,33 +29,14 @@ function Alert({
   cancelText = "Cancel",
   visible,
   onClose,
-  onClosed,
 }: AlertProps) {
   const dialogRef$ = useSignalRef<HTMLDialogElement>(null);
 
   useEffect(() => {
     if (visible) {
       dialogRef$.current?.showModal();
-      dialogRef$.current?.animate([{ opacity: 0, transform: "scale(0)" }, {}], {
-        duration: 500,
-        easing: getComputedStyle(dialogRef$.current).getPropertyValue(
-          "--default-transition-timing-function"
-        ),
-        fill: "forwards",
-      });
     } else {
-      dialogRef$.current
-        ?.animate([{}, { opacity: 0, transform: "scale(0)" }], {
-          duration: 500,
-          easing: getComputedStyle(dialogRef$.current).getPropertyValue(
-            "--default-transition-timing-function"
-          ),
-          fill: "forwards",
-        })
-        .finished.then(() => {
-          dialogRef$.current?.close();
-          onClosed?.();
-        });
+      dialogRef$.current?.close();
     }
   }, [visible]);
 
@@ -127,21 +107,14 @@ export function AlertProvider({
     });
   }
 
-  function closedHandler() {
-    alertOptions$.value = null;
-  }
-
   return (
     <AlertContext.Provider value={{ showAlert }}>
       {children}
-      {alertOptions$.value && (
-        <Alert
-          {...alertOptions$.value}
-          visible={visible$.value}
-          onClose={closeHandler}
-          onClosed={closedHandler}
-        />
-      )}
+      <Alert
+        {...alertOptions$.value}
+        visible={visible$.value}
+        onClose={closeHandler}
+      />
     </AlertContext.Provider>
   );
 }
