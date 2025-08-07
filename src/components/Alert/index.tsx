@@ -32,25 +32,8 @@ function Alert({
 }: AlertProps) {
   const dialogRef$ = useSignalRef<HTMLDialogElement>(null);
 
-  useEffect(() => {
-    if (visible) {
-      dialogRef$.current?.showModal();
-    } else {
-      dialogRef$.current?.close();
-    }
-  }, [visible]);
-
-  useEffect(() => {
-    const dialog = dialogRef$.current;
-    if (!dialog) return;
-
-    const onCancel = (e: Event) => {
-      e.preventDefault();
-      onClose?.(false);
-    };
-    dialog.addEventListener("cancel", onCancel);
-    return () => dialog.removeEventListener("cancel", onCancel);
-  }, [onClose]);
+  useEffect(handleVisibleEffect, [visible]);
+  useEffect(handleOnCloseEffect, [onClose]);
 
   return (
     <dialog class="neumo alert" ref={dialogRef$}>
@@ -78,6 +61,26 @@ function Alert({
       </div>
     </dialog>
   );
+
+  function handleOnCloseEffect() {
+    const dialog = dialogRef$.current;
+    if (!dialog) return;
+
+    const onCancel = (e: Event) => {
+      e.preventDefault();
+      onClose?.(false);
+    };
+    dialog.addEventListener("cancel", onCancel);
+    return () => dialog.removeEventListener("cancel", onCancel);
+  }
+
+  function handleVisibleEffect() {
+    if (visible) {
+      dialogRef$.current?.showModal();
+    } else {
+      dialogRef$.current?.close();
+    }
+  }
 }
 
 export function AlertProvider({

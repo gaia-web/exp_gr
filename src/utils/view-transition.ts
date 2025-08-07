@@ -23,3 +23,8 @@ export async function startViewTransition(
     if (finishedCallback) Promise.resolve(finishedCallback());
   });
 }
+
+export function resolvePageTransitionPromise() {
+  pageTranstionResolver$.value?.("");
+  pageTranstionResolver$.value = void 0;
+}

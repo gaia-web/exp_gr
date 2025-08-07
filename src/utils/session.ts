@@ -20,10 +20,8 @@ export const unreadPlayerListChanges$ = signal(false);
 
 setTimeout(() => {
   effect(() => {
-    if (!peer$.value) {
-      exitRoom();
-      return;
-    }
+    if (peer$.value) return;
+    exitRoom();
   });
 
   effect(() => {

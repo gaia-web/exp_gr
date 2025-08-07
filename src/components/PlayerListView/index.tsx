@@ -8,20 +8,13 @@ import {
   unreadPlayerListChanges$,
 } from "../../utils/session";
 import "./style.css";
-import { pageTranstionResolver$ } from "../../utils/view-transition";
+import { resolvePageTransitionPromise } from "../../utils/view-transition";
 
 export function PlayerListView() {
   const { params } = useRoute();
 
-  useSignalEffect(() => {
-    pageTranstionResolver$.value?.("");
-    pageTranstionResolver$.value = void 0;
-  });
-
-  useSignalEffect(() => {
-    if (!unreadPlayerListChanges$.value) return;
-    unreadPlayerListChanges$.value = false;
-  });
+  useSignalEffect(resolvePageTransitionPromise);
+  useSignalEffect(resetAttentionStatus);
 
   return (
     <section class="player-list view">
@@ -58,4 +51,9 @@ export function PlayerListView() {
       </div>
     </section>
   );
+
+  function resetAttentionStatus() {
+    if (!unreadPlayerListChanges$.value) return;
+    unreadPlayerListChanges$.value = false;
+  }
 }

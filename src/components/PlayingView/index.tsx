@@ -1,5 +1,5 @@
 import { useSignalEffect } from "@preact/signals";
-import { pageTranstionResolver$ } from "../../utils/view-transition";
+import { resolvePageTransitionPromise } from "../../utils/view-transition";
 import {
   currentGamePluginIframe$,
   isGameActive$,
@@ -8,15 +8,8 @@ import {
 import "./style.css";
 
 export function PlayingView() {
-  useSignalEffect(() => {
-    pageTranstionResolver$.value?.("");
-    pageTranstionResolver$.value = void 0;
-  });
-
-  useSignalEffect(() => {
-    if (!hasStartedGamePending$) return;
-    hasStartedGamePending$.value = false;
-  });
+  useSignalEffect(resolvePageTransitionPromise);
+  useSignalEffect(resetAttentionStatus);
 
   useSignalEffect(() => {
     if (!currentGamePluginIframe$.value) {
@@ -37,4 +30,9 @@ export function PlayingView() {
       {isGameActive$.value ? null : "No game is selected yet."}
     </section>
   );
+
+  function resetAttentionStatus() {
+    if (!hasStartedGamePending$) return;
+    hasStartedGamePending$.value = false;
+  }
 }
