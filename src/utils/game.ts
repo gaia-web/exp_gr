@@ -127,9 +127,8 @@ export function boardcastGameStatus(message: GameStatusMessage) {
 function initializeCurrrentGameList() {
   if (!peer$.value) return;
   if (!isHost$.value) return;
-  currentGameList$.value =
-    JSON.parse(localStorage.getItem("game-list") ?? "null") ??
-    DEFAULT_GAME_LIST;
+  const cachedGameList = JSON.parse(localStorage.getItem("game-list") ?? null);
+  currentGameList$.value = cachedGameList ?? DEFAULT_GAME_LIST;
 }
 
 function handleCurrentGameListChange() {
