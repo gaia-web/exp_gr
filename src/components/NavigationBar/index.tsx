@@ -11,17 +11,17 @@ import {
 } from "../../utils/view-transition";
 import "./style.css";
 import { Joystick, List, LogOut, MessagesSquare, Users } from "lucide-preact";
-import { vibrateForButtonClick } from "../../utils/vibration";
 import { hasStartedGamePending$ } from "../../utils/game";
 import { hasGamePickPending$ } from "../../utils/game-pick";
 import { showAlert } from "../..";
+import WithViberation from "../WithViberation";
 
 export function NavigationBar() {
   const { url, route } = useLocation();
 
   return (
     <nav class="nav-bar neumo">
-      <button
+      <WithViberation.Button
         title="Player List"
         class={`neumo ${
           url === `/room/${roomName$.value}/players` ? "active hollow" : ""
@@ -34,8 +34,8 @@ export function NavigationBar() {
         }
       >
         <Users />
-      </button>
-      <button
+      </WithViberation.Button>
+      <WithViberation.Button
         title="Chats"
         class={`neumo ${
           url === `/room/${roomName$.value}/chat` ? "active hollow" : ""
@@ -48,8 +48,8 @@ export function NavigationBar() {
         }
       >
         <MessagesSquare />
-      </button>
-      <button
+      </WithViberation.Button>
+      <WithViberation.Button
         title="Game List"
         class={`neumo ${
           url === `/room/${roomName$.value}/games` ? "active hollow" : ""
@@ -62,8 +62,8 @@ export function NavigationBar() {
         }
       >
         <List />
-      </button>
-      <button
+      </WithViberation.Button>
+      <WithViberation.Button
         title="Playing"
         class={`neumo ${
           url === `/room/${roomName$.value}/play` ? "active hollow" : ""
@@ -76,14 +76,13 @@ export function NavigationBar() {
         }
       >
         <Joystick />
-      </button>
-      <button
+      </WithViberation.Button>
+      <WithViberation.Button
         name="exit"
         title="Leave Room"
         class="neumo"
         style={{ marginRight: "auto" }}
         onClick={() => {
-          vibrateForButtonClick();
           setTimeout(async () => {
             if (
               !(await showAlert({
@@ -120,13 +119,12 @@ export function NavigationBar() {
         }}
       >
         <LogOut />
-      </button>
+      </WithViberation.Button>
       <div class="space-taker" />
     </nav>
   );
 
   function pageViewTransitionHandler(href: string, target: HTMLElement) {
-    vibrateForButtonClick();
     if (!href) return;
     // TODO select better view transition target
     target.style.viewTransitionName = "page-enter";

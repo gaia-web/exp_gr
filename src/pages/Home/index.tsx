@@ -7,7 +7,7 @@ import {
   pageTranstionResolver$,
   startViewTransition,
 } from "../../utils/view-transition";
-import { vibrateForButtonClick } from "../../utils/vibration";
+import WithVibration from "../../components/WithViberation";
 
 export function Home() {
   const { route } = useLocation();
@@ -79,16 +79,9 @@ export function Home() {
             (playerName$.value = currentTarget.value)
           }
         />
-        <button
-          type="submit"
-          name="action"
-          class="neumo"
-          onClick={() => {
-            vibrateForButtonClick();
-          }}
-        >
+        <WithVibration.Button type="submit" name="action" class="neumo">
           <b>Enter Room</b>
-        </button>
+        </WithVibration.Button>
         <i style="text-align: center;">
           If the room does not exist, it would be created.
         </i>
