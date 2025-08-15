@@ -11,7 +11,7 @@ import "./style.css";
 import { useSignalRef } from "@preact/signals/utils";
 import { resolvePageTransitionPromise } from "../../utils/view-transition";
 import { Send } from "lucide-preact";
-import { vibrateForButtonClick } from "../../utils/vibration";
+import WithVibration from "../WithViberation";
 
 export function ChattingView() {
   const chatMessageListRef$ = useSignalRef<HTMLUListElement>(void 0);
@@ -50,16 +50,9 @@ export function ChattingView() {
           name="content"
           placeholder="Type a message..."
         />
-        <button
-          title="Send"
-          class="neumo"
-          type="submit"
-          onClick={() => {
-            vibrateForButtonClick();
-          }}
-        >
+        <WithVibration.Button title="Send" class="neumo" type="submit">
           <Send />
-        </button>
+        </WithVibration.Button>
       </form>
     </section>
   );
