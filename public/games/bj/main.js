@@ -123,6 +123,7 @@ function updateStatusAndTimer() {
   }
 
   if (!roundActive) {
+    console.log("XXX - roundResult:", roundResult);
     if (roundResult) {
       setStatus(roundResult.resultText);
     } else {
@@ -263,10 +264,111 @@ function startRound() {
 //   }
 // }
 
-// Host: advance to next turn or end round
+
+// !!!!!! now you need to figure out how to stand
+
+// when dealer busted, game not ends
+
+
 function nextTurnOrEnd() {
+  let standCount = 0;
+  let bustCount = 0;
+
+  
   const ids = [...playerMap.keys()];
-  console.log("XXX - nextTurnOrEnd called, ids:", ids, "currentTurn", currentTurn);
+  
+  
+  console.log("XXX - nextTurnOrEnd called moves:", moves);
+  ids.forEach((id) => {
+    const move = moves.get(id);
+    if (!move){
+      // do nothing and skip
+    }
+    else if  (move.action === "stand") {
+      standCount++;
+    }
+    else if (move.action === "bust") {
+      bustCount++;
+    }
+  });
+
+  console.log("XXX - nextTurnOrEnd called, standCount:", standCount);
+  console.log("XXX - nextTurnOrEnd called, bustCount:", bustCount);
+  if (standCount + bustCount == ids.length) {
+    // All done
+    roundActive = false;
+    roundResult = evaluateRound();
+    currentTurn = null;
+    return;
+  }
+
+  let currentIdx = ids.indexOf(currentTurn);
+  // Find next player who hasn't stood or busted
+  let remainingActionable = 0;
+  let foundNext = false;
+  for (let i = currentIdx + 1; i < ids.length; i++) {
+    // const nextIdx = (idx + i) % ids.length;
+    // const id = ids[nextIdx];
+    const id = ids[i];
+    const move = moves.get(id);
+    console.log("XXX - first half checking player", id, "move:", move);
+    if (!move || (move.action !== "stand" && move.action !== "bust")) {
+      if (!foundNext) {
+        currentTurn = id;
+        foundNext = true;
+      }
+      remainingActionable++;
+    }
+  }
+
+  if (!foundNext) {
+    for (let i = 0; i <= currentIdx; i++) {
+      const id = ids[i];
+      const move = moves.get(id);
+      console.log("XXX - second half checking player", id, "move:", move);
+      if (!move || (move.action !== "stand" && move.action !== "bust")) {
+        if (!foundNext) {
+          currentTurn = id;
+          foundNext = true;
+        }
+        remainingActionable++;
+      }
+    }
+  }
+
+  // ids.forEach((id) => {
+  //   const move = moves.get(id);
+  //   if (!move || move.action !== "bust" || move.action !== "stand") {
+  //     // currentTurn = id;
+  //     remainingActionable++;
+  //     // break;
+  //   }
+  // });
+  console.log(
+    "XXX - nextTurnOrEnd found currentTurn:",
+    currentTurn,
+    "remainingActionable:",
+    remainingActionable
+  );
+  if (remainingActionable <= 0 ||  bustCount === ids.length - 1) {
+    // All done
+    roundActive = false;
+    roundResult = evaluateRound();
+    currentTurn = null;
+  }
+}
+
+// Host: advance to next turn or end round
+function nextTurnOrEnd2() {
+  const ids = [...playerMap.keys()];
+  console.log(
+    "XXX - nextTurnOrEnd called, ids:",
+    ids,
+    "currentTurn",
+    currentTurn,
+    "moves:",
+    moves
+  );
   let currentIdx = ids.indexOf(currentTurn);
   // Find next player who hasn't stood or busted
   let remainingActionable = 0;
@@ -309,6 +411,12 @@ function nextTurnOrEnd() {
   //     // break;
   //   }
   // });
+  console.log(
+    "XXX - nextTurnOrEnd found currentTurn:",
+    remainingActionable,
+    "remainingActionable:",
+    remainingActionable
+  );
   if (remainingActionable <= 0) {
     // All done
     roundActive = false;
@@ -346,6 +454,7 @@ function handleActions(action, playerId) {
         moves.set(playerId, { action: "bust" });
       }
     } else if (action === "stand") {
+      moves.set(playerId, { action: "stand" });
       console.log(`XXX - ${playerId} stands`);
       // do nothing, skip
     }
@@ -369,14 +478,16 @@ function handleUpdate(message) {
   if (player.isHost) {
     handleActions(v.move, v.sender);
 
-    nextTurnOrEnd();
-    broadcastState();
+    // nextTurnOrEnd();
+    // broadcastState();
 
     console.log("hand is now:", hands);
   } else {
     hands = new Map(Object.entries(v.hands || {}));
     roundActive = v.roundActive;
     currentTurn = v.currentTurn || null;
+    roundResult = v.roundResult || null;
+    moves = new Map(Object.entries(v.moves || {}));
   }
   updateStatusAndTimer();
 

@@ -74,7 +74,7 @@ export const DEFAULT_GAME_LIST: GameInfo[] = [
     label: "First Person Shooter",
     description: "it's a poker game actually lol",
     playerLimit: [2, 2],
-    pluginUrl: "/public/games/bj/index.html",
+    pluginUrl: "/games/bj/index.html",
   },
 ];
 
