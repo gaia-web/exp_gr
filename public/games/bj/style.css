@@ -18,6 +18,11 @@ body {
   gap: 12px;
   margin-bottom: 16px;
 }
+.all-hands {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
 .card {
   width: 60px;
   height: 90px;

@@ -109,9 +109,50 @@ function enableControls() {
   if (standBtn instanceof HTMLButtonElement) standBtn.disabled = false;
 }
 
+function renderAllHands() {
+  const handsContainer = document.getElementById("all-hands");
+  if (!handsContainer) return;
+  handsContainer.innerHTML = "";
+  for (const [id, name] of playerMap.entries()) {
+    const hand = hands.get(id) || [];
+    const move = moves.get(id);
+    const handDiv = document.createElement("div");
+    handDiv.className = "all-hands";
+    let label = name;
+    if (move && move.action === "stand") label += " 🟢";
+    if (move && move.action === "bust") label += " ❌";
+    if (id === currentTurn) label += " ⏳";
+    const labelDiv = document.createElement("div");
+    labelDiv.textContent = label;
+    labelDiv.style.minWidth = "100px";
+    handDiv.appendChild(labelDiv);
+    // Show cards: show all if round over, or if it's you, else facedown
+    const showCards = !roundActive || id === player.id;
+    for (let i = 0; i < hand.length; i++) {
+      const cardDiv = document.createElement("div");
+      cardDiv.className = "card";
+      if (showCards) {
+        cardDiv.textContent = cardToString(hand[i]);
+      } else {
+        cardDiv.textContent = "🂠";
+      }
+      handDiv.appendChild(cardDiv);
+    }
+    // Show hand value if visible
+    if (showCards) {
+      const valueDiv = document.createElement("div");
+      valueDiv.style.marginLeft = "10px";
+      valueDiv.textContent = `(${handValue(hand)})`;
+      handDiv.appendChild(valueDiv);
+    }
+    handsContainer.appendChild(handDiv);
+  }
+}
+
 function updateStatusAndTimer() {
   renderPlayerList();
   renderPlayerHand();
+  renderAllHands();
 
   // Update deal button state
   if (
@@ -133,10 +174,8 @@ function updateStatusAndTimer() {
 
   // Only allow action if it's this player's turn and not already stood/bust
   const move = moves.get(player.id);
-  
-  if (
-    currentTurn === player.id
-  ) {
+
+  if (currentTurn === player.id) {
     setStatus("Your turn! Hit or Stand.");
     enableControls();
   } else if (move && move.action === "stand") {
