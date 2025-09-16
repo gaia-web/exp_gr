@@ -71,8 +71,9 @@ export const DEFAULT_GAME_LIST: GameInfo[] = [
   },
   {
     id: "fps",
-    label: "First Person Shooter",
-    description: "it's a poker game actually lol",
+    label: "21-Points (Blackjack)",
+    description: "Poker game",
+    // player limit has not been enforced in the game logic yet
     playerLimit: [2, 2],
     pluginUrl: "/games/bj/index.html",
   },
