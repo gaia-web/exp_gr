@@ -19,6 +19,7 @@ import { isHost$ } from "../../utils/peer";
 import { githubDarkTheme, githubLightTheme, JsonEditor } from "json-edit-react";
 import "./style.css";
 import { showAlert } from "../..";
+import WithVibration from "../WithViberation";
 
 export function GameListView() {
   const gameListConfigDialogRef$ = useSignalRef<HTMLDialogElement>(null);
@@ -52,14 +53,14 @@ export function GameListView() {
     if (!isHost$.value) return null;
     return (
       <div class="config">
-        <button
+        <WithVibration.Button
           class="neumo"
           onClick={() => {
             gameListConfigDialogRef$.current?.showModal();
           }}
         >
           Config the list
-        </button>
+        </WithVibration.Button>
         {/* TODO update it to a user-friendly UI/UX */}
         <dialog class="neumo config-dialog" ref={gameListConfigDialogRef$}>
           <div class="json-editor-scroll-wrapper">
@@ -75,7 +76,7 @@ export function GameListView() {
               }
             />
           </div>
-          <button
+          <WithVibration.Button
             class="neumo confirm"
             onClick={async () => {
               gameListConfigDialogRef$.current?.close();
@@ -95,8 +96,8 @@ export function GameListView() {
             }}
           >
             Save
-          </button>
-          <button
+          </WithVibration.Button>
+          <WithVibration.Button
             class="neumo cancel"
             onClick={() => {
               gameListConfigDialogRef$.current?.close();
@@ -104,7 +105,7 @@ export function GameListView() {
             }}
           >
             Cancel
-          </button>
+          </WithVibration.Button>
         </dialog>
       </div>
     );
@@ -117,7 +118,7 @@ export function GameListView() {
         <div class="game-list neumo hollow">
           {currentGameList$.value?.map(
             ({ id, label, description, playerLimit }) => (
-              <button
+              <WithVibration.Button
                 class="neumo"
                 onClick={() => {
                   sendGamePickMessage(id);
@@ -137,7 +138,7 @@ export function GameListView() {
                       <span class="neumo hollow player-name">{name}</span>
                     ))}
                 </div>
-              </button>
+              </WithVibration.Button>
             )
           )}
         </div>
@@ -148,7 +149,7 @@ export function GameListView() {
   function renderGameControl() {
     if (!isHost$.value) return null;
     return isGameActive$.value ? (
-      <button
+      <WithVibration.Button
         class="neumo"
         onClick={() => {
           boardcastGameStatus({ type: GameStatus.RETIRED });
@@ -156,17 +157,17 @@ export function GameListView() {
         }}
       >
         End Game
-      </button>
+      </WithVibration.Button>
     ) : (
       <>
-        <button
+        <WithVibration.Button
           class="neumo"
           onClick={() => {
             gameSelectionDialogRef$.current?.showModal();
           }}
         >
           Start Game
-        </button>
+        </WithVibration.Button>
         <dialog class="neumo start-game-dialog" ref={gameSelectionDialogRef$}>
           <div>
             {polledGameList$.value?.map(
@@ -178,7 +179,7 @@ export function GameListView() {
                 pluginUrl,
                 pollCount,
               }) => (
-                <button
+                <WithVibration.Button
                   class="neumo"
                   onClick={() => {
                     boardcastGameStatus({ type: GameStatus.READY, value: id });
@@ -199,18 +200,18 @@ export function GameListView() {
                       <b>{pollCount}</b> vote(s)
                     </span>
                   </div>
-                </button>
+                </WithVibration.Button>
               )
             )}
           </div>
-          <button
+          <WithVibration.Button
             class="neumo cancel"
             onClick={() => {
               gameSelectionDialogRef$.current?.close();
             }}
           >
             Cancel
-          </button>
+          </WithVibration.Button>
         </dialog>
       </>
     );

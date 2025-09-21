@@ -2,6 +2,7 @@ import { batch, useSignal } from "@preact/signals";
 import { useSignalRef } from "@preact/signals/utils";
 import { createContext } from "preact";
 import { useContext, useEffect } from "preact/hooks";
+import WithVibration from "../WithViberation";
 import "./style.css";
 
 export type AlertOptions = {
@@ -40,23 +41,23 @@ function Alert({
       <b class="dialog-title">{title}</b>
       <p>{content}</p>
       <div class="button-group">
-        <button
+        <WithVibration.Button
           class="neumo confirm"
           onClick={() => {
             onClose?.(true);
           }}
         >
           {confirmText}
-        </button>
+        </WithVibration.Button>
         {cancelText && (
-          <button
+          <WithVibration.Button
             class="neumo"
             onClick={() => {
               onClose?.(false);
             }}
           >
             {cancelText}
-          </button>
+          </WithVibration.Button>
         )}
       </div>
     </dialog>

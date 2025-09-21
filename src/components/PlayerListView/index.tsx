@@ -9,6 +9,7 @@ import {
 } from "../../utils/session";
 import "./style.css";
 import { resolvePageTransitionPromise } from "../../utils/view-transition";
+import WithVibration from "../WithViberation";
 
 export function PlayerListView() {
   const { params } = useRoute();
@@ -19,7 +20,7 @@ export function PlayerListView() {
   return (
     <section class="player-list view">
       <h1>Room: {params.roomName}</h1>
-      <button
+      <WithVibration.Button
         class="neumo"
         onClick={() => {
           const url = new URL(
@@ -34,7 +35,7 @@ export function PlayerListView() {
         }}
       >
         Invite
-      </button>
+      </WithVibration.Button>
       <div class="neumo hollow card">
         <div class="player-count-label">{playerMap$.value.size} Player(s)</div>
         <ul>
