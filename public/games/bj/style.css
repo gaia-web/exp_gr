@@ -1,3 +1,6 @@
+:root {
+  color-scheme: light dark;
+}
 body {
   font-family: Arial, sans-serif;
   background: transparent;
@@ -53,6 +56,12 @@ button {
 }
 button:hover {
   background: #388e3c;
+}
+button:disabled{
+  background: #888 !important;
+  color: #ccc !important;
+  cursor: not-allowed !important;
+  opacity: 0.6;
 }
 #status {
   min-height: 24px;
