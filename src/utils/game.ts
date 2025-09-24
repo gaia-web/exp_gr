@@ -74,7 +74,7 @@ export const DEFAULT_GAME_LIST: GameInfo[] = [
     label: "21-Points (Blackjack)",
     description: "Poker game",
     // player limit has not been enforced in the game logic yet
-    playerLimit: [2, 2],
+    playerLimit: [1, Infinity],
     pluginUrl: "/games/bj/index.html",
   },
 ];
