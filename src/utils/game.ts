@@ -69,6 +69,14 @@ export const DEFAULT_GAME_LIST: GameInfo[] = [
     playerLimit: [2, 2],
     pluginUrl: "/games/tic-tac-toe/index.html",
   },
+  {
+    id: "fps",
+    label: "21-Points (Blackjack)",
+    description: "Poker game",
+    // player limit has not been enforced in the game logic yet
+    playerLimit: [1, Infinity],
+    pluginUrl: "/games/bj/index.html",
+  },
 ];
 
 export const currentGamePluginIframe$ = signal<HTMLIFrameElement>(null);
@@ -127,8 +135,7 @@ export function boardcastGameStatus(message: GameStatusMessage) {
 function initializeCurrrentGameList() {
   if (!peer$.value) return;
   if (!isHost$.value) return;
-  const cachedGameList = JSON.parse(localStorage.getItem("game-list") ?? null);
-  currentGameList$.value = cachedGameList ?? DEFAULT_GAME_LIST;
+  currentGameList$.value = DEFAULT_GAME_LIST;
 }
 
 function handleCurrentGameListChange() {
